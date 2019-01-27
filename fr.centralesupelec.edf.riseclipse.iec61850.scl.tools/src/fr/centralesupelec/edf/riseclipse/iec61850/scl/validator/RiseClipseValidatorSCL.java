@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2018 CentraleSupélec & EDF.
+ *  Copyright (c) 2019 CentraleSupélec & EDF.
  *  All rights reserved. This program and the accompanying materials
  *  are made available under the terms of the Eclipse Public License v1.0
  *  which accompanies this distribution, and is available at
@@ -21,6 +21,7 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 import java.io.File;
 import java.util.ArrayList;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.provider.NsdItemProviderAdapterFactory;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.provider.SclItemProviderAdapterFactory;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
@@ -32,14 +33,20 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 public class RiseClipseValidatorSCL {
 
-    private static OCLValidator ocl;
-    private static SclItemProviderAdapterFactory adapter;
-    private static SCLModelLoader loader;
+    private static OCLValidator oclValidator;
+    private static SclItemProviderAdapterFactory sclAdapter;
+    private static SCLModelLoader sclLoader;
+    private static NSDValidator nsdValidator;
+    private static boolean oclValidation = false;
+    private static boolean nsdValidation = false;
+    private static NsdItemProviderAdapterFactory nsdAdapter;
 
     public static void usage( IRiseClipseConsole console ) {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-        console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose] [--make-explicit-links] [<oclFile> | <sclFile>]*" );
-        console.info( "Files ending with \".ocl\" are considered OCL files, all others are considered SCL files" );
+        console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose] [--make-explicit-links] [<oclFile> | <nsdFile> | <sclFile>]*" );
+        console.info( "Files ending with \".ocl\" are considered OCL files, "
+                    + "files ending with \\\".nsd\\\" are considered NSD files, "
+                    + "all others are considered SCL files" );
         System.exit( -1 );
     }
 
@@ -74,24 +81,30 @@ public class RiseClipseValidatorSCL {
         }
 
         ArrayList< File > oclFiles = new ArrayList<>();
+        ArrayList< String > nsdFiles = new ArrayList<>();
         ArrayList< String > sclFiles = new ArrayList<>();
         for( int i = posFiles; i < args.length; ++i ) {
             if( args[i].endsWith( ".ocl" )) {
                 oclFiles.add( new File( args[i] ));
+                oclValidation = true;
+            }
+            else if( args[i].endsWith( ".nsd" )) {
+                nsdFiles.add( args[i] );
+                nsdValidation = true;
             }
             else {
                 sclFiles.add( args[i] );
             }
         }
         
-        prepare( console, oclFiles );
+        prepare( console, oclFiles, nsdFiles );
         for( int i = 0; i < sclFiles.size(); ++i ) {
             run( console, make_explicit_links, sclFiles.get( i ));
         }
     }
     
     public static void displayLegal( IRiseClipseConsole console ) {
-        console.info( "Copyright (c) 2018 CentraleSupélec & EDF." );
+        console.info( "Copyright (c) 2019 CentraleSupélec & EDF." );
         console.info( "All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0" );
         console.info( "which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html" );
         console.info( "" );
@@ -105,39 +118,56 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseSCLValidator version: 1.0.1 (6 June 2018)" );
+        console.info( "RiseClipseValidatorSCL version: 1.0.0 (28 January 2019)" );
         console.info( "" );
     }
 
-    public static void prepare( IRiseClipseConsole console, ArrayList< File > oclFiles ) {
-        SclPackage sclPg = SclPackage.eINSTANCE;
-        ocl = new OCLValidator( sclPg, true );
-
-        for( int i = 0; i < oclFiles.size(); ++i ) {
-            console.info( "Loading ocl: " + oclFiles.get( i ));
-            // workaround for bug 486872
-//          File file = new File( oclFiles.get( i ));
-//          URI uri = file.isFile() ? URI.createFileURI( file.getAbsolutePath() ) : URI.createURI( oclFiles.get( i ));
-//          oclFiles.add( uri );
-//          ocl.addOCLDocument( uri, console );
-            ocl.addOCLDocument( oclFiles.get( i ), console );
+    public static void prepare( IRiseClipseConsole console, ArrayList< File > oclFiles, ArrayList< String > nsdFiles ) {
+        if( oclValidation ) {
+            oclValidator = new OCLValidator( SclPackage.eINSTANCE, true );
+    
+            for( int i = 0; i < oclFiles.size(); ++i ) {
+                console.info( "Loading ocl: " + oclFiles.get( i ));
+                // workaround for bug 486872
+//              File file = new File( oclFiles.get( i ));
+//              URI uri = file.isFile() ? URI.createFileURI( file.getAbsolutePath() ) : URI.createURI( oclFiles.get( i ));
+//              oclFiles.add( uri );
+//              ocl.addOCLDocument( uri, console );
+                oclValidator.addOCLDocument( oclFiles.get( i ), console );
+            }
+        }
+        
+        if( nsdValidation ) {
+            nsdValidator = new NSDValidator( SclPackage.eINSTANCE );
+            NSDModelLoader nsdLoader = new NSDModelLoader( console );
+            for( int i = 0; i < nsdFiles.size(); ++i ) {
+                console.info( "Loading nsd: " + nsdFiles.get( i ));
+                nsdValidator.addNSDDocument( nsdLoader.load( nsdFiles.get( i )), console );
+            }
+            nsdAdapter = new NsdItemProviderAdapterFactory();
         }
 
-        loader = new SCLModelLoader( console );
-        adapter = new SclItemProviderAdapterFactory();
+        sclLoader = new SCLModelLoader( console );
+        sclAdapter = new SclItemProviderAdapterFactory();
     }
 
     public static void run( IRiseClipseConsole console, boolean make_explicit_links, String sclFile ) {
-        loader.reset();
-        Resource resource = loader.loadWithoutValidation( sclFile );
+        sclLoader.reset();
+        Resource resource = sclLoader.loadWithoutValidation( sclFile );
         if( make_explicit_links ) {
             console.info( "Making explicit links for file: " + sclFile );
-            loader.finalizeLoad();
+            sclLoader.finalizeLoad();
         }
         if( resource != null ) {
-            console.info( "Validating file: " + sclFile );
-            ocl.validate( resource, adapter, console );
-        }
+            if( oclValidation ) {
+                console.info( "Validating file: " + sclFile + " with OCL" );
+                oclValidator.validate( resource, sclAdapter, console );
+            }
+            if( nsdValidation ) {
+                console.info( "Validating file: " + sclFile + " with NSD" );
+                nsdValidator.validate( resource, nsdAdapter, console );
+            }
+       }
     }
 
 }
