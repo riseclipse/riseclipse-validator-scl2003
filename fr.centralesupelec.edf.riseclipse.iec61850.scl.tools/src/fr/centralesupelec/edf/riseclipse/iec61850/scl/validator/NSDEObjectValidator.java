@@ -27,6 +27,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DocumentRoot;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TFunctionalConstraint;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TFunctionalConstraints;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TNS;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class NSDEObjectValidator implements EValidator {
@@ -35,6 +39,18 @@ public class NSDEObjectValidator implements EValidator {
 
     public NSDEObjectValidator( Resource nsdResource ) {
         this.nsdResource = nsdResource;
+        
+        // Cet attribut contient le fichier NSD qui a été chargé.
+        // On peut par exemple faire:
+        DocumentRoot root = (DocumentRoot) nsdResource.getContents().get( 0 );
+        TNS tns = (TNS) root.getNS();
+        AbstractRiseClipseConsole.getConsole().info( "    NS.id: " + tns.getId() );
+        TFunctionalConstraints fcs = tns.getFunctionalConstraints();
+        // La suite ne marche que pour IEC_61850-7-2_2007B.nsd
+        if( fcs != null ) {
+            TFunctionalConstraint fc0 = fcs.getFunctionalConstraint().get( 0 );
+            AbstractRiseClipseConsole.getConsole().info( "    FunctionalConstraint.titleID: " + fc0.getTitleID() );
+        }
     }
 
     @Override
