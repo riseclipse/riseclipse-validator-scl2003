@@ -59,7 +59,7 @@ public class NSDModelLoader  extends RiseClipseModelLoader {
     
     public static void main( String[] args ) {
         IRiseClipseConsole console = new TextRiseClipseConsole();
-        SCLModelLoader loader = new SCLModelLoader( console );
+        NSDModelLoader loader = new NSDModelLoader( console );
         
         for( int i = 0; i < args.length; ++i ) {
             @SuppressWarnings( "unused" )
