@@ -29,49 +29,24 @@ import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DocumentRoot;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TBasicType;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TBasicTypes;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TCDC;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TDataAttribute;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TDataObject;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TFunctionalConstraint;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TFunctionalConstraints;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TLNClass;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TLNClasses;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.TNS;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.BasicType;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.NS;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAI;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNode;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.impl.AnyLNImpl;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.impl.DAIImpl;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.impl.DAImpl;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.impl.LN0Impl;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.impl.LNodeTypeImpl;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class NSDEObjectValidator implements EValidator {
     
-    private Resource nsdResource;
+    private NS ns;
 
     public NSDEObjectValidator( Resource nsdResource ) {
-        this.nsdResource = nsdResource;
-        
-        // Cet attribut contient le fichier NSD qui a été chargé.
-        // On peut par exemple faire:
         DocumentRoot root = (DocumentRoot) nsdResource.getContents().get( 0 );
-        TNS tns = (TNS) root.getNS();
-        AbstractRiseClipseConsole.getConsole().info( "    NS.id: " + tns.getId() );
-        TFunctionalConstraints fcs = tns.getFunctionalConstraints();
-        // La suite ne marche que pour IEC_61850-7-2_2007B.nsd
-        if( fcs != null ) {
-            TFunctionalConstraint fc0 = fcs.getFunctionalConstraint().get( 0 );
-            AbstractRiseClipseConsole.getConsole().info( "    FunctionalConstraint.titleID: " + fc0.getTitleID() );
-        }
-   
-        
+        ns = (NS) root.getNS();
     }
 
     @Override
@@ -82,10 +57,6 @@ public class NSDEObjectValidator implements EValidator {
     @Override
     public boolean validate( EClass eClass, EObject eObject, DiagnosticChain diagnostics,
             Map< Object, Object > context ) {
-        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validate( EClass ): " + eClass.getName());
-        
-        // TODO: use nsdResource to validate eObject
-        
         
         switch(eClass.getName()) {
         case "LNode":
@@ -102,7 +73,7 @@ public class NSDEObjectValidator implements EValidator {
         	DOType dot = (DOType) eObject;
         	return validateDO(dot.getCdc());
         case "DA":
-        	DAImpl da = (DAImpl) eObject;
+        	DA da = (DA) eObject;
         	return validateDA(da.getBType());
         default:
         	return false;
@@ -121,13 +92,12 @@ public class NSDEObjectValidator implements EValidator {
     }
     
     
-    public boolean validateLN(String lnClass) {
-        DocumentRoot root = (DocumentRoot) nsdResource.getContents().get( 0 );
-        TNS tns = (TNS) root.getNS();
-        if(tns.getLNClasses() != null) {
-	        EList<TLNClass> tlnClass = tns.getLNClasses().getLNClass();
-	    	for(int i = 0; i < tlnClass.size(); i++) {
-	    		if(lnClass.equals(tlnClass.get(i).getName())) {
+    public boolean validateLN(String lnClassName) {
+        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateLN( " + lnClassName + " )" );
+        if(ns.getLNClasses() != null) {
+	        EList<LNClass> lnClass = ns.getLNClasses().getLNClass();
+	    	for(int i = 0; i < lnClass.size(); i++) {
+	    		if(lnClassName.equals(lnClass.get(i).getName())) {
 	    			//log("is valid");
 	    			return true;
 	    		}
@@ -139,13 +109,12 @@ public class NSDEObjectValidator implements EValidator {
         }
     }
     
-    public boolean validateDO(String cdc) {
-        DocumentRoot root = (DocumentRoot) nsdResource.getContents().get( 0 );
-        TNS tns = (TNS) root.getNS();
-        if(tns.getCDCs() != null) {
-	    	EList<TCDC> tcdc = tns.getCDCs().getCDC();
-	    	for(int i = 0; i < tcdc.size(); i++) {
-	    		if(cdc.equals(tcdc.get(i).getName())) {
+    public boolean validateDO(String cdcName) {
+        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateDO( " + cdcName + " )" );
+        if(ns.getCDCs() != null) {
+	    	EList<CDC> cdc = ns.getCDCs().getCDC();
+	    	for(int i = 0; i < cdc.size(); i++) {
+	    		if(cdcName.equals(cdc.get(i).getName())) {
 	    			//log("is valid");
 	    			return true;
 	    		}
@@ -157,13 +126,12 @@ public class NSDEObjectValidator implements EValidator {
         }
     }
 
-    public boolean validateDA(String basicType) {
-        DocumentRoot root = (DocumentRoot) nsdResource.getContents().get( 0 );
-        TNS tns = (TNS) root.getNS();
-        if(tns.getBasicTypes() != null) {
-	    	EList<TBasicType> tda = tns.getBasicTypes().getBasicType();
-	    	for(int i = 0; i < tda.size(); i++) {
-	    		if(basicType.equals(tda.get(i).getName())) {
+    public boolean validateDA(String basicTypeName) {
+        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateDA( " + basicTypeName + " )" );
+        if(ns.getBasicTypes() != null) {
+	    	EList<BasicType> basicTypes = ns.getBasicTypes().getBasicType();
+	    	for(int i = 0; i < basicTypes.size(); i++) {
+	    		if(basicTypeName.equals(basicTypes.get(i).getName())) {
 	    			//log("is valid");
 	    			return true;
 	    		}
