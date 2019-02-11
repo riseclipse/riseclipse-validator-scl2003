@@ -104,10 +104,10 @@ public class NsdEObjectValidator implements EValidator {
         
         Optional< LNClass > lnClassFound = nsdResourceSet.getLNClassStream().filter( lNClass -> lNClass.getName().equals( ln.getLnClass() )).findAny();
         if( ! lnClassFound.isPresent() ) {
-            AbstractRiseClipseConsole.getConsole().error( "ln.getLnClass() not found in NSD files" );
+            AbstractRiseClipseConsole.getConsole().error( "LNClass " + ln.getLnClass() + " not found in NSD files" );
 	    	return false; 
         }
-        AbstractRiseClipseConsole.getConsole().info( "found ln.getLnClass() in NSD files" );
+        AbstractRiseClipseConsole.getConsole().info( "found LNClass " + ln.getLnClass() + " in NSD files" );
         
         // lnClassFound contains DataObject which describes allowed DOI in LN
         for( DOI doi : ln.getDOI() ) {
