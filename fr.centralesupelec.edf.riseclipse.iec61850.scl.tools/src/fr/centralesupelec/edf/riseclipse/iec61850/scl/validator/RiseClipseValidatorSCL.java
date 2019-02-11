@@ -30,22 +30,24 @@ import fr.centralesupelec.edf.riseclipse.validation.ocl.OCLValidator;
 
 //import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
 public class RiseClipseValidatorSCL {
 
-    private static OCLValidator oclValidator;
+    //private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
     private static SCLModelLoader sclLoader;
-    private static NSDValidator nsdValidator;
-    private static boolean oclValidation = false;
+    private static NsdValidator nsdValidator;
+    //private static boolean oclValidation = false;
     private static boolean nsdValidation = false;
     private static NsdItemProviderAdapterFactory nsdAdapter;
 
     public static void usage( IRiseClipseConsole console ) {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose] [--make-explicit-links] [<oclFile> | <nsdFile> | <sclFile>]*" );
-        console.info( "Files ending with \".ocl\" are considered OCL files, "
-                    + "files ending with \\\".nsd\\\" are considered NSD files, "
+        console.info( /*"Files ending with \".ocl\" are considered OCL files, "
+                    +*/ "files ending with \\\".nsd\\\" are considered NSD files, "
                     + "all others are considered SCL files" );
         System.exit( -1 );
     }
@@ -56,7 +58,6 @@ public class RiseClipseValidatorSCL {
         
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         displayLegal( console );
-        
         console.setLevel( IRiseClipseConsole.WARNING_LEVEL );
         
         if( args.length == 0 ) usage( console );
@@ -80,15 +81,15 @@ public class RiseClipseValidatorSCL {
             }
         }
 
-        ArrayList< File > oclFiles = new ArrayList<>();
+        //ArrayList< String > oclFiles = new ArrayList<>();
         ArrayList< String > nsdFiles = new ArrayList<>();
         ArrayList< String > sclFiles = new ArrayList<>();
         for( int i = posFiles; i < args.length; ++i ) {
-            if( args[i].endsWith( ".ocl" )) {
-                oclFiles.add( new File( args[i] ));
+            /*if( args[i].endsWith( ".ocl" )) {
+                oclFiles.add( args[i] );
                 oclValidation = true;
             }
-            else if( args[i].endsWith( ".nsd" )) {
+            else*/ if( args[i].endsWith( ".nsd" )) {
                 nsdFiles.add( args[i] );
                 nsdValidation = true;
             }
@@ -97,7 +98,7 @@ public class RiseClipseValidatorSCL {
             }
         }
         
-        prepare( console, oclFiles, nsdFiles );
+        prepare( console, /*oclFiles,*/ nsdFiles );
         for( int i = 0; i < sclFiles.size(); ++i ) {
             run( console, make_explicit_links, sclFiles.get( i ));
         }
@@ -122,29 +123,24 @@ public class RiseClipseValidatorSCL {
         console.info( "" );
     }
 
-    public static void prepare( IRiseClipseConsole console, ArrayList< File > oclFiles, ArrayList< String > nsdFiles ) {
-        if( oclValidation ) {
-            oclValidator = new OCLValidator( SclPackage.eINSTANCE, true );
+    public static void prepare( IRiseClipseConsole console, /*ArrayList< String > oclFiles,*/ ArrayList< String > nsdFiles ) {
+        @NonNull
+        ComposedEValidator validator = ComposedEValidator.install( SclPackage.eINSTANCE );
+        
+        /*if( oclValidation ) {
+            oclValidator = new OCLValidator( validator, true );
     
             for( int i = 0; i < oclFiles.size(); ++i ) {
-                console.info( "Loading ocl: " + oclFiles.get( i ));
-                // workaround for bug 486872
-//              File file = new File( oclFiles.get( i ));
-//              URI uri = file.isFile() ? URI.createFileURI( file.getAbsolutePath() ) : URI.createURI( oclFiles.get( i ));
-//              oclFiles.add( uri );
-//              ocl.addOCLDocument( uri, console );
                 oclValidator.addOCLDocument( oclFiles.get( i ), console );
             }
-        }
+        }*/
         
         if( nsdValidation ) {
-            nsdValidator = new NSDValidator( SclPackage.eINSTANCE );
-            NSDModelLoader nsdLoader = new NSDModelLoader( console );
+            nsdValidator = new NsdValidator( validator, console );
             for( int i = 0; i < nsdFiles.size(); ++i ) {
-                console.info( "Loading nsd: " + nsdFiles.get( i ));
-                nsdValidator.addNSDDocument( nsdLoader.load( nsdFiles.get( i )), console );
+                nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
             }
-            nsdAdapter = new NsdItemProviderAdapterFactory();
+            //nsdAdapter = new NsdItemProviderAdapterFactory();
         }
 
         sclLoader = new SCLModelLoader( console );
@@ -159,13 +155,13 @@ public class RiseClipseValidatorSCL {
             sclLoader.finalizeLoad();
         }
         if( resource != null ) {
-            if( oclValidation ) {
+            /*if( oclValidation ) {
                 console.info( "Validating file: " + sclFile + " with OCL" );
                 oclValidator.validate( resource, sclAdapter, console );
-            }
+            }*/
             if( nsdValidation ) {
                 console.info( "Validating file: " + sclFile + " with NSD" );
-                nsdValidator.validate( resource, nsdAdapter, console );
+                nsdValidator.validate( resource, sclAdapter, console );
             }
        }
     }

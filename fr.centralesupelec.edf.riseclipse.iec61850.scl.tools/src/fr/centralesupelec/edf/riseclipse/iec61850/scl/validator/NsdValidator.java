@@ -38,25 +38,27 @@ import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
-public class NSDValidator {
+public class NsdValidator {
 
     private @NonNull EPackage modelPackage;
-    private ComposedEValidator validator;
+    private NsdModelLoader nsdLoader;
 
-    public NSDValidator( @NonNull EPackage modelPackage ) {
-        this.modelPackage = modelPackage;
-        validator = ComposedEValidator.install( modelPackage );
+    public NsdValidator( @NonNull ComposedEValidator validator, IRiseClipseConsole console ) {
+        nsdLoader = new NsdModelLoader( console );
+        validator.addChild( new NsdEObjectValidator( nsdLoader.getResourceSet() ));
     }
         
-    public boolean addNSDDocument( Resource resource, IRiseClipseConsole console ) {
-        NSDEObjectValidator nsdObjectValidator = new NSDEObjectValidator( resource );
-        validator.addChild( nsdObjectValidator );
-        return true;
+    public void addNsdDocument( String nsdFile, IRiseClipseConsole console ) {
+        console.info( "Loading nsd: " + nsdFile );
+        nsdLoader.load( nsdFile );
     }
 
     public void validate( Resource resource, final AdapterFactory adapter, IRiseClipseConsole console ) {
+        nsdLoader.getResourceSet().buildExplicitLinks( console );
+        
         Map<Object, Object> context = new HashMap< Object, Object >();
         SubstitutionLabelProvider substitutionLabelProvider = new EValidator.SubstitutionLabelProvider() {
             
