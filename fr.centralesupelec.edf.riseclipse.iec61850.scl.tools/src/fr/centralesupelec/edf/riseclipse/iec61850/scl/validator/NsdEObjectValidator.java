@@ -30,6 +30,7 @@ import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DocumentRoot;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.FunctionalConstraint;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.BasicType;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataAttribute;
@@ -64,22 +65,10 @@ public class NsdEObjectValidator implements EValidator {
             Map< Object, Object > context ) {
         
         switch(eClass.getName()) {
-//        case "LNode":
-//        	LNode lnd = (LNode) eObject;
-//        	return validateLN(lnd.getLnClass());
-//        case "LNodeType":
-//        	LNodeType lnt = (LNodeType) eObject;
-//        	return validateLN(lnt.getLnClass());
         case "LN0":
         case "LN":
         	AnyLN ln = (AnyLN) eObject;
         	return validateLN(ln);
-//        case "DOType":
-//        	DOType dot = (DOType) eObject;
-//        	return validateDO(dot.getCdc());
-//        case "DA":
-//        	DA da = (DA) eObject;
-//        	return validateDA(da.getBType());
         default:
         	return false;
         }
@@ -98,6 +87,7 @@ public class NsdEObjectValidator implements EValidator {
     
     
     public boolean validateLN(AnyLN ln) {
+    	AbstractRiseClipseConsole.getConsole().info(" ");
         AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateLN( " + ln.getLnClass() + " )" );
         
         // TODO: inheritance of LNClass must be taken into account
@@ -112,65 +102,37 @@ public class NsdEObjectValidator implements EValidator {
         // lnClassFound contains DataObject which describes allowed DOI in LN
         for( DOI doi : ln.getDOI() ) {
             Optional< DataObject > dataObjectFound = lnClassFound.get().getDataObject().stream().filter( dataObject -> dataObject.getName().equals( doi.getName()) ).findAny();
-            
+
             if( ! dataObjectFound.isPresent() ) {
                 // TODO: add message
-                return false;
+                AbstractRiseClipseConsole.getConsole().error( "DO " + doi.getName() + " not found in LNClass " +  ln.getLnClass());
+            	return false;
             }
             
             // dataObjectFound refers to a CDC which describes allowed DAI in DOI
             CDC cdcFound = dataObjectFound.get().getRefersToCDC();
+            AbstractRiseClipseConsole.getConsole().info( "found DO " + doi.getName() + " (CDC: " + cdcFound.getName() + ") in LNClass " +  ln.getLnClass());
             for( DAI dai : doi.getDAI() ) {
                 Optional< DataAttribute > dataAttributeFound = cdcFound.getDataAttribute().stream().filter( dataAttribute -> dataAttribute.getName().equals( dai.getName() ) ).findAny();
+                
                 if( ! dataAttributeFound.isPresent() ) {
                     // TODO: add message
-                    return false;
+                	AbstractRiseClipseConsole.getConsole().error( "DA " + dai.getName() + " not found in CDC " +  cdcFound.getName());
+                	return false;
                 }
+                AbstractRiseClipseConsole.getConsole().info( "found DA " + dai.getName() + " in CDC " +  cdcFound.getName());
                 
                 // TODO: is there anything else to check ?
+                
             }
             
-            // TODO: check that compulsory DataObject in cdcFound are present in doi 
+            // TODO: check that compulsory DataAttribute in cdcFound are present in doi 
         }
         
-        // TODO: check that compulsory DataAttribute in lnClassFound are present in ln 
+        // TODO: check that compulsory DataObject in lnClassFound are present in ln 
 
         return true;
     }
-    
-//    public boolean validateDO(String cdcName) {
-//        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateDO( " + cdcName + " )" );
-//        if(ns.getCDCs() != null) {
-//	    	EList<CDC> cdc = ns.getCDCs().getCDC();
-//	    	for(int i = 0; i < cdc.size(); i++) {
-//	    		if(cdcName.equals(cdc.get(i).getName())) {
-//	    			//log("is valid");
-//	    			return true;
-//	    		}
-//	    	}
-//	    	//log("is not valid");
-//	    	return false;
-//        } else {
-//        	return true;
-//        }
-//    }
-//
-//    public boolean validateDA(String basicTypeName) {
-//        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateDA( " + basicTypeName + " )" );
-//        if(ns.getBasicTypes() != null) {
-//	    	EList<BasicType> basicTypes = ns.getBasicTypes().getBasicType();
-//	    	for(int i = 0; i < basicTypes.size(); i++) {
-//	    		if(basicTypeName.equals(basicTypes.get(i).getName())) {
-//	    			//log("is valid");
-//	    			return true;
-//	    		}
-//	    	}
-//	    	//log("is not valid");
-//	    	return false;
-//        } else {
-//        	return true;
-//        }
-//    }
     
     
     public void log(String message) {
