@@ -45,6 +45,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOI;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNode;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class NsdEObjectValidator implements EValidator {
@@ -77,7 +78,7 @@ public class NsdEObjectValidator implements EValidator {
     @Override
     public boolean validate( EDataType eDataType, Object value, DiagnosticChain diagnostics,
             Map< Object, Object > context ) {
-        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validate( EDataType ): " + eDataType.getName() );
+        //AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validate( EDataType ): " + eDataType.getName() );
         
         // TODO: use nsdResource to validate value
         
@@ -100,38 +101,111 @@ public class NsdEObjectValidator implements EValidator {
         AbstractRiseClipseConsole.getConsole().info( "found LNClass " + ln.getLnClass() + " in NSD files" );
         
         // lnClassFound contains DataObject which describes allowed DOI in LN
-        for( DOI doi : ln.getDOI() ) {
-            Optional< DataObject > dataObjectFound = lnClassFound.get().getDataObject().stream().filter( dataObject -> dataObject.getName().equals( doi.getName()) ).findAny();
-
-            if( ! dataObjectFound.isPresent() ) {
-                // TODO: add message
-                AbstractRiseClipseConsole.getConsole().error( "DO " + doi.getName() + " not found in LNClass " +  ln.getLnClass());
-            	return false;
-            }
-            
-            // dataObjectFound refers to a CDC which describes allowed DAI in DOI
-            CDC cdcFound = dataObjectFound.get().getRefersToCDC();
-            AbstractRiseClipseConsole.getConsole().info( "found DO " + doi.getName() + " (CDC: " + cdcFound.getName() + ") in LNClass " +  ln.getLnClass());
-            for( DAI dai : doi.getDAI() ) {
-                Optional< DataAttribute > dataAttributeFound = cdcFound.getDataAttribute().stream().filter( dataAttribute -> dataAttribute.getName().equals( dai.getName() ) ).findAny();
-                
-                if( ! dataAttributeFound.isPresent() ) {
-                    // TODO: add message
-                	AbstractRiseClipseConsole.getConsole().error( "DA " + dai.getName() + " not found in CDC " +  cdcFound.getName());
-                	return false;
-                }
-                AbstractRiseClipseConsole.getConsole().info( "found DA " + dai.getName() + " in CDC " +  cdcFound.getName());
-                
-                // TODO: is there anything else to check ?
-                
-            }
-            
-            // TODO: check that compulsory DataAttribute in cdcFound are present in doi 
-        }
-        
+    	for( DOI doi : ln.getDOI() ) {
+	        if( ! validateDO(doi, lnClassFound.get()) ) {
+	        	return false;
+	        }
+    	}
         // TODO: check that compulsory DataObject in lnClassFound are present in ln 
 
         return true;
+    }
+    
+    public boolean validateDO(DOI doi, LNClass lnClassFound) {
+        Optional< DataObject > dataObjectFound = lnClassFound.getDataObject().stream().filter( dataObject -> dataObject.getName().equals( doi.getName()) ).findAny();
+        AbstractRiseClipseConsole.getConsole().info(" ");
+        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateDO( " + doi.getName() + " )" );
+        if( ! dataObjectFound.isPresent() ) {
+            AbstractRiseClipseConsole.getConsole().error( "DO " + doi.getName() + " not found in LNClass " +  lnClassFound.getName());
+        	return false;
+        }
+        
+        // dataObjectFound refers to a CDC which describes allowed DAI in DOI
+        CDC cdcFound = dataObjectFound.get().getRefersToCDC();
+        AbstractRiseClipseConsole.getConsole().info( "found DO " + doi.getName() + " (CDC: " + cdcFound.getName() + ") in LNClass " +  lnClassFound.getName());
+    	for( DAI dai : doi.getDAI() ) {
+	        if( ! validateDA(dai, cdcFound) ) {
+	        	return false;
+	        }
+    	}
+        
+        // TODO: check that compulsory DataAttribute in cdcFound are present in doi 
+       
+    	return true;
+    }
+    
+    public boolean validateDA(DAI dai, CDC cdcFound) {
+        AbstractRiseClipseConsole.getConsole().info(" ");
+    	AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateDA( " + dai.getName() + " )" );
+        Optional< DataAttribute > dataAttributeFound = cdcFound.getDataAttribute().stream().filter( dataAttribute -> dataAttribute.getName().equals( dai.getName() ) ).findAny();
+        
+        if( ! dataAttributeFound.isPresent() ) {
+        	AbstractRiseClipseConsole.getConsole().error( "DA " + dai.getName() + " not found in CDC " +  cdcFound.getName());
+        	return false;
+        }
+        AbstractRiseClipseConsole.getConsole().info( "found DA " + dai.getName() + " in CDC " +  cdcFound.getName());
+        
+        // dataAttributeFound that are BASIC have a BasicType which describes allowed Val of DA
+        if(dataAttributeFound.get().getTypeKind().getName().equals("BASIC")) {
+            for(Val val : dai.getVal()) {
+            	if( ! validateVal(val.getValue(), dataAttributeFound.get().getType()) ) {
+            		AbstractRiseClipseConsole.getConsole().error( "Val " + val.getValue() + " of DA " +  dai.getName() + 
+            				"should have had type " + dataAttributeFound.get().getType() + ", but is not");;
+            		return false;
+            	}
+            	AbstractRiseClipseConsole.getConsole().info( "Val " +  val.getValue() + " of DA " +  dai.getName() + 
+        				" has type " + dataAttributeFound.get().getType());
+            }                	
+        }
+
+    	return true;
+    }
+    
+    public boolean validateVal(String val, String type) {
+    	int v;
+    	long l;
+    	float f;
+    	switch(type) {
+    	case "BOOLEAN":
+    		return (val.equals("0") || val.equals("1") || val.equals("false") || val.equals("true"));
+    	case "INT8":
+    		v = Integer.parseInt(val);
+    		return v >= -128 && v <= 127;
+    	case "INT16":
+    		v = Integer.parseInt(val);
+    		return v >= -32768 && v <= 32767;
+    	case "INT32":
+    		v = Integer.parseInt(val);
+    		return v >= Integer.MIN_VALUE && v <= Integer.MAX_VALUE;
+    	case "INT64":
+    		l = Long.parseLong(val);
+    		return l >= Long.MIN_VALUE && l <= Long.MAX_VALUE;
+    	case "INT8U":
+    		v = Integer.parseInt(val);
+    		return v >= 0 && v <= 255;
+    	case "INT16U":
+    		v = Integer.parseInt(val);
+    		return v >= 0 && v <= 65535;
+    	case "INT32U":
+    		l = Long.parseLong(val);
+            String max = "4294967295";
+    		return l >= 0 && l <= Long.parseLong(max);
+    	case "FLOAT32":
+    		f = Float.parseFloat(val);
+    		return f >= Float.MIN_VALUE && f <= Float.MAX_VALUE;
+    	case "Octet64":
+    		byte[] bytes = val.getBytes();
+    		return bytes.length <= 64;
+    	case "VisString64":
+    		return val.length() <= 255;
+    	case "VisString129":
+    		return val.length() <= 129;
+    	case "Unicode255":
+    	case "VisString255":
+    		return val.length() <= 255;
+    	default:
+    		return false;
+    	}
     }
     
     
