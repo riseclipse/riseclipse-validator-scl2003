@@ -18,6 +18,8 @@
  */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -88,7 +90,8 @@ public class NsdEObjectValidator implements EValidator {
     
     
     public boolean validateLN(AnyLN ln) {
-    	AbstractRiseClipseConsole.getConsole().info(" ");
+    	AbstractRiseClipseConsole.getConsole().info("");
+    	AbstractRiseClipseConsole.getConsole().info("");
         AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateLN( " + ln.getLnClass() + " )" );
         
         // TODO: inheritance of LNClass must be taken into account
@@ -101,66 +104,184 @@ public class NsdEObjectValidator implements EValidator {
         AbstractRiseClipseConsole.getConsole().info( "found LNClass " + ln.getLnClass() + " in NSD files" );
         
         // lnClassFound contains DataObject which describes allowed DOI in LN
-    	for( DOI doi : ln.getDOI() ) {
-	        if( ! validateDO(doi, lnClassFound.get()) ) {
-	        	return false;
-	        }
-    	}
+        if( ! validateDO(ln.getDOI(), lnClassFound.get()) ) {
+        	return false;
+        }
+        
         // TODO: check that compulsory DataObject in lnClassFound are present in ln 
 
         return true;
     }
     
-    public boolean validateDO(DOI doi, LNClass lnClassFound) {
-        Optional< DataObject > dataObjectFound = lnClassFound.getDataObject().stream().filter( dataObject -> dataObject.getName().equals( doi.getName()) ).findAny();
-        AbstractRiseClipseConsole.getConsole().info(" ");
-        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateDO( " + doi.getName() + " )" );
-        if( ! dataObjectFound.isPresent() ) {
-            AbstractRiseClipseConsole.getConsole().error( "DO " + doi.getName() + " not found in LNClass " +  lnClassFound.getName());
-        	return false;
-        }
-        
-        // dataObjectFound refers to a CDC which describes allowed DAI in DOI
-        CDC cdcFound = dataObjectFound.get().getRefersToCDC();
-        AbstractRiseClipseConsole.getConsole().info( "found DO " + doi.getName() + " (CDC: " + cdcFound.getName() + ") in LNClass " +  lnClassFound.getName());
-    	for( DAI dai : doi.getDAI() ) {
-	        if( ! validateDA(dai, cdcFound) ) {
+    
+    public boolean validateDO(EList<DOI> lnDOI, LNClass lnClassFound) {
+    	HashMap<String, HashSet<String>> presenceDO = generatePresenceDO(lnClassFound);
+    	for( DOI doi : lnDOI ) {
+	        Optional< DataObject > dataObjectFound = lnClassFound.getDataObject().stream().filter( dataObject -> dataObject.getName().equals( doi.getName()) ).findAny();
+	        AbstractRiseClipseConsole.getConsole().info(" ");
+	        AbstractRiseClipseConsole.getConsole().info( "validateDO( " + doi.getName() + " )" );
+	        if( ! dataObjectFound.isPresent() ) {
+	            AbstractRiseClipseConsole.getConsole().error( "DO " + doi.getName() + " not found in LNClass " +  lnClassFound.getName());
 	        	return false;
 	        }
+	        
+	        try {
+	        	presenceDO = updatePresenceDO(presenceDO, dataObjectFound.get());
+	        } catch(Exception e) {
+	        	AbstractRiseClipseConsole.getConsole().error( "LN contains forbidden DO for class " + lnClassFound.getName());
+	        	return false;
+	        }
+	        
+	        // dataObjectFound refers to a CDC which describes allowed DAI in DOI
+	        CDC cdcFound = dataObjectFound.get().getRefersToCDC();
+	        AbstractRiseClipseConsole.getConsole().info( "found DO " + doi.getName() + " (CDC: " + cdcFound.getName() + ") in LNClass " +  lnClassFound.getName());
+	        if( ! validateDA(doi.getDAI(), cdcFound) ) {
+	        	return false;
+	        }
+	        
+	        // TODO: check that compulsory DataAttribute in cdcFound are present in doi
     	}
-        
-        // TODO: check that compulsory DataAttribute in cdcFound are present in doi 
-       
+    	
+    	if(presenceDO.get("mandatory").size() > 0) {
+            AbstractRiseClipseConsole.getConsole().error( "LN does not contain all mandatory DO from class " + lnClassFound.getName());
+    		return false;
+    	}
+    	
     	return true;
     }
     
-    public boolean validateDA(DAI dai, CDC cdcFound) {
-        AbstractRiseClipseConsole.getConsole().info(" ");
-    	AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateDA( " + dai.getName() + " )" );
-        Optional< DataAttribute > dataAttributeFound = cdcFound.getDataAttribute().stream().filter( dataAttribute -> dataAttribute.getName().equals( dai.getName() ) ).findAny();
-        
-        if( ! dataAttributeFound.isPresent() ) {
-        	AbstractRiseClipseConsole.getConsole().error( "DA " + dai.getName() + " not found in CDC " +  cdcFound.getName());
-        	return false;
-        }
-        AbstractRiseClipseConsole.getConsole().info( "found DA " + dai.getName() + " in CDC " +  cdcFound.getName());
-        
-        // dataAttributeFound that are BASIC have a BasicType which describes allowed Val of DA
-        if(dataAttributeFound.get().getTypeKind().getName().equals("BASIC")) {
-            for(Val val : dai.getVal()) {
-            	if( ! validateVal(val.getValue(), dataAttributeFound.get().getType()) ) {
-            		AbstractRiseClipseConsole.getConsole().error( "Val " + val.getValue() + " of DA " +  dai.getName() + 
-            				"should have had type " + dataAttributeFound.get().getType() + ", but is not");;
-            		return false;
-            	}
-            	AbstractRiseClipseConsole.getConsole().info( "Val " +  val.getValue() + " of DA " +  dai.getName() + 
-        				" has type " + dataAttributeFound.get().getType());
-            }                	
-        }
-
+    public HashMap <String, HashSet<String>> generatePresenceDO(LNClass lnClass) {
+    	HashMap <String, HashSet<String>> sets = new HashMap<>();
+    	HashSet<String> mandatory = new HashSet<>();
+    	HashSet<String> forbidden = new HashSet<>();
+    	for(DataObject dObj : lnClass.getDataObject()) {
+        	switch(dObj.getPresCond()) {
+        	case "M":
+        	case "AtLeastOne":
+    			mandatory.add(dObj.getName());
+    			break;
+        	case "F":
+    			forbidden.add(dObj.getName());
+        		break;
+    		default:
+    			break;
+        	}
+    	}
+    	sets.put("mandatory", mandatory);
+    	sets.put("forbidden", forbidden);
+		return sets;
+    }
+    
+    public HashMap <String, HashSet<String>> updatePresenceDO(HashMap <String, HashSet<String>> sets, DataObject dObj) throws Exception {
+    	HashSet<String> mandatory = sets.get("mandatory");
+    	HashSet<String> forbidden = sets.get("forbidden");
+    	switch(dObj.getPresCond()) {
+    	case "M":
+    	case "AtLeastOne":
+			mandatory.remove(dObj.getName());
+			break;
+    	case "AtMostOne":
+    		if(forbidden.contains(dObj.getName())) {
+    			throw new Exception("Forbidden");
+    		}
+    		forbidden.add(dObj.getName());
+    		break;
+    	case "F":
+    		throw new Exception("Forbidden");
+		default:
+			break;
+    	}
+    	return sets;
+    }
+    
+    
+    public boolean validateDA(EList<DAI> doiDAI, CDC cdcFound) {
+    	HashMap<String, HashSet<String>> presenceDA = generatePresenceDA(cdcFound);
+    	for( DAI dai : doiDAI ) {
+	        AbstractRiseClipseConsole.getConsole().info(" ");
+	    	AbstractRiseClipseConsole.getConsole().info( "validateDA( " + dai.getName() + " )" );
+	        Optional< DataAttribute > dataAttributeFound = cdcFound.getDataAttribute().stream().filter( dataAttribute -> dataAttribute.getName().equals( dai.getName() ) ).findAny();
+	        
+	        if( ! dataAttributeFound.isPresent() ) {
+	        	AbstractRiseClipseConsole.getConsole().error( "DA " + dai.getName() + " not found in CDC " +  cdcFound.getName());
+	        	return false;
+	        }
+	        AbstractRiseClipseConsole.getConsole().info( "found DA " + dai.getName() + " in CDC " +  cdcFound.getName());
+	        
+	        try {
+	        	presenceDA = updatePresenceDA(presenceDA, dataAttributeFound.get());
+	        } catch(Exception e) {
+	        	AbstractRiseClipseConsole.getConsole().error( "DO contains forbidden DA for class " + cdcFound.getName());
+	        	return false;
+	        }
+	        
+	        // dataAttributeFound that are BASIC have a BasicType which describes allowed Val of DA
+	        if(dataAttributeFound.get().getTypeKind().getName().equals("BASIC")) {
+	            for(Val val : dai.getVal()) {
+	            	if( ! validateVal(val.getValue(), dataAttributeFound.get().getType()) ) {
+	            		AbstractRiseClipseConsole.getConsole().error( "Val " + val.getValue() + " of DA " +  dai.getName() + 
+	            				" is not of type " + dataAttributeFound.get().getType());;
+	            		return false;
+	            	}
+	            	AbstractRiseClipseConsole.getConsole().info( "Val " +  val.getValue() + " of DA " +  dai.getName() + 
+	        				" is of type " + dataAttributeFound.get().getType());
+	            }                	
+	        }
+    	}    
+    	
+    	if(presenceDA.get("mandatory").size() > 0) {
+            AbstractRiseClipseConsole.getConsole().error( "DO does not contain all mandatory DA from class " + cdcFound.getName());
+    		return false;
+    	}
+    	
     	return true;
     }
     
+    public HashMap <String, HashSet<String>> generatePresenceDA(CDC cdc) {
+    	HashMap <String, HashSet<String>> sets = new HashMap<>();
+    	HashSet<String> mandatory = new HashSet<>();
+    	HashSet<String> forbidden = new HashSet<>();
+    	for(DataAttribute da : cdc.getDataAttribute()) {
+        	switch(da.getPresCond()) {
+        	case "M":
+        	case "AtLeastOne":
+    			mandatory.add(da.getName());
+    			break;
+        	case "F":
+    			forbidden.add(da.getName());
+        		break;
+    		default:
+    			break;
+        	}
+    	}
+    	sets.put("mandatory", mandatory);
+    	sets.put("forbidden", forbidden);
+		return sets;
+    }
+    
+    public HashMap <String, HashSet<String>> updatePresenceDA(HashMap <String, HashSet<String>> sets, DataAttribute da) throws Exception {
+    	HashSet<String> mandatory = sets.get("mandatory");
+    	HashSet<String> forbidden = sets.get("forbidden");
+    	switch(da.getPresCond()) {
+    	case "M":
+    	case "AtLeastOne":
+			mandatory.remove(da.getName());
+			break;
+    	case "AtMostOne":
+    		if(forbidden.contains(da.getName())) {
+    			throw new Exception("Forbidden");
+    		}
+    		forbidden.add(da.getName());
+    		break;
+    	case "F":
+    		throw new Exception("Forbidden");
+		default:
+			break;
+    	}
+    	return sets;
+    }
+    	
+    	
     public boolean validateVal(String val, String type) {
     	int v;
     	long l;
@@ -208,6 +329,7 @@ public class NsdEObjectValidator implements EValidator {
     	}
     }
     
+
     
     public void log(String message) {
         AbstractRiseClipseConsole.getConsole().info(message);
