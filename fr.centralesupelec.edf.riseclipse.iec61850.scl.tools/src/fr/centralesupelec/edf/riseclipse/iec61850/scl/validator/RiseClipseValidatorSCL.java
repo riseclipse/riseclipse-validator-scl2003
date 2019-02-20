@@ -28,6 +28,7 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.validation.ocl.OCLValidator;
 
+import org.eclipse.emf.ecore.EValidator;
 //import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jdt.annotation.NonNull;
@@ -141,6 +142,12 @@ public class RiseClipseValidatorSCL {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
             }
             //nsdAdapter = new NsdItemProviderAdapterFactory();
+        	for(EValidator v: validator.getChildren()) {
+        		if(v.getClass() == NsdEObjectValidator.class) {
+        			NsdEObjectValidator nsdValidator = (NsdEObjectValidator) v;
+        			nsdValidator.initializeValidationData();
+        		}
+        	}
         }
 
         sclLoader = new SCLModelLoader( console );
