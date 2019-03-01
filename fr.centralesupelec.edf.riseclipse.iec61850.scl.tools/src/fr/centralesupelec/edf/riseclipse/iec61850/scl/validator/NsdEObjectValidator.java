@@ -56,29 +56,24 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 public class NsdEObjectValidator implements EValidator {
     
     private NsdResourceSetImpl nsdResourceSet;
-    private HashMap<String, HashMap<String, String>> lnMap;
+    private HashMap<String, AnyLNValidator> lnMap;
     
-
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
         this.nsdResourceSet = nsdResourceSet;
     }
-    
+
     public void initializeValidationData() {
         this.lnMap= this.nsdResourceSet.getLNClassStream()
-        		.map(lnClass -> generatePresenceMap(lnClass))
+        		.map(lnClass -> generateValidators(lnClass))
         		.reduce((a, b) -> {a.putAll(b); return a;}).get();
-        log(this.lnMap.toString());
     }
-    
-    public HashMap<String, HashMap<String, String>> generatePresenceMap (LNClass lnClass) {
-    	HashMap<String, HashMap<String, String>> lnDOMap = new HashMap<>();
-    	HashMap<String, String> doMap = new HashMap<>();
-    	for(DataObject dObj : lnClass.getDataObject()) {
-    		doMap.put(dObj.getName(), dObj.getPresCond());
-    	}
-    	lnDOMap.put(lnClass.getName(), doMap);
-    	return lnDOMap;
+
+    public HashMap<String, AnyLNValidator> generateValidators(LNClass lnClass) {
+    	HashMap<String, AnyLNValidator> lnMap = new HashMap<>();
+    	lnMap.put(lnClass.getName(), new AnyLNValidator(lnClass));
+    	return lnMap;
     }
+
     
     @Override
     public boolean validate( EObject eObject, DiagnosticChain diagnostics, Map< Object, Object > context ) {
@@ -88,6 +83,11 @@ public class NsdEObjectValidator implements EValidator {
     @Override
     public boolean validate( EClass eClass, EObject eObject, DiagnosticChain diagnostics,
             Map< Object, Object > context ) {
+    	
+    	if(this.lnMap == null) {
+    		this.initializeValidationData();
+    	}
+    	
         switch(eClass.getName()) {
         case "LN0":
         case "LN":
@@ -102,7 +102,7 @@ public class NsdEObjectValidator implements EValidator {
     public boolean validate( EDataType eDataType, Object value, DiagnosticChain diagnostics,
             Map< Object, Object > context ) {
         //AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validate( EDataType ): " + eDataType.getName() );
-        
+    	
         // TODO: use nsdResource to validate value
         
 
@@ -110,6 +110,22 @@ public class NsdEObjectValidator implements EValidator {
     }
     
     
+    public boolean validateLN(AnyLN ln) {
+    	AbstractRiseClipseConsole.getConsole().info("");
+        AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateLN( " + ln.getLnClass() + " )" );
+        
+        //LN has valid LNClass
+        if( ! this.lnMap.containsKey(ln.getLnClass()) ) {
+            AbstractRiseClipseConsole.getConsole().error( "LNClass " + ln.getLnClass() + " not found in NSD files" );
+	    	return false; 
+        }
+        AbstractRiseClipseConsole.getConsole().info( "found LNClass " + ln.getLnClass() + " in NSD files" );
+        
+        //AnyLNValidator validates LN content
+        return lnMap.get(ln.getLnClass()).validateLN(ln);
+    }
+    
+    /*
     public boolean validateLN(AnyLN ln) {
     	AbstractRiseClipseConsole.getConsole().info("");
     	AbstractRiseClipseConsole.getConsole().info("");
@@ -130,7 +146,7 @@ public class NsdEObjectValidator implements EValidator {
 	    	return false; 
         }
         AbstractRiseClipseConsole.getConsole().info( "found LNClass " + ln.getLnClass() + " in NSD files" );
-        */
+       
         
         // lnClassFound contains DataObject which describes allowed DOI in LN        
     	for( DOI doi : ln.getDOI() ) {
@@ -167,7 +183,9 @@ public class NsdEObjectValidator implements EValidator {
     	}
     	return true;
     }
+    */
     
+    /*
     public boolean checkCompulsory(String dObj, String presCond, HashSet<String> checked) {
     	switch(presCond) {
     	case "M":
@@ -178,14 +196,16 @@ public class NsdEObjectValidator implements EValidator {
     	}
     	return true;
     }
+    */
     
-    
+    /*
     public boolean validateDO(DOI doi) {
         return true;
     }
-    
+    */
+ 
     /*
-    public boolean validateDO(EList<DOI> lnDOI, LNClass lnClassFound) {
+	public boolean validateDO(EList<DOI> lnDOI, LNClass lnClassFound) {
     	for( DOI doi : lnDOI ) {
 	        Optional< DataObject > dataObjectFound = lnClassFound.getDataObject().stream().filter( dataObject -> dataObject.getName().equals( doi.getName()) ).findAny();
 	        AbstractRiseClipseConsole.getConsole().info(" ");
@@ -353,6 +373,7 @@ public class NsdEObjectValidator implements EValidator {
     }
     */	
     	
+    /*
     public boolean validateVal(String val, String type) {
     	int v;
     	long l;
@@ -399,7 +420,7 @@ public class NsdEObjectValidator implements EValidator {
     		return false;
     	}
     }
-    
+    */
     
     public void log(String message) {
         AbstractRiseClipseConsole.getConsole().info(message);

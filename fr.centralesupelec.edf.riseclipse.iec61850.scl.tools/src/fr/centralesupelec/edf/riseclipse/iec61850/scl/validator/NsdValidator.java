@@ -79,7 +79,7 @@ public class NsdValidator {
             }
         };
         context.put(EValidator.SubstitutionLabelProvider.class, substitutionLabelProvider );
-
+        
         for( int n = 0; n < resource.getContents().size(); ++n ) {
             Diagnostic diagnostic = Diagnostician.INSTANCE.validate( resource.getContents().get( n ), context );
             

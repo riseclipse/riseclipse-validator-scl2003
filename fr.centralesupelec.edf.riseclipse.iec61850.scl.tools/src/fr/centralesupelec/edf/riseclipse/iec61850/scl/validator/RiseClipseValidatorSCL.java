@@ -142,16 +142,17 @@ public class RiseClipseValidatorSCL {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
             }
             //nsdAdapter = new NsdItemProviderAdapterFactory();
-        	for(EValidator v: validator.getChildren()) {
-        		if(v.getClass() == NsdEObjectValidator.class) {
-        			NsdEObjectValidator nsdValidator = (NsdEObjectValidator) v;
-        			nsdValidator.initializeValidationData();
-        		}
-        	}
         }
 
         sclLoader = new SCLModelLoader( console );
         sclAdapter = new SclItemProviderAdapterFactory();
+        
+    	/*for(EValidator v: validator.getChildren()) {
+    		if(v.getClass() == NsdEObjectValidator.class) {
+    			NsdEObjectValidator nsdValidator = (NsdEObjectValidator) v;
+    			nsdValidator.initializeValidationData();
+    		}
+    	}*/
     }
 
     public static void run( IRiseClipseConsole console, boolean make_explicit_links, String sclFile ) {
