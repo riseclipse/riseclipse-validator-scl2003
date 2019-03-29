@@ -18,7 +18,6 @@
  */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,25 +41,25 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseModelLoader;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;
 
-public class NsdModelLoader  extends RiseClipseModelLoader {
-    
+public class NsdModelLoader extends RiseClipseModelLoader {
+
     public NsdModelLoader( IRiseClipseConsole console ) {
         super( console );
     }
 
     @Override
     public void reset() {
-        super.reset(new NsdResourceSetImpl(true, console) );
+        super.reset( new NsdResourceSetImpl( true, console ) );
 
         // Register the appropriate resource factory to handle all file
         // extensions.
         getResourceSet().getResourceFactoryRegistry().getExtensionToFactoryMap()
-            .put( Resource.Factory.Registry.DEFAULT_EXTENSION, new NsdResourceFactoryImpl() );
+                .put( Resource.Factory.Registry.DEFAULT_EXTENSION, new NsdResourceFactoryImpl() );
 
         // Register the package to ensure it is available during loading.
         getResourceSet().getPackageRegistry().put( NsdPackage.eNS_URI, NsdPackage.eINSTANCE );
     }
-    
+
     @Override
     public NsdResourceSetImpl getResourceSet() {
         return ( NsdResourceSetImpl ) super.getResourceSet();
@@ -70,48 +69,49 @@ public class NsdModelLoader  extends RiseClipseModelLoader {
         Object eValidator = EValidator.Registry.INSTANCE.remove( NsdPackage.eINSTANCE );
 
         Resource resource = load( name );
-        
+
         if( eValidator != null ) {
             EValidator.Registry.INSTANCE.put( NsdPackage.eINSTANCE, eValidator );
         }
         return resource;
     }
-    
+
     public static void main( String[] args ) {
         IRiseClipseConsole console = new TextRiseClipseConsole();
         //console.setLevel( IRiseClipseConsole.ERROR_LEVEL );
         NsdModelLoader loader = new NsdModelLoader( console );
-        
+
         org.eclipse.ocl.xtext.oclinecore.OCLinEcoreStandaloneSetup.doSetup();
-        
-        Map<Object, Object> context = new HashMap< Object, Object >();
+
+        Map< Object, Object > context = new HashMap< Object, Object >();
         SubstitutionLabelProvider substitutionLabelProvider = new EValidator.SubstitutionLabelProvider() {
-            
+
             @Override
             public String getValueLabel( EDataType eDataType, Object value ) {
                 return Diagnostician.INSTANCE.getValueLabel( eDataType, value );
             }
-            
+
             @Override
             public String getObjectLabel( EObject eObject ) {
                 NsdItemProviderAdapterFactory adapter = new NsdItemProviderAdapterFactory();
-                IItemLabelProvider labelProvider = ( IItemLabelProvider ) adapter .adapt( eObject, IItemLabelProvider.class );
+                IItemLabelProvider labelProvider = ( IItemLabelProvider ) adapter.adapt( eObject,
+                        IItemLabelProvider.class );
                 return labelProvider.getText( eObject );
             }
-            
+
             @Override
             public String getFeatureLabel( EStructuralFeature eStructuralFeature ) {
                 return Diagnostician.INSTANCE.getFeatureLabel( eStructuralFeature );
             }
         };
-        context.put(EValidator.SubstitutionLabelProvider.class, substitutionLabelProvider );
+        context.put( EValidator.SubstitutionLabelProvider.class, substitutionLabelProvider );
 
         for( int i = 0; i < args.length; ++i ) {
             Resource resource = loader.load( args[i] );
             if( resource == null ) continue;
             if( resource.getContents().size() == 0 ) continue;
             Diagnostic diagnostic = Diagnostician.INSTANCE.validate( resource.getContents().get( 0 ), context );
-            
+
             if( diagnostic.getSeverity() == Diagnostic.ERROR || diagnostic.getSeverity() == Diagnostic.WARNING ) {
                 for( Iterator< Diagnostic > d = diagnostic.getChildren().iterator(); d.hasNext(); ) {
                     Diagnostic childDiagnostic = d.next();

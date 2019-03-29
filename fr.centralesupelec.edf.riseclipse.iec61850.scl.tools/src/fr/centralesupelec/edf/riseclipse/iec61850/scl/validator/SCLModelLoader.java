@@ -27,9 +27,8 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseModelLoader;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;
 
-
 public class SCLModelLoader extends RiseClipseModelLoader {
-    
+
     public SCLModelLoader( IRiseClipseConsole console ) {
         super( console );
     }
@@ -41,27 +40,27 @@ public class SCLModelLoader extends RiseClipseModelLoader {
         // Register the appropriate resource factory to handle all file
         // extensions.
         getResourceSet().getResourceFactoryRegistry().getExtensionToFactoryMap()
-            .put( Resource.Factory.Registry.DEFAULT_EXTENSION, new SclResourceFactoryImpl() );
+                .put( Resource.Factory.Registry.DEFAULT_EXTENSION, new SclResourceFactoryImpl() );
 
         // Register the package to ensure it is available during loading.
         getResourceSet().getPackageRegistry().put( SclPackage.eNS_URI, SclPackage.eINSTANCE );
     }
-    
+
     public Resource loadWithoutValidation( String name ) {
         Object eValidator = EValidator.Registry.INSTANCE.remove( SclPackage.eINSTANCE );
 
         Resource resource = load( name );
-        
+
         if( eValidator != null ) {
             EValidator.Registry.INSTANCE.put( SclPackage.eINSTANCE, eValidator );
         }
         return resource;
     }
-    
+
     public static void main( String[] args ) {
         IRiseClipseConsole console = new TextRiseClipseConsole();
         SCLModelLoader loader = new SCLModelLoader( console );
-        
+
         for( int i = 0; i < args.length; ++i ) {
             @SuppressWarnings( "unused" )
             Resource resource = loader.load( args[i] );

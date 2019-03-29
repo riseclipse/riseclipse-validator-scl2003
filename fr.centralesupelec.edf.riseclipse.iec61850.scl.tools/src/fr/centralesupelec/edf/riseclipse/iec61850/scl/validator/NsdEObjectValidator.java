@@ -19,62 +19,41 @@
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.emf.common.util.DiagnosticChain;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
-import org.eclipse.emf.ecore.resource.Resource;
-
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DocumentRoot;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.FunctionalConstraint;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.BasicType;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataAttribute;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.NS;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAI;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOI;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNode;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class NsdEObjectValidator implements EValidator {
-    
+
     private NsdResourceSetImpl nsdResourceSet;
-    private HashMap<String, AnyLNValidator> lnMap;
-    
+    private HashMap< String, AnyLNValidator > lnMap;
+
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
         this.nsdResourceSet = nsdResourceSet;
     }
 
     public void initializeValidationData() {
-        this.lnMap= this.nsdResourceSet.getLNClassStream()
-        		.map(lnClass -> generateValidators(lnClass))
-        		.reduce((a, b) -> {a.putAll(b); return a;}).get();
+        this.lnMap = this.nsdResourceSet.getLNClassStream()
+                .map( lnClass -> generateValidators( lnClass ) )
+                .reduce( ( a, b ) -> {
+                    a.putAll( b );
+                    return a;
+                } ).get();
     }
 
-    public HashMap<String, AnyLNValidator> generateValidators(LNClass lnClass) {
-    	HashMap<String, AnyLNValidator> lnMap = new HashMap<>();
-    	lnMap.put(lnClass.getName(), new AnyLNValidator(lnClass));
-    	return lnMap;
+    public HashMap< String, AnyLNValidator > generateValidators( LNClass lnClass ) {
+        HashMap< String, AnyLNValidator > lnMap = new HashMap<>();
+        lnMap.put( lnClass.getName(), new AnyLNValidator( lnClass ) );
+        return lnMap;
     }
 
-    
     @Override
     public boolean validate( EObject eObject, DiagnosticChain diagnostics, Map< Object, Object > context ) {
         return validate( eObject.eClass(), eObject, diagnostics, context );
@@ -83,18 +62,18 @@ public class NsdEObjectValidator implements EValidator {
     @Override
     public boolean validate( EClass eClass, EObject eObject, DiagnosticChain diagnostics,
             Map< Object, Object > context ) {
-    	
-    	if(this.lnMap == null) {
-    		this.initializeValidationData();
-    	}
-    	
-        switch(eClass.getName()) {
+
+        if( this.lnMap == null ) {
+            this.initializeValidationData();
+        }
+
+        switch( eClass.getName() ) {
         case "LN0":
         case "LN":
-        	AnyLN ln = (AnyLN) eObject;
-        	return validateLN(ln);
+            AnyLN ln = ( AnyLN ) eObject;
+            return validateLN( ln );
         default:
-        	return false;
+            return false;
         }
     }
 
@@ -102,29 +81,27 @@ public class NsdEObjectValidator implements EValidator {
     public boolean validate( EDataType eDataType, Object value, DiagnosticChain diagnostics,
             Map< Object, Object > context ) {
         //AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validate( EDataType ): " + eDataType.getName() );
-    	
+
         // TODO: use nsdResource to validate value
-        
 
         return true;
     }
-    
-    
-    public boolean validateLN(AnyLN ln) {
-    	AbstractRiseClipseConsole.getConsole().info("");
+
+    public boolean validateLN( AnyLN ln ) {
+        AbstractRiseClipseConsole.getConsole().info( "" );
         AbstractRiseClipseConsole.getConsole().info( "NSDEObjectValidator.validateLN( " + ln.getLnClass() + " )" );
-        
+
         //LN has valid LNClass
-        if( ! this.lnMap.containsKey(ln.getLnClass()) ) {
+        if( !this.lnMap.containsKey( ln.getLnClass() ) ) {
             AbstractRiseClipseConsole.getConsole().error( "LNClass " + ln.getLnClass() + " not found in NSD files" );
-	    	return false; 
+            return false;
         }
         AbstractRiseClipseConsole.getConsole().info( "found LNClass " + ln.getLnClass() + " in NSD files" );
-        
+
         //AnyLNValidator validates LN content
-        return lnMap.get(ln.getLnClass()).validateLN(ln);
+        return lnMap.get( ln.getLnClass() ).validateLN( ln );
     }
-    
+
     /*
     public boolean validateLN(AnyLN ln) {
     	AbstractRiseClipseConsole.getConsole().info("");
@@ -133,17 +110,17 @@ public class NsdEObjectValidator implements EValidator {
         
         if( ! this.lnMap.containsKey(ln.getLnClass()) ) {
             AbstractRiseClipseConsole.getConsole().error( "LNClass " + ln.getLnClass() + " not found in NSD files" );
-	    	return false; 
+        	return false; 
         }
         AbstractRiseClipseConsole.getConsole().info( "found LNClass " + ln.getLnClass() + " in NSD files" );
-
+    
         HashSet<String> checkedDO = new HashSet<>();
         
         /*
         Optional< LNClass > lnClassFound = nsdResourceSet.getLNClassStream().filter( lNClass -> lNClass.getName().equals( ln.getLnClass() )).findAny();
         if( ! lnClassFound.isPresent() ) {
             AbstractRiseClipseConsole.getConsole().error( "LNClass " + ln.getLnClass() + " not found in NSD files" );
-	    	return false; 
+        	return false; 
         }
         AbstractRiseClipseConsole.getConsole().info( "found LNClass " + ln.getLnClass() + " in NSD files" );
        
@@ -152,7 +129,7 @@ public class NsdEObjectValidator implements EValidator {
     	for( DOI doi : ln.getDOI() ) {
     		
     		if(!this.lnMap.get(ln.getLnClass()).containsKey(doi.getName())) {
-	            AbstractRiseClipseConsole.getConsole().error( "DO " + doi.getName() + " not found in LNClass " +  ln.getLnClass());
+                AbstractRiseClipseConsole.getConsole().error( "DO " + doi.getName() + " not found in LNClass " +  ln.getLnClass());
     			return false;
     		}
     		
@@ -172,9 +149,9 @@ public class NsdEObjectValidator implements EValidator {
     			return false;
     		}
     		
-		    if( ! validateDO(doi) ){
-		    	return false;
-		    }
+    	    if( ! validateDO(doi) ){
+    	    	return false;
+    	    }
     	}
         // TODO: check that compulsory DataObject in lnClassFound are present in ln 
     	if(!this.lnMap.get(ln.getLnClass()).entrySet().stream().map(x -> checkCompulsory(x.getKey(), x.getValue(), checkedDO)).reduce((a, b) -> a && b).get()) {
@@ -184,7 +161,7 @@ public class NsdEObjectValidator implements EValidator {
     	return true;
     }
     */
-    
+
     /*
     public boolean checkCompulsory(String dObj, String presCond, HashSet<String> checked) {
     	switch(presCond) {
@@ -197,39 +174,39 @@ public class NsdEObjectValidator implements EValidator {
     	return true;
     }
     */
-    
+
     /*
     public boolean validateDO(DOI doi) {
         return true;
     }
     */
- 
+
     /*
-	public boolean validateDO(EList<DOI> lnDOI, LNClass lnClassFound) {
+    public boolean validateDO(EList<DOI> lnDOI, LNClass lnClassFound) {
     	for( DOI doi : lnDOI ) {
-	        Optional< DataObject > dataObjectFound = lnClassFound.getDataObject().stream().filter( dataObject -> dataObject.getName().equals( doi.getName()) ).findAny();
-	        AbstractRiseClipseConsole.getConsole().info(" ");
-	        AbstractRiseClipseConsole.getConsole().info( "validateDO( " + doi.getName() + " )" );
-	        if( ! dataObjectFound.isPresent() ) {
-	            AbstractRiseClipseConsole.getConsole().error( "DO " + doi.getName() + " not found in LNClass " +  lnClassFound.getName());
-	        	return false;
-	        }
-	        
-	        try {
-	        	presenceDO = updatePresenceDO(presenceDO, dataObjectFound.get());
-	        } catch(Exception e) {
-	        	AbstractRiseClipseConsole.getConsole().error( "LN contains forbidden DO for class " + lnClassFound.getName());
-	        	return false;
-	        }
-	        
-	        // dataObjectFound refers to a CDC which describes allowed DAI in DOI
-	        CDC cdcFound = dataObjectFound.get().getRefersToCDC();
-	        AbstractRiseClipseConsole.getConsole().info( "found DO " + doi.getName() + " (CDC: " + cdcFound.getName() + ") in LNClass " +  lnClassFound.getName());
-	        if( ! validateDA(doi.getDAI(), cdcFound) ) {
-	        	return false;
-	        }
-	        
-	        // TODO: check that compulsory DataAttribute in cdcFound are present in doi
+            Optional< DataObject > dataObjectFound = lnClassFound.getDataObject().stream().filter( dataObject -> dataObject.getName().equals( doi.getName()) ).findAny();
+            AbstractRiseClipseConsole.getConsole().info(" ");
+            AbstractRiseClipseConsole.getConsole().info( "validateDO( " + doi.getName() + " )" );
+            if( ! dataObjectFound.isPresent() ) {
+                AbstractRiseClipseConsole.getConsole().error( "DO " + doi.getName() + " not found in LNClass " +  lnClassFound.getName());
+            	return false;
+            }
+            
+            try {
+            	presenceDO = updatePresenceDO(presenceDO, dataObjectFound.get());
+            } catch(Exception e) {
+            	AbstractRiseClipseConsole.getConsole().error( "LN contains forbidden DO for class " + lnClassFound.getName());
+            	return false;
+            }
+            
+            // dataObjectFound refers to a CDC which describes allowed DAI in DOI
+            CDC cdcFound = dataObjectFound.get().getRefersToCDC();
+            AbstractRiseClipseConsole.getConsole().info( "found DO " + doi.getName() + " (CDC: " + cdcFound.getName() + ") in LNClass " +  lnClassFound.getName());
+            if( ! validateDA(doi.getDAI(), cdcFound) ) {
+            	return false;
+            }
+            
+            // TODO: check that compulsory DataAttribute in cdcFound are present in doi
     	}
     	
     	if(presenceDO.get("mandatory").size() > 0) {
@@ -259,7 +236,7 @@ public class NsdEObjectValidator implements EValidator {
     	}
     	sets.put("mandatory", mandatory);
     	sets.put("forbidden", forbidden);
-		return sets;
+    	return sets;
     }
     
     public HashMap <String, HashSet<String>> updatePresenceDO(HashMap <String, HashSet<String>> sets, DataObject dObj) throws Exception {
@@ -268,8 +245,8 @@ public class NsdEObjectValidator implements EValidator {
     	switch(dObj.getPresCond()) {
     	case "M":
     	case "AtLeastOne":
-			mandatory.remove(dObj.getName());
-			break;
+    		mandatory.remove(dObj.getName());
+    		break;
     	case "AtMostOne":
     		if(forbidden.contains(dObj.getName())) {
     			throw new Exception("Forbidden");
@@ -278,46 +255,46 @@ public class NsdEObjectValidator implements EValidator {
     		break;
     	case "F":
     		throw new Exception("Forbidden");
-		default:
-			break;
+    	default:
+    		break;
     	}
     	return sets;
     }
     */
-    
+
     /*
     public boolean validateDA(EList<DAI> doiDAI, CDC cdcFound) {
     	HashMap<String, HashSet<String>> presenceDA = generatePresenceDA(cdcFound);
     	for( DAI dai : doiDAI ) {
-	        AbstractRiseClipseConsole.getConsole().info(" ");
-	    	AbstractRiseClipseConsole.getConsole().info( "validateDA( " + dai.getName() + " )" );
-	        Optional< DataAttribute > dataAttributeFound = cdcFound.getDataAttribute().stream().filter( dataAttribute -> dataAttribute.getName().equals( dai.getName() ) ).findAny();
-	        
-	        if( ! dataAttributeFound.isPresent() ) {
-	        	AbstractRiseClipseConsole.getConsole().error( "DA " + dai.getName() + " not found in CDC " +  cdcFound.getName());
-	        	return false;
-	        }
-	        AbstractRiseClipseConsole.getConsole().info( "found DA " + dai.getName() + " in CDC " +  cdcFound.getName());
-	        
-	        try {
-	        	presenceDA = updatePresenceDA(presenceDA, dataAttributeFound.get());
-	        } catch(Exception e) {
-	        	AbstractRiseClipseConsole.getConsole().error( "DO contains forbidden DA for class " + cdcFound.getName());
-	        	return false;
-	        }
-	        
-	        // dataAttributeFound that are BASIC have a BasicType which describes allowed Val of DA
-	        if(dataAttributeFound.get().getTypeKind().getName().equals("BASIC")) {
-	            for(Val val : dai.getVal()) {
-	            	if( ! validateVal(val.getValue(), dataAttributeFound.get().getType()) ) {
-	            		AbstractRiseClipseConsole.getConsole().error( "Val " + val.getValue() + " of DA " +  dai.getName() + 
-	            				" is not of type " + dataAttributeFound.get().getType());;
-	            		return false;
-	            	}
-	            	AbstractRiseClipseConsole.getConsole().info( "Val " +  val.getValue() + " of DA " +  dai.getName() + 
-	        				" is of type " + dataAttributeFound.get().getType());
-	            }                	
-	        }
+            AbstractRiseClipseConsole.getConsole().info(" ");
+        	AbstractRiseClipseConsole.getConsole().info( "validateDA( " + dai.getName() + " )" );
+            Optional< DataAttribute > dataAttributeFound = cdcFound.getDataAttribute().stream().filter( dataAttribute -> dataAttribute.getName().equals( dai.getName() ) ).findAny();
+            
+            if( ! dataAttributeFound.isPresent() ) {
+            	AbstractRiseClipseConsole.getConsole().error( "DA " + dai.getName() + " not found in CDC " +  cdcFound.getName());
+            	return false;
+            }
+            AbstractRiseClipseConsole.getConsole().info( "found DA " + dai.getName() + " in CDC " +  cdcFound.getName());
+            
+            try {
+            	presenceDA = updatePresenceDA(presenceDA, dataAttributeFound.get());
+            } catch(Exception e) {
+            	AbstractRiseClipseConsole.getConsole().error( "DO contains forbidden DA for class " + cdcFound.getName());
+            	return false;
+            }
+            
+            // dataAttributeFound that are BASIC have a BasicType which describes allowed Val of DA
+            if(dataAttributeFound.get().getTypeKind().getName().equals("BASIC")) {
+                for(Val val : dai.getVal()) {
+                	if( ! validateVal(val.getValue(), dataAttributeFound.get().getType()) ) {
+                		AbstractRiseClipseConsole.getConsole().error( "Val " + val.getValue() + " of DA " +  dai.getName() + 
+                				" is not of type " + dataAttributeFound.get().getType());;
+                		return false;
+                	}
+                	AbstractRiseClipseConsole.getConsole().info( "Val " +  val.getValue() + " of DA " +  dai.getName() + 
+            				" is of type " + dataAttributeFound.get().getType());
+                }                	
+            }
     	}    
     	
     	if(presenceDA.get("mandatory").size() > 0) {
@@ -347,7 +324,7 @@ public class NsdEObjectValidator implements EValidator {
     	}
     	sets.put("mandatory", mandatory);
     	sets.put("forbidden", forbidden);
-		return sets;
+    	return sets;
     }
     
     public HashMap <String, HashSet<String>> updatePresenceDA(HashMap <String, HashSet<String>> sets, DataAttribute da) throws Exception {
@@ -356,8 +333,8 @@ public class NsdEObjectValidator implements EValidator {
     	switch(da.getPresCond()) {
     	case "M":
     	case "AtLeastOne":
-			mandatory.remove(da.getName());
-			break;
+    		mandatory.remove(da.getName());
+    		break;
     	case "AtMostOne":
     		if(forbidden.contains(da.getName())) {
     			throw new Exception("Forbidden");
@@ -366,13 +343,13 @@ public class NsdEObjectValidator implements EValidator {
     		break;
     	case "F":
     		throw new Exception("Forbidden");
-		default:
-			break;
+    	default:
+    		break;
     	}
     	return sets;
     }
-    */	
-    	
+    */
+
     /*
     public boolean validateVal(String val, String type) {
     	int v;
@@ -421,10 +398,9 @@ public class NsdEObjectValidator implements EValidator {
     	}
     }
     */
-    
-    public void log(String message) {
-        AbstractRiseClipseConsole.getConsole().info(message);
+
+    public void log( String message ) {
+        AbstractRiseClipseConsole.getConsole().info( message );
     }
 
-    
 }

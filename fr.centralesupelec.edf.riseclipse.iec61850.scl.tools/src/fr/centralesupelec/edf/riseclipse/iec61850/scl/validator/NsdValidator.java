@@ -45,9 +45,9 @@ public class NsdValidator {
 
     public NsdValidator( @NonNull ComposedEValidator validator, IRiseClipseConsole console ) {
         nsdLoader = new NsdModelLoader( console );
-        validator.addChild( new NsdEObjectValidator( nsdLoader.getResourceSet() ));
+        validator.addChild( new NsdEObjectValidator( nsdLoader.getResourceSet() ) );
     }
-        
+
     public void addNsdDocument( String nsdFile, IRiseClipseConsole console ) {
         console.info( "Loading nsd: " + nsdFile );
         nsdLoader.load( nsdFile );
@@ -55,31 +55,32 @@ public class NsdValidator {
 
     public void validate( Resource resource, final AdapterFactory adapter, IRiseClipseConsole console ) {
         nsdLoader.getResourceSet().finalizeLoad( console );
-        
-        Map<Object, Object> context = new HashMap< Object, Object >();
+
+        Map< Object, Object > context = new HashMap< Object, Object >();
         SubstitutionLabelProvider substitutionLabelProvider = new EValidator.SubstitutionLabelProvider() {
-            
+
             @Override
             public String getValueLabel( EDataType eDataType, Object value ) {
                 return Diagnostician.INSTANCE.getValueLabel( eDataType, value );
             }
-            
+
             @Override
             public String getObjectLabel( EObject eObject ) {
-                IItemLabelProvider labelProvider = ( IItemLabelProvider ) adapter.adapt( eObject, IItemLabelProvider.class );
+                IItemLabelProvider labelProvider = ( IItemLabelProvider ) adapter.adapt( eObject,
+                        IItemLabelProvider.class );
                 return labelProvider.getText( eObject );
             }
-            
+
             @Override
             public String getFeatureLabel( EStructuralFeature eStructuralFeature ) {
                 return Diagnostician.INSTANCE.getFeatureLabel( eStructuralFeature );
             }
         };
-        context.put(EValidator.SubstitutionLabelProvider.class, substitutionLabelProvider );
-        
+        context.put( EValidator.SubstitutionLabelProvider.class, substitutionLabelProvider );
+
         for( int n = 0; n < resource.getContents().size(); ++n ) {
             Diagnostic diagnostic = Diagnostician.INSTANCE.validate( resource.getContents().get( n ), context );
-            
+
             if( diagnostic.getSeverity() == Diagnostic.ERROR || diagnostic.getSeverity() == Diagnostic.WARNING ) {
                 //EObject root = ( EObject ) diagnostic.getData().get( 0 );
                 //URI uri = root.eResource().getURI();
@@ -97,7 +98,9 @@ public class NsdValidator {
                         else if( data.get( 1 ) instanceof EAttribute ) {
                             EAttribute attribute = ( EAttribute ) data.get( 1 );
                             if( attribute == null ) continue;
-                            console.error( "\tAttribute " + attribute.getName() + " of " + substitutionLabelProvider.getObjectLabel( object ) + " : " + childDiagnostic.getChildren().get( 0 ).getMessage() );
+                            console.error( "\tAttribute " + attribute.getName() + " of "
+                                    + substitutionLabelProvider.getObjectLabel( object ) + " : "
+                                    + childDiagnostic.getChildren().get( 0 ).getMessage() );
                         }
                         else {
                             console.error( "\t" + childDiagnostic.getMessage() );
