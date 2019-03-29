@@ -28,7 +28,6 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.EValidator.SubstitutionLabelProvider;
@@ -38,12 +37,10 @@ import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class NsdValidator {
 
-    private @NonNull EPackage modelPackage;
     private NsdModelLoader nsdLoader;
 
     public NsdValidator( @NonNull ComposedEValidator validator, IRiseClipseConsole console ) {
@@ -57,7 +54,7 @@ public class NsdValidator {
     }
 
     public void validate( Resource resource, final AdapterFactory adapter, IRiseClipseConsole console ) {
-        nsdLoader.getResourceSet().buildExplicitLinks( console );
+        nsdLoader.getResourceSet().finalizeLoad( console );
         
         Map<Object, Object> context = new HashMap< Object, Object >();
         SubstitutionLabelProvider substitutionLabelProvider = new EValidator.SubstitutionLabelProvider() {

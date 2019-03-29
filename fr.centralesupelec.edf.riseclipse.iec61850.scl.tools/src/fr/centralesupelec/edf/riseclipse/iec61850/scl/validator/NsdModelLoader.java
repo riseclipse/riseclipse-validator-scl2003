@@ -50,7 +50,7 @@ public class NsdModelLoader  extends RiseClipseModelLoader {
 
     @Override
     public void reset() {
-        super.reset(new NsdResourceSetImpl() );
+        super.reset(new NsdResourceSetImpl(true, console) );
 
         // Register the appropriate resource factory to handle all file
         // extensions.
@@ -123,7 +123,7 @@ public class NsdModelLoader  extends RiseClipseModelLoader {
                 }
             }
         }
-        loader.getResourceSet().buildExplicitLinks( console );
+        loader.getResourceSet().finalizeLoad( console );
     }
 
 }
