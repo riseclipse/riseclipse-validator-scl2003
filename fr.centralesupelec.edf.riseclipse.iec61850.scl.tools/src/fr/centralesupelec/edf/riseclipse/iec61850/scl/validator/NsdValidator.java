@@ -52,10 +52,19 @@ public class NsdValidator {
         console.info( "Loading nsd: " + nsdFile );
         nsdLoader.load( nsdFile );
     }
-
-    public void validate( Resource resource, final AdapterFactory adapter, IRiseClipseConsole console ) {
+    
+    public void prepare( @NonNull ComposedEValidator validator, IRiseClipseConsole console ) {
         nsdLoader.getResourceSet().finalizeLoad( console );
 
+        for( EValidator v : validator.getChildren() ) {
+            if( v.getClass() == NsdEObjectValidator.class ) {
+                NsdEObjectValidator nsdValidator = ( NsdEObjectValidator ) v;
+                nsdValidator.initializeValidationData();
+            }
+        }
+    }
+
+    public void validate( Resource resource, final AdapterFactory adapter, IRiseClipseConsole console ) {
         Map< Object, Object > context = new HashMap< Object, Object >();
         SubstitutionLabelProvider substitutionLabelProvider = new EValidator.SubstitutionLabelProvider() {
 

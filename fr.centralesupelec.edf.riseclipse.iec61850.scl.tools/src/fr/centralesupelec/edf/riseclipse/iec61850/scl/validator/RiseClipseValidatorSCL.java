@@ -147,17 +147,12 @@ public class RiseClipseValidatorSCL {
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
             }
+            nsdValidator.prepare( validator, console );
         }
 
         sclLoader = new SCLModelLoader( console );
         sclAdapter = new SclItemProviderAdapterFactory();
 
-        for( EValidator v : validator.getChildren() ) {
-            if( v.getClass() == NsdEObjectValidator.class ) {
-                NsdEObjectValidator nsdValidator = ( NsdEObjectValidator ) v;
-                nsdValidator.initializeValidationData();
-            }
-        }
     }
 
     public static void run( IRiseClipseConsole console, boolean make_explicit_links, String sclFile ) {
