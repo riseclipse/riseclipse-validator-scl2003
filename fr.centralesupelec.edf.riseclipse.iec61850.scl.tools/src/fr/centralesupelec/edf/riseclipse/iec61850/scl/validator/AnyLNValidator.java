@@ -53,7 +53,7 @@ public class AnyLNValidator {
         for( DataObject dObj : lnClass.getDataObject() ) {
             this.doMap.put( dObj.getName(), dObj );
             if( dObj.getRefersToCDC() != null ) {
-                if( !cdcMap.containsKey( dObj.getRefersToCDC().getName() ) ) {
+                if( ! cdcMap.containsKey( dObj.getRefersToCDC().getName() )) {
                     this.cdcMap.put( dObj.getRefersToCDC().getName(), new DOIValidator( dObj.getRefersToCDC() ));
                 }
             }
@@ -64,7 +64,7 @@ public class AnyLNValidator {
         HashSet< String > checkedDO = new HashSet<>();
 
         for( DOI doi : ln.getDOI() ) {
-            AbstractRiseClipseConsole.getConsole().info( "validateDOI( " + doi.getName() + " )" );
+            AbstractRiseClipseConsole.getConsole().verbose( "validateDOI( " + doi.getName() + " )" );
 
             // Test if DOI is a possible DOI in this LN
             if( !this.doMap.containsKey( doi.getName() ) ) {
@@ -78,7 +78,7 @@ public class AnyLNValidator {
             this.updateCompulsory( doi.getName(), presCond, checkedDO );
 
             // Validation of DOI content
-            if( !validateDOI( doi ) ) {
+            if( ! validateDOI( doi ) ) {
                 return false;
             }
 
@@ -98,7 +98,7 @@ public class AnyLNValidator {
     public boolean checkCompulsory( String name, String presCond, HashSet< String > checked ) {
         switch( presCond ) {
         case "M":
-            if( !checked.contains( name ) ) {
+            if( ! checked.contains( name ) ) {
                 AbstractRiseClipseConsole.getConsole().error( "DO " + name + " is missing" );
                 return false;
             }
@@ -127,15 +127,11 @@ public class AnyLNValidator {
 
     public boolean validateDOI( DOI doi ) {
 
-        AbstractRiseClipseConsole.getConsole().info( "found DO " + doi.getName() + " in LNClass " + this.lnClass );
+        AbstractRiseClipseConsole.getConsole().verbose( "found DO " + doi.getName() + " in LNClass " + this.lnClass );
 
         // DOIValidator validates DOI content
         String cdc = this.doMap.get( doi.getName() ).getRefersToCDC().getName();
         return cdcMap.get( cdc ).validateDOI( doi );
-    }
-
-    public void log( String message ) {
-        AbstractRiseClipseConsole.getConsole().info( message );
     }
 
 }

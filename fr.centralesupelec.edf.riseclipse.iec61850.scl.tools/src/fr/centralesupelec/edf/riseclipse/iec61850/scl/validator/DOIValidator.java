@@ -31,7 +31,6 @@ public class DOIValidator {
 
     private String cdc;
     private HashMap< String, DataAttribute > daMap;
-    //private static Boolean test = false;
 
     public DOIValidator( CDC cdc ) {
         this.cdc = cdc.getName();
@@ -39,20 +38,16 @@ public class DOIValidator {
         for( DataAttribute da : cdc.getDataAttribute() ) {
             this.daMap.put( da.getName(), da );
         }
-        /*if(!test) {
-        	testValidateVal();
-        }
-        test = true;*/
     }
 
     public boolean validateDOI( DOI doi ) {
         HashSet< String > checkedDA = new HashSet<>();
 
         for( DAI dai : doi.getDAI() ) {
-            AbstractRiseClipseConsole.getConsole().info( "validateDAI( " + dai.getName() + " )" );
+            AbstractRiseClipseConsole.getConsole().verbose( "validateDAI( " + dai.getName() + " )" );
 
             // Test if DAI is a possible DAI in this DOI
-            if( !this.daMap.containsKey( dai.getName() ) ) {
+            if( ! this.daMap.containsKey( dai.getName() ) ) {
                 AbstractRiseClipseConsole.getConsole().error( "DA " + dai.getName() + " not found in CDC " + this.cdc );
                 return false;
             }
@@ -62,14 +57,14 @@ public class DOIValidator {
             this.updateCompulsory( dai.getName(), presCond, checkedDA );
 
             // Validation of DAI content
-            if( !validateDAI( dai ) ) {
+            if( ! validateDAI( dai ) ) {
                 return false;
             }
 
         }
 
         // Verify all necessary DAI were present
-        if( !this.daMap.entrySet().stream()
+        if( ! this.daMap.entrySet().stream()
                 .map( x -> checkCompulsory( x.getKey(), x.getValue().getPresCond(), checkedDA ) )
                 .reduce( ( a, b ) -> a && b ).get() ) {
             AbstractRiseClipseConsole.getConsole().error( "DO does not contain all mandatory DA from CDC " + this.cdc );
@@ -110,19 +105,18 @@ public class DOIValidator {
 
     public boolean validateDAI( DAI dai ) {
 
-        AbstractRiseClipseConsole.getConsole().info( "found DA " + dai.getName() + " in CDC " + this.cdc );
+        AbstractRiseClipseConsole.getConsole().verbose( "found DA " + dai.getName() + " in CDC " + this.cdc );
 
         // DataAttributes that are BASIC have a BasicType which describes allowed Val of DA
         DataAttribute da = this.daMap.get( dai.getName() );
         if( da.getTypeKind().getName().equals( "BASIC" ) ) {
             for( Val val : dai.getVal() ) {
-                if( !validateVal( val.getValue(), da.getType() ) ) {
+                if( ! validateVal( val.getValue(), da.getType() ) ) {
                     AbstractRiseClipseConsole.getConsole().error( "Val " + val.getValue() + " of DA " + dai.getName() +
                             " is not of type " + da.getType() );
-                    ;
                     return false;
                 }
-                AbstractRiseClipseConsole.getConsole().info( "Val " + val.getValue() + " of DA " + dai.getName() +
+                AbstractRiseClipseConsole.getConsole().verbose( "Val " + val.getValue() + " of DA " + dai.getName() +
                         " is of type " + da.getType() );
             }
         }
@@ -217,7 +211,7 @@ public class DOIValidator {
         }
     }
 
-    public void testValidateVal() {
+    private void testValidateVal() {
         log( "\n--\tSTART TEST\t--\n" );
         assertTrue( validateVal( "0", "BOOLEAN" ) );
         assertTrue( validateVal( "1", "BOOLEAN" ) );
@@ -302,7 +296,7 @@ public class DOIValidator {
                 + "1234567890123456789012345678901234567890123456789012345678901234", "VisString255" ) );
     }
 
-    public void assertTrue( Boolean b ) {
+    private void assertTrue( Boolean b ) {
         if( b ) {
             log( "Check" );
         }
@@ -311,7 +305,7 @@ public class DOIValidator {
         }
     }
 
-    public void log( String message ) {
+    private void log( String message ) {
         AbstractRiseClipseConsole.getConsole().info( message );
     }
 }
