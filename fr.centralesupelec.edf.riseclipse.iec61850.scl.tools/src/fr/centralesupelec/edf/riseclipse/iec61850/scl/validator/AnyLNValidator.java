@@ -23,6 +23,7 @@ import java.util.HashSet;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AbstractLNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AnyLNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOI;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
@@ -48,25 +49,12 @@ public class AnyLNValidator {
 
     }
 
-    public void generateValidators( HashMap< String, DataObject > doMap, HashMap< String, DOIValidator > cdcMap,
-            AbstractLNClass lnClass ) {
+    public void generateValidators( HashMap< String, DataObject > doMap, HashMap< String, DOIValidator > cdcMap, AnyLNClass lnClass ) {
         for( DataObject dObj : lnClass.getDataObject() ) {
             this.doMap.put( dObj.getName(), dObj );
             if( dObj.getRefersToCDC() != null ) {
                 if( !cdcMap.containsKey( dObj.getRefersToCDC().getName() ) ) {
-                    this.cdcMap.put( dObj.getRefersToCDC().getName(), new DOIValidator( dObj.getRefersToCDC() ) );
-                }
-            }
-        }
-    }
-
-    public void generateValidators( HashMap< String, DataObject > doMap, HashMap< String, DOIValidator > cdcMap,
-            LNClass lnClass ) {
-        for( DataObject dObj : lnClass.getDataObject() ) {
-            this.doMap.put( dObj.getName(), dObj );
-            if( dObj.getRefersToCDC() != null ) {
-                if( !cdcMap.containsKey( dObj.getRefersToCDC().getName() ) ) {
-                    this.cdcMap.put( dObj.getRefersToCDC().getName(), new DOIValidator( dObj.getRefersToCDC() ) );
+                    this.cdcMap.put( dObj.getRefersToCDC().getName(), new DOIValidator( dObj.getRefersToCDC() ));
                 }
             }
         }
@@ -98,7 +86,7 @@ public class AnyLNValidator {
 
         // Verify all necessary DOI were present
         if( !this.doMap.entrySet().stream()
-                .map( x -> checkCompulsory( x.getKey(), x.getValue().getPresCond(), checkedDO ) )
+                .map( x -> checkCompulsory( x.getKey(), x.getValue().getPresCond(), checkedDO ))
                 .reduce( ( a, b ) -> a && b ).get() ) {
             AbstractRiseClipseConsole.getConsole()
                     .error( "LN does not contain all mandatory DO from class " + ln.getLnClass() );
@@ -122,7 +110,7 @@ public class AnyLNValidator {
         switch( presCond ) {
         case "M":
         case "O":
-            if( checked.contains( name ) ) {
+            if( checked.contains( name )) {
                 AbstractRiseClipseConsole.getConsole().error( "DO " + name + " cannot appear more than once" );
                 return false;
             }
