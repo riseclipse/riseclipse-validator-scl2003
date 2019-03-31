@@ -20,6 +20,11 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
 import java.util.HashMap;
 import java.util.HashSet;
+
+import org.eclipse.emf.common.util.BasicDiagnostic;
+import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.common.util.DiagnosticChain;
+
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAI;
@@ -40,7 +45,8 @@ public class DOIValidator {
         }
     }
 
-    public boolean validateDOI( DOI doi ) {
+    public boolean validateDOI( DOI doi, DiagnosticChain diagnostics ) {
+        boolean res = true;
         HashSet< String > checkedDA = new HashSet<>();
 
         for( DAI dai : doi.getDAI() ) {
@@ -48,62 +54,87 @@ public class DOIValidator {
 
             // Test if DAI is a possible DAI in this DOI
             if( ! this.daMap.containsKey( dai.getName() ) ) {
-                AbstractRiseClipseConsole.getConsole().error( "DA " + dai.getName() + " not found in CDC " + this.cdc );
-                return false;
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "DA " + dai.getName() + " not found in CDC",
+                        new Object[] { doi, cdc } ));
+                res = false;
+                continue;
             }
 
             // Control of DAI presence in DOI
-            String presCond = this.daMap.get( dai.getName() ).getPresCond();
-            this.updateCompulsory( dai.getName(), presCond, checkedDA );
+            this.updateCompulsory( dai, checkedDA, diagnostics );
 
             // Validation of DAI content
-            if( ! validateDAI( dai ) ) {
-                return false;
+            if( ! validateDAI( dai, diagnostics ) ) {
+                res = false;
             }
 
         }
 
         // Verify all necessary DAI were present
-        if( ! this.daMap.entrySet().stream()
-                .map( x -> checkCompulsory( x.getKey(), x.getValue().getPresCond(), checkedDA ) )
+        if( ! this.daMap.values().stream()
+                .map( x -> checkCompulsory( x, checkedDA, diagnostics ) )
                 .reduce( ( a, b ) -> a && b ).get() ) {
-            AbstractRiseClipseConsole.getConsole().error( "DO does not contain all mandatory DA from CDC " + this.cdc );
-            return false;
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    "DO does not contain all mandatory DA from CDC ",
+                    new Object[] { doi, cdc } ));
+            res = false;
         }
-        return true;
+        return res;
     }
 
-    public boolean checkCompulsory( String name, String presCond, HashSet< String > checked ) {
-        switch( presCond ) {
+    public boolean checkCompulsory( DataAttribute da, HashSet< String > checked, DiagnosticChain diagnostics ) {
+        switch( da.getPresCond() ) {
         case "M":
-            if( !checked.contains( name ) ) {
-                AbstractRiseClipseConsole.getConsole().error( "DA " + name + " is missing" );
+            if( ! checked.contains( da.getName() )) {
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "DA " + da.getName() + " not found in CDC",
+                        new Object[] { da } ));
                 return false;
             }
         }
         return true;
     }
 
-    public boolean updateCompulsory( String name, String presCond, HashSet< String > checked ) {
-        switch( presCond ) {
+    public boolean updateCompulsory( DAI dai, HashSet< String > checked, DiagnosticChain diagnostics ) {
+        switch( this.daMap.get( dai.getName() ).getPresCond() ) {
         case "M":
         case "O":
-            if( checked.contains( name ) ) {
-                AbstractRiseClipseConsole.getConsole().error( "DA " + name + " cannot appear more than once" );
+            if( checked.contains( dai.getName() ) ) {
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "DA " + dai.getName() + " cannot appear more than once",
+                        new Object[] { dai } ));
                 return false;
             }
             else {
-                checked.add( name );
+                checked.add( dai.getName() );
                 break;
             }
         case "F":
-            AbstractRiseClipseConsole.getConsole().error( "DA " + name + " is forbidden" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    "DA " + dai.getName() + " is forbidden",
+                    new Object[] { dai } ));
             return false;
         }
         return true;
     }
 
-    public boolean validateDAI( DAI dai ) {
+    public boolean validateDAI( DAI dai, DiagnosticChain diagnostics ) {
 
         AbstractRiseClipseConsole.getConsole().verbose( "found DA " + dai.getName() + " in CDC " + this.cdc );
 
@@ -111,10 +142,14 @@ public class DOIValidator {
         DataAttribute da = this.daMap.get( dai.getName() );
         if( da.getTypeKind().getName().equals( "BASIC" ) ) {
             for( Val val : dai.getVal() ) {
-                if( ! validateVal( val.getValue(), da.getType() ) ) {
-                    AbstractRiseClipseConsole.getConsole().error( "Val " + val.getValue() + " of DA " + dai.getName() +
-                            " is not of type " + da.getType() );
-                    return false;
+                if( ! validateVal( val.getValue(), da.getType() )) {
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.ERROR,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "Val " + val.getValue() + " of DA " + dai.getName() + " is not of type " + da.getType(),
+                            new Object[] { dai, val } ));
+                     return false;
                 }
                 AbstractRiseClipseConsole.getConsole().verbose( "Val " + val.getValue() + " of DA " + dai.getName() +
                         " is of type " + da.getType() );

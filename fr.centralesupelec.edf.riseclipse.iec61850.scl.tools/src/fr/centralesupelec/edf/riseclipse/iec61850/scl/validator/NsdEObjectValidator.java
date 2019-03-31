@@ -20,6 +20,9 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.emf.common.util.BasicDiagnostic;
+import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
@@ -50,7 +53,7 @@ public class NsdEObjectValidator implements EValidator {
 
     private HashMap< String, AnyLNValidator > generateValidators( LNClass lnClass ) {
         HashMap< String, AnyLNValidator > lnMap = new HashMap<>();
-        lnMap.put( lnClass.getName(), new AnyLNValidator( lnClass ) );
+        lnMap.put( lnClass.getName(), new AnyLNValidator( lnClass ));
         return lnMap;
     }
 
@@ -70,34 +73,40 @@ public class NsdEObjectValidator implements EValidator {
         case "LN0":
         case "LN":
             AnyLN ln = ( AnyLN ) eObject;
-            return validateLN( ln );
+            return validateLN( ln, diagnostics );
         default:
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NSDEObjectValidator.validate( " + eClass.getName() + " )" );
             return false;
         }
     }
 
     @Override
     public boolean validate( EDataType eDataType, Object value, DiagnosticChain diagnostics, Map< Object, Object > context ) {
-        AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NSDEObjectValidator.validate( EDataType ): " + eDataType.getName() );
+        AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NSDEObjectValidator.validate( " + eDataType.getName() +" )" );
 
         // TODO: use nsdResource to validate value
 
         return true;
     }
 
-    public boolean validateLN( AnyLN ln ) {
+    public boolean validateLN( AnyLN ln, DiagnosticChain diagnostics ) {
         AbstractRiseClipseConsole.getConsole().verbose( "" );
         AbstractRiseClipseConsole.getConsole().verbose( "NSDEObjectValidator.validateLN( " + ln.getLnClass() + " )" );
 
-        //LN has valid LNClass
-        if( ! this.lnMap.containsKey( ln.getLnClass() ) ) {
-            AbstractRiseClipseConsole.getConsole().error( "LNClass " + ln.getLnClass() + " not found in NSD files" );
+        // Check that LN has valid LNClass
+        if( ! this.lnMap.containsKey( ln.getLnClass() )) {
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    "LNClass " + ln.getLnClass() + " not found in NSD files",
+                    new Object[] { ln } ));
             return false;
         }
         AbstractRiseClipseConsole.getConsole().verbose( "found LNClass " + ln.getLnClass() + " in NSD files" );
 
-        //AnyLNValidator validates LN content
-        return lnMap.get( ln.getLnClass() ).validateLN( ln );
+        // AnyLNValidator validates LN content
+        return lnMap.get( ln.getLnClass() ).validateLN( ln, diagnostics );
     }
 
 }

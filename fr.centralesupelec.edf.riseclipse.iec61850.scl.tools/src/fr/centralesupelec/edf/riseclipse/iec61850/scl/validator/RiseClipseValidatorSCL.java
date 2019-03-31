@@ -27,12 +27,13 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseFatalException;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.validation.ocl.OCLValidator;
 
-import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
 public class RiseClipseValidatorSCL {
 
+    public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
+    
     private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
     private static SCLModelLoader sclLoader;
@@ -57,6 +58,8 @@ public class RiseClipseValidatorSCL {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         displayLegal( console );
         console.setLevel( IRiseClipseConsole.WARNING_LEVEL );
+        
+        console.doNotDisplayIdenticalMessages();
 
         if( args.length == 0 ) usage( console );
 

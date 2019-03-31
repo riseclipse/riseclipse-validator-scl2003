@@ -20,6 +20,11 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
 import java.util.HashMap;
 import java.util.HashSet;
+
+import org.eclipse.emf.common.util.BasicDiagnostic;
+import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.common.util.DiagnosticChain;
+
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AbstractLNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
@@ -60,78 +65,103 @@ public class AnyLNValidator {
         }
     }
 
-    public boolean validateLN( AnyLN ln ) {
+    public boolean validateLN( AnyLN ln, DiagnosticChain diagnostics ) {
+        boolean res = true;
+
         HashSet< String > checkedDO = new HashSet<>();
 
         for( DOI doi : ln.getDOI() ) {
             AbstractRiseClipseConsole.getConsole().verbose( "validateDOI( " + doi.getName() + " )" );
 
             // Test if DOI is a possible DOI in this LN
-            if( !this.doMap.containsKey( doi.getName() ) ) {
-                AbstractRiseClipseConsole.getConsole()
-                        .error( "DO " + doi.getName() + " not found in LNClass " + ln.getLnClass() );
-                return false;
+            if( ! this.doMap.containsKey( doi.getName() ) ) {
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "DO " + doi.getName() + " not found in LNClass " + ln.getLnClass(),
+                        new Object[] { ln } ));
+                continue;
             }
 
             // Control of DOI presence in LN  
             String presCond = this.doMap.get( doi.getName() ).getPresCond();
-            this.updateCompulsory( doi.getName(), presCond, checkedDO );
+            this.updateCompulsory( doi, presCond, checkedDO, diagnostics );
 
             // Validation of DOI content
-            if( ! validateDOI( doi ) ) {
-                return false;
+            if( ! validateDOI( doi, diagnostics ) ) {
+                res = false;
             }
 
         }
 
         // Verify all necessary DOI were present
-        if( !this.doMap.entrySet().stream()
-                .map( x -> checkCompulsory( x.getKey(), x.getValue().getPresCond(), checkedDO ))
+        if( ! this.doMap.entrySet().stream()
+                .map( x -> checkCompulsory( ln, x.getKey(), x.getValue().getPresCond(), checkedDO, diagnostics ))
                 .reduce( ( a, b ) -> a && b ).get() ) {
-            AbstractRiseClipseConsole.getConsole()
-                    .error( "LN does not contain all mandatory DO from class " + ln.getLnClass() );
-            return false;
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    "LN does not contain all mandatory DO from class " + ln.getLnClass(),
+                    new Object[] { ln } ));
+            res = false;
         }
-        return true;
+        return res;
     }
 
-    public boolean checkCompulsory( String name, String presCond, HashSet< String > checked ) {
+    public boolean checkCompulsory( AnyLN ln, String name, String presCond, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
         switch( presCond ) {
         case "M":
-            if( ! checked.contains( name ) ) {
-                AbstractRiseClipseConsole.getConsole().error( "DO " + name + " is missing" );
+            if( ! checkedDO.contains( name ) ) {
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "DO " + name + " is missing",
+                        new Object[] { ln } ));
                 return false;
             }
         }
         return true;
     }
 
-    public boolean updateCompulsory( String name, String presCond, HashSet< String > checked ) {
+    public boolean updateCompulsory( DOI doi, String presCond, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
         switch( presCond ) {
         case "M":
         case "O":
-            if( checked.contains( name )) {
-                AbstractRiseClipseConsole.getConsole().error( "DO " + name + " cannot appear more than once" );
+            if( checkedDO.contains( doi.getName() )) {
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "DO " + doi + " cannot appear more than once",
+                        new Object[] { doi } ));
                 return false;
             }
             else {
-                checked.add( name );
+                checkedDO.add( doi.getName() );
                 break;
             }
         case "F":
-            AbstractRiseClipseConsole.getConsole().error( "DO " + name + " is forbidden" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    "DO " + doi + " is forbidden",
+                    new Object[] { doi } ));
             return false;
         }
         return true;
     }
 
-    public boolean validateDOI( DOI doi ) {
+    public boolean validateDOI( DOI doi, DiagnosticChain diagnostics ) {
 
         AbstractRiseClipseConsole.getConsole().verbose( "found DO " + doi.getName() + " in LNClass " + this.lnClass );
 
         // DOIValidator validates DOI content
         String cdc = this.doMap.get( doi.getName() ).getRefersToCDC().getName();
-        return cdcMap.get( cdc ).validateDOI( doi );
+        return cdcMap.get( cdc ).validateDOI( doi, diagnostics );
     }
 
 }
