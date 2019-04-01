@@ -43,6 +43,7 @@ public class AnyLNValidator {
         this.lnClass = lnClass.getName();
         this.doMap = new HashMap<>(); // link between DOI (name) and its respective DataObject
         this.cdcMap = new HashMap<>(); // link between CDC (name) and its respective DOIValidator
+        
         generateValidators( doMap, cdcMap, lnClass );
 
         // LNClass hierarchy taken into account
@@ -56,10 +57,10 @@ public class AnyLNValidator {
 
     public void generateValidators( HashMap< String, DataObject > doMap, HashMap< String, DOIValidator > cdcMap, AnyLNClass lnClass ) {
         for( DataObject dObj : lnClass.getDataObject() ) {
-            this.doMap.put( dObj.getName(), dObj );
+            doMap.put( dObj.getName(), dObj );
             if( dObj.getRefersToCDC() != null ) {
                 if( ! cdcMap.containsKey( dObj.getRefersToCDC().getName() )) {
-                    this.cdcMap.put( dObj.getRefersToCDC().getName(), new DOIValidator( dObj.getRefersToCDC() ));
+                    cdcMap.put( dObj.getRefersToCDC().getName(), new DOIValidator( dObj.getRefersToCDC() ));
                 }
             }
         }
@@ -74,19 +75,18 @@ public class AnyLNValidator {
             AbstractRiseClipseConsole.getConsole().verbose( "validateDOI( " + doi.getName() + " )" );
 
             // Test if DOI is a possible DOI in this LN
-            if( ! this.doMap.containsKey( doi.getName() ) ) {
+            if( ! doMap.containsKey( doi.getName() ) ) {
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DO " + doi.getName() + " not found in LNClass " + ln.getLnClass(),
+                        "DO " + doi.getName() + " in LN at line " + ln.getLineNumber() + " not found in LNClass " + ln.getLnClass(),
                         new Object[] { ln } ));
                 continue;
             }
 
             // Control of DOI presence in LN  
-            String presCond = this.doMap.get( doi.getName() ).getPresCond();
-            this.updateCompulsory( doi, presCond, checkedDO, diagnostics );
+            updateCompulsory( doi, checkedDO, diagnostics );
 
             // Validation of DOI content
             if( ! validateDOI( doi, diagnostics ) ) {
@@ -96,29 +96,29 @@ public class AnyLNValidator {
         }
 
         // Verify all necessary DOI were present
-        if( ! this.doMap.entrySet().stream()
-                .map( x -> checkCompulsory( ln, x.getKey(), x.getValue().getPresCond(), checkedDO, diagnostics ))
+        if( ! doMap.values().stream()
+                .map( x -> checkCompulsory( ln, x, checkedDO, diagnostics ))
                 .reduce( ( a, b ) -> a && b ).get() ) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "LN does not contain all mandatory DO from class " + ln.getLnClass(),
+                    "LN at line " + ln.getLineNumber() + " does not contain all mandatory DO from class " + ln.getLnClass(),
                     new Object[] { ln } ));
             res = false;
         }
         return res;
     }
 
-    public boolean checkCompulsory( AnyLN ln, String name, String presCond, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
-        switch( presCond ) {
+    public boolean checkCompulsory( AnyLN ln, DataObject dataObject, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
+        switch( dataObject.getPresCond() ) {
         case "M":
-            if( ! checkedDO.contains( name ) ) {
+            if( ! checkedDO.contains( dataObject.getName() ) ) {
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DO " + name + " is missing",
+                        "DO " + dataObject.getName() + " is missing in LN at line " + ln.getLineNumber(),
                         new Object[] { ln } ));
                 return false;
             }
@@ -126,8 +126,8 @@ public class AnyLNValidator {
         return true;
     }
 
-    public boolean updateCompulsory( DOI doi, String presCond, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
-        switch( presCond ) {
+    public boolean updateCompulsory( DOI doi, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
+        switch( doMap.get( doi.getName() ).getPresCond() ) {
         case "M":
         case "O":
             if( checkedDO.contains( doi.getName() )) {
@@ -135,20 +135,18 @@ public class AnyLNValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DO " + doi + " cannot appear more than once",
+                        "DO " + doi + " cannot appear more than once in LN at line " + doi.getAnyLN().getLineNumber(),
                         new Object[] { doi } ));
                 return false;
             }
-            else {
-                checkedDO.add( doi.getName() );
-                break;
-            }
+            checkedDO.add( doi.getName() );
+            break;
         case "F":
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "DO " + doi + " is forbidden",
+                    "DO " + doi + " is forbidden in LN at line " + doi.getAnyLN().getLineNumber(),
                     new Object[] { doi } ));
             return false;
         }
@@ -157,10 +155,10 @@ public class AnyLNValidator {
 
     public boolean validateDOI( DOI doi, DiagnosticChain diagnostics ) {
 
-        AbstractRiseClipseConsole.getConsole().verbose( "found DO " + doi.getName() + " in LNClass " + this.lnClass );
+        AbstractRiseClipseConsole.getConsole().verbose( "found DO " + doi.getName() + " in LNClass " + lnClass );
 
         // DOIValidator validates DOI content
-        String cdc = this.doMap.get( doi.getName() ).getRefersToCDC().getName();
+        String cdc = doMap.get( doi.getName() ).getRefersToCDC().getName();
         return cdcMap.get( cdc ).validateDOI( doi, diagnostics );
     }
 

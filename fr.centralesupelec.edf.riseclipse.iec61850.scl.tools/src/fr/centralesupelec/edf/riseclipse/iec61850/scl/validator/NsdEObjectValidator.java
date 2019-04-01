@@ -75,14 +75,14 @@ public class NsdEObjectValidator implements EValidator {
             AnyLN ln = ( AnyLN ) eObject;
             return validateLN( ln, diagnostics );
         default:
-            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NSDEObjectValidator.validate( " + eClass.getName() + " )" );
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NsdEObjectValidator.validate( " + eClass.getName() + " )" );
             return false;
         }
     }
 
     @Override
     public boolean validate( EDataType eDataType, Object value, DiagnosticChain diagnostics, Map< Object, Object > context ) {
-        AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NSDEObjectValidator.validate( " + eDataType.getName() +" )" );
+        AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NsdEObjectValidator.validate( " + eDataType.getName() + " )" );
 
         // TODO: use nsdResource to validate value
 
@@ -91,7 +91,7 @@ public class NsdEObjectValidator implements EValidator {
 
     public boolean validateLN( AnyLN ln, DiagnosticChain diagnostics ) {
         AbstractRiseClipseConsole.getConsole().verbose( "" );
-        AbstractRiseClipseConsole.getConsole().verbose( "NSDEObjectValidator.validateLN( " + ln.getLnClass() + " )" );
+        AbstractRiseClipseConsole.getConsole().verbose( "NsdEObjectValidator.validateLN( " + ln.getLnClass() + " )" );
 
         // Check that LN has valid LNClass
         if( ! this.lnMap.containsKey( ln.getLnClass() )) {
@@ -99,11 +99,11 @@ public class NsdEObjectValidator implements EValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "LNClass " + ln.getLnClass() + " not found in NSD files",
+                    "LNClass " + ln.getLnClass() + " not found in NSD files for LN at line " + ln.getLineNumber(),
                     new Object[] { ln } ));
             return false;
         }
-        AbstractRiseClipseConsole.getConsole().verbose( "found LNClass " + ln.getLnClass() + " in NSD files" );
+        AbstractRiseClipseConsole.getConsole().verbose( "found LNClass " + ln.getLnClass() + " in NSD files for LN at line " + ln.getLineNumber() );
 
         // AnyLNValidator validates LN content
         return lnMap.get( ln.getLnClass() ).validateLN( ln, diagnostics );

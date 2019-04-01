@@ -40,6 +40,7 @@ public class DOIValidator {
     public DOIValidator( CDC cdc ) {
         this.cdc = cdc.getName();
         this.daMap = new HashMap<>(); // link between DAI (name) and its respective DataAttribute
+        
         for( DataAttribute da : cdc.getDataAttribute() ) {
             this.daMap.put( da.getName(), da );
         }
@@ -50,22 +51,22 @@ public class DOIValidator {
         HashSet< String > checkedDA = new HashSet<>();
 
         for( DAI dai : doi.getDAI() ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "validateDAI( " + dai.getName() + " )" );
+            AbstractRiseClipseConsole.getConsole().verbose( "validateDAI( " + dai.getName() + " ) (line" + dai.getLineNumber() + ")" );
 
             // Test if DAI is a possible DAI in this DOI
-            if( ! this.daMap.containsKey( dai.getName() ) ) {
+            if( ! daMap.containsKey( dai.getName() ) ) {
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DA " + dai.getName() + " not found in CDC",
+                        "DAI " + dai.getName() + " (line" + dai.getLineNumber() + ") not found in CDC",
                         new Object[] { doi, cdc } ));
                 res = false;
                 continue;
             }
 
             // Control of DAI presence in DOI
-            this.updateCompulsory( dai, checkedDA, diagnostics );
+            updateCompulsory( dai, checkedDA, diagnostics );
 
             // Validation of DAI content
             if( ! validateDAI( dai, diagnostics ) ) {
@@ -75,21 +76,21 @@ public class DOIValidator {
         }
 
         // Verify all necessary DAI were present
-        if( ! this.daMap.values().stream()
-                .map( x -> checkCompulsory( x, checkedDA, diagnostics ) )
+        if( ! daMap.values().stream()
+                .map( x -> checkCompulsory( doi, x, checkedDA, diagnostics ) )
                 .reduce( ( a, b ) -> a && b ).get() ) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "DO does not contain all mandatory DA from CDC ",
+                    "DOI (line " + doi.getLineNumber() + ") does not contain all mandatory DA from CDC ",
                     new Object[] { doi, cdc } ));
             res = false;
         }
         return res;
     }
 
-    public boolean checkCompulsory( DataAttribute da, HashSet< String > checked, DiagnosticChain diagnostics ) {
+    public boolean checkCompulsory( DOI doi, DataAttribute da, HashSet< String > checked, DiagnosticChain diagnostics ) {
         switch( da.getPresCond() ) {
         case "M":
             if( ! checked.contains( da.getName() )) {
@@ -97,7 +98,7 @@ public class DOIValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DA " + da.getName() + " not found in CDC",
+                        "DA " + da.getName() + " not found in DOI (line " + doi.getLineNumber() + ")",
                         new Object[] { da } ));
                 return false;
             }
@@ -106,7 +107,7 @@ public class DOIValidator {
     }
 
     public boolean updateCompulsory( DAI dai, HashSet< String > checked, DiagnosticChain diagnostics ) {
-        switch( this.daMap.get( dai.getName() ).getPresCond() ) {
+        switch( daMap.get( dai.getName() ).getPresCond() ) {
         case "M":
         case "O":
             if( checked.contains( dai.getName() ) ) {
@@ -114,7 +115,7 @@ public class DOIValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DA " + dai.getName() + " cannot appear more than once",
+                        "DAI " + dai.getName() + " (line " + dai.getLineNumber() + ") cannot appear more than once",
                         new Object[] { dai } ));
                 return false;
             }
@@ -127,7 +128,7 @@ public class DOIValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "DA " + dai.getName() + " is forbidden",
+                    "DAI " + dai.getName() + " (line " + dai.getLineNumber() + ") is forbidden",
                     new Object[] { dai } ));
             return false;
         }
@@ -136,10 +137,10 @@ public class DOIValidator {
 
     public boolean validateDAI( DAI dai, DiagnosticChain diagnostics ) {
 
-        AbstractRiseClipseConsole.getConsole().verbose( "found DA " + dai.getName() + " in CDC " + this.cdc );
+        AbstractRiseClipseConsole.getConsole().verbose( "found DA " + dai.getName() + " in CDC " + cdc );
 
         // DataAttributes that are BASIC have a BasicType which describes allowed Val of DA
-        DataAttribute da = this.daMap.get( dai.getName() );
+        DataAttribute da = daMap.get( dai.getName() );
         if( da.getTypeKind().getName().equals( "BASIC" ) ) {
             for( Val val : dai.getVal() ) {
                 if( ! validateVal( val.getValue(), da.getType() )) {
@@ -147,11 +148,11 @@ public class DOIValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "Val " + val.getValue() + " of DA " + dai.getName() + " is not of type " + da.getType(),
+                            "Val " + val.getValue() + " (" + dai.getLineNumber() + ") of DA " + dai.getName() + " is not of type " + da.getType(),
                             new Object[] { dai, val } ));
                      return false;
                 }
-                AbstractRiseClipseConsole.getConsole().verbose( "Val " + val.getValue() + " of DA " + dai.getName() +
+                AbstractRiseClipseConsole.getConsole().verbose( "Val " + val.getValue() + " (" + dai.getLineNumber() + ") of DA " + dai.getName() +
                         " is of type " + da.getType() );
             }
         }
