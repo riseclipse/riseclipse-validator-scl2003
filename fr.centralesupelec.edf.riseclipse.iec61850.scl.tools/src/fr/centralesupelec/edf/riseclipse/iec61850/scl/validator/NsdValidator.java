@@ -22,6 +22,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.utilities.NsdModelLoader;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class NsdValidator {
