@@ -26,6 +26,7 @@ import java.util.Map;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.provider.SclItemProviderAdapterFactory;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities.SclModelLoader;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseFatalException;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;
@@ -50,7 +51,7 @@ public class RiseClipseValidatorSCL {
     
     private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
-    private static SCLModelLoader sclLoader;
+    private static SclModelLoader sclLoader;
     private static NsdValidator nsdValidator;
     private static boolean oclValidation = false;
     private static boolean nsdValidation = false;
@@ -168,7 +169,7 @@ public class RiseClipseValidatorSCL {
             nsdValidator.prepare( validator, console );
         }
 
-        sclLoader = new SCLModelLoader( console );
+        sclLoader = new SclModelLoader( console );
         sclAdapter = new SclItemProviderAdapterFactory();
 
     }
