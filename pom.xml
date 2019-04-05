@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+ 
+  <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+  <artifactId>RiseClipseValidator_SCL2003</artifactId>
+  <version>1.0.2-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  
+  <parent>
+    <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+    <artifactId>fr.centralesupelec.edf.riseclipse.developer.maven</artifactId>
+    <version>1.0.8-SNAPSHOT</version>
+    <relativePath>../RiseClipseDeveloper/fr.centralesupelec.edf.riseclipse.developer.maven/pom.xml</relativePath>
+  </parent>
+  
+  <scm>
+    <connection>scm:git:git@gitlab.centralesupelec.fr:RiseClipseGroup/RiseClipseValidator_SCL2003.git</connection>
+    <developerConnection>scm:git:git@gitlab.centralesupelec.fr:RiseClipseGroup/RiseClipseValidator_SCL2003.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <!-- Common dependencies -->
+  <dependencies>
+
+    <!-- These dependencies are found locally after using the command
+           mvn eclipse:to-maven -DstripQualifier=true
+         on a computer with Eclipse installed
+         and answering (replacing ~ with path to the home directory)
+           ~/.p2/pool
+         to the question
+           [INFO] Eclipse directory? 
+     -->
+    <dependency>
+       <groupId>org.eclipse.equinox</groupId>
+       <artifactId>app</artifactId>
+       <version>${eclipse-equinox-app-version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.eclipse.emf</groupId>
+      <artifactId>ecore</artifactId>
+      <version>${eclipse-emf-ecore-version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.eclipse.emf</groupId>
+      <artifactId>common</artifactId>
+      <version>${eclipse-emf-common-version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.eclipse.emf.ecore</groupId>
+      <artifactId>xmi</artifactId>
+      <version>${eclipse-emf-xmi-version}</version>
+    </dependency>
+    
+    <dependency>
+       <groupId>org.eclipse.ocl</groupId>
+       <artifactId>pivot</artifactId>
+       <version>${eclipse-ocl-version}</version>
+    </dependency>
+    
+    <dependency>
+       <groupId>org.eclipse.ocl.xtext</groupId>
+       <artifactId>completeocl</artifactId>
+       <version>${eclipse-ocl-version}</version>
+    </dependency>
+    
+    <dependency>
+       <groupId>org.eclipse.ocl.xtext</groupId>
+       <artifactId>oclstdlib</artifactId>
+       <version>${eclipse-ocl-version}</version>
+    </dependency>
+    
+    <dependency>
+       <groupId>org.eclipse.ocl.xtext</groupId>
+       <artifactId>oclinecore</artifactId>
+       <version>${eclipse-ocl-version}</version>
+    </dependency>
+    
+    <!-- RiseClipse dependencies not found automatically -->
+    <!-- https://mvnrepository.com/artifact/log4j/log4j -->
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${log4j-version}</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/javax.inject/javax.inject -->
+    <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>${javax-inject-version}</version>
+    </dependency>
+
+    <!-- RiseClipse needed plugins -->
+    <dependency>
+      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <artifactId>fr.centralesupelec.edf.riseclipse.main</artifactId>
+      <version>1.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <artifactId>fr.centralesupelec.edf.riseclipse.validation.ocl</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl</artifactId>
+      <version>1.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.edit</artifactId>
+      <version>1.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.nsd</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.nsd.edit</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+
+  <modules>
+    <module>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools</module>
+  </modules>
+
+</project>
