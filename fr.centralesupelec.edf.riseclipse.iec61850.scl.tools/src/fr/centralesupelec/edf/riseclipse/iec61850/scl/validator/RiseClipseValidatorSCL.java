@@ -70,15 +70,10 @@ public class RiseClipseValidatorSCL {
 
     public static void main( String[] args ) {
 
-        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-        displayLegal();
-        console.setLevel( IRiseClipseConsole.WARNING_LEVEL );
-        
-        console.doNotDisplayIdenticalMessages();
-
         if( args.length == 0 ) usage();
 
         boolean make_explicit_links = false;
+        boolean displayCopyright = true;
 
         int posFiles = 0;
         for( int i = 0; i < args.length; ++i ) {
@@ -93,12 +88,23 @@ public class RiseClipseValidatorSCL {
                 else if( "--make-explicit-links".equals( args[i] ) ) {
                     make_explicit_links = true;
                 }
+                else if( "--do-not-display-copyright".equals( args[i] ) ) {
+                    displayCopyright = false;
+                }
                 else {
                     console.error( "Unrecognized option " + args[i] );
                     usage();
                 }
             }
         }
+
+        if( displayCopyright ) {
+            int level = console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+            displayLegal();
+            console.setLevel( level );
+        }
+        
+        console.doNotDisplayIdenticalMessages();
 
         ArrayList< String > oclFiles = new ArrayList<>();
         ArrayList< String > nsdFiles = new ArrayList<>();
