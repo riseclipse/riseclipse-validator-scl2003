@@ -39,7 +39,7 @@
             <configuration>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools.RiseClipseSCLValidator</mainClass>
+                  <mainClass>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL</mainClass>
                 </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                   <resource>plugin.properties</resource>
