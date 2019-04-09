@@ -72,7 +72,7 @@ public class RiseClipseValidatorSCL {
 
         if( args.length == 0 ) usage();
 
-        boolean make_explicit_links = false;
+        boolean makeExplicitLinks = false;
         boolean displayCopyright = true;
 
         int posFiles = 0;
@@ -86,7 +86,7 @@ public class RiseClipseValidatorSCL {
                     console.setLevel( IRiseClipseConsole.VERBOSE_LEVEL );
                 }
                 else if( "--make-explicit-links".equals( args[i] ) ) {
-                    make_explicit_links = true;
+                    makeExplicitLinks = true;
                 }
                 else if( "--do-not-display-copyright".equals( args[i] ) ) {
                     displayCopyright = false;
@@ -125,7 +125,7 @@ public class RiseClipseValidatorSCL {
 
         prepare( oclFiles, nsdFiles );
         for( int i = 0; i < sclFiles.size(); ++i ) {
-            run( make_explicit_links, sclFiles.get( i ));
+            run( makeExplicitLinks, sclFiles.get( i ));
         }
     }
 
