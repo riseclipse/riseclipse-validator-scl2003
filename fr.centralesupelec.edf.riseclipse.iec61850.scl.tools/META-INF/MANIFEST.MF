@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: RiseClipse IEC61850 SCL Validator
 Bundle-Vendor: CentraleSupélec & EDF
 Bundle-SymbolicName: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Export-Package: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,

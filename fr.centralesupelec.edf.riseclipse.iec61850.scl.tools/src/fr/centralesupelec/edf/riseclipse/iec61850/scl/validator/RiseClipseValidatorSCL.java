@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.EValidator.SubstitutionLabelProvider;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
 public class RiseClipseValidatorSCL {
@@ -56,7 +57,7 @@ public class RiseClipseValidatorSCL {
     private static boolean oclValidation = false;
     private static boolean nsdValidation = false;
 
-    private static final IRiseClipseConsole console = new TextRiseClipseConsole();
+    @NonNull private static final IRiseClipseConsole console = new TextRiseClipseConsole();
 
     private static void usage() {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
@@ -68,7 +69,7 @@ public class RiseClipseValidatorSCL {
         System.exit( -1 );
     }
 
-    public static void main( String[] args ) {
+    public static void main( @NonNull String[] args ) {
 
         if( args.length == 0 ) usage();
 
@@ -106,9 +107,9 @@ public class RiseClipseValidatorSCL {
         
         console.doNotDisplayIdenticalMessages();
 
-        ArrayList< String > oclFiles = new ArrayList<>();
-        ArrayList< String > nsdFiles = new ArrayList<>();
-        ArrayList< String > sclFiles = new ArrayList<>();
+        ArrayList< @NonNull String > oclFiles = new ArrayList<>();
+        ArrayList< @NonNull String > nsdFiles = new ArrayList<>();
+        ArrayList< @NonNull String > sclFiles = new ArrayList<>();
         for( int i = posFiles; i < args.length; ++i ) {
             if( args[i].endsWith( ".ocl" ) ) {
                 oclFiles.add( args[i] );
@@ -146,11 +147,11 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.0.0 (2 april 2019)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 (11 april 2019)" );
         console.info( "" );
     }
 
-    private static void prepare( ArrayList< String > oclFiles, ArrayList< String > nsdFiles ) {
+    private static void prepare( ArrayList< @NonNull String > oclFiles, ArrayList< @NonNull String > nsdFiles ) {
         SclPackage sclPg = SclPackage.eINSTANCE;
         if( sclPg == null ) {
             throw new RiseClipseFatalException( "SCL package not found", null );
@@ -180,7 +181,7 @@ public class RiseClipseValidatorSCL {
 
     }
 
-    private static void run( boolean make_explicit_links, String sclFile ) {
+    private static void run( boolean make_explicit_links, @NonNull String sclFile ) {
         sclLoader.reset();
         Resource resource = sclLoader.loadWithoutValidation( sclFile );
         if( make_explicit_links ) {
@@ -193,7 +194,7 @@ public class RiseClipseValidatorSCL {
         }
     }
 
-    private static void validate( Resource resource, final AdapterFactory adapter ) {
+    private static void validate( @NonNull Resource resource, final AdapterFactory adapter ) {
         Map< Object, Object > context = new HashMap< Object, Object >();
         SubstitutionLabelProvider substitutionLabelProvider = new EValidator.SubstitutionLabelProvider() {
 
