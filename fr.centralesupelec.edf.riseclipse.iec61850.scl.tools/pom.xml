@@ -4,13 +4,13 @@
  
   <groupId>fr.centralesupelec.edf.riseclipse</groupId>
   <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <parent>
     <groupId>fr.centralesupelec.edf.riseclipse</groupId>
     <artifactId>RiseClipseValidator_SCL2003</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
   </parent>
 
   <properties>
