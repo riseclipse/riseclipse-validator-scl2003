@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-    <toolName>RiseClipseSCLValidator</toolName>
+    <toolName>RiseClipseValidatorSCL</toolName>
   </properties>
 
   <build>
