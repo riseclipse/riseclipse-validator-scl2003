@@ -135,7 +135,7 @@ public class AnyLNValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DO " + doi + " cannot appear more than once in LN at line " + doi.getAnyLN().getLineNumber(),
+                        "DO " + doi + " cannot appear more than once in LN at line " + doi.getParentAnyLN().getLineNumber(),
                         new Object[] { doi } ));
                 return false;
             }
@@ -146,7 +146,7 @@ public class AnyLNValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "DO " + doi + " is forbidden in LN at line " + doi.getAnyLN().getLineNumber(),
+                    "DO " + doi + " is forbidden in LN at line " + doi.getParentAnyLN().getLineNumber(),
                     new Object[] { doi } ));
             return false;
         }
