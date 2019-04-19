@@ -94,6 +94,13 @@
         <version>${javax-inject-version}</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/javax.inject/javax.inject -->
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${apache-lang3-version}</version>
+    </dependency>
+
     <!-- RiseClipse needed plugins -->
     <dependency>
       <groupId>fr.centralesupelec.edf.riseclipse</groupId>
