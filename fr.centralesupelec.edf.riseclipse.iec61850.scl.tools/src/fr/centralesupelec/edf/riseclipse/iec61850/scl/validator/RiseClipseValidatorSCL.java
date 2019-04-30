@@ -62,7 +62,7 @@ public class RiseClipseValidatorSCL {
     private static void usage() {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         console.info(
-                "java -jar RiseClipseValidatorSCL.jar [--info | --verbose] [--make-explicit-links] [<oclFile> | <nsdFile> | <sclFile>]*" );
+                "java -jar RiseClipseValidatorSCL.jar [--info | --warning | --verbose] [--make-explicit-links] [<oclFile> | <nsdFile> | <sclFile>]*" );
         console.info( "Files ending with \".ocl\" are considered OCL files, "
                 + "files ending with \\\".nsd\\\" are considered NSD files, "
                 + "all others are considered SCL files" );
@@ -82,6 +82,9 @@ public class RiseClipseValidatorSCL {
                 posFiles = i + 1;
                 if( "--info".equals( args[i] ) ) {
                     console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+                }
+                else if( "--warning".equals( args[i] ) ) {
+                    console.setLevel( IRiseClipseConsole.WARNING_LEVEL );
                 }
                 else if( "--verbose".equals( args[i] ) ) {
                     console.setLevel( IRiseClipseConsole.VERBOSE_LEVEL );
