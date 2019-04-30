@@ -102,6 +102,10 @@ public class DOIValidator {
                         new Object[] { da } ));
                 return false;
             }
+            break;
+        default:
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOIValidator.checkCompulsory( " + da.getPresCond() + " )" );
+            break;
         }
         return true;
     }
@@ -131,6 +135,9 @@ public class DOIValidator {
                     "DAI " + dai.getName() + " (line " + dai.getLineNumber() + ") is forbidden",
                     new Object[] { dai } ));
             return false;
+        default:
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOIValidator.updateCompulsory( " + daMap.get( dai.getName() ).getPresCond() + " )" );
+            break;
         }
         return true;
     }
@@ -247,6 +254,7 @@ public class DOIValidator {
         }
     }
 
+    @SuppressWarnings( "unused" )
     private void testValidateVal() {
         log( "\n--\tSTART TEST\t--\n" );
         assertTrue( validateVal( "0", "BOOLEAN" ) );

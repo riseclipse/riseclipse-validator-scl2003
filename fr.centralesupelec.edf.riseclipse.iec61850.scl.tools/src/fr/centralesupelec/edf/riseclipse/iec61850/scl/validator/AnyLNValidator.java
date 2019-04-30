@@ -55,7 +55,7 @@ public class AnyLNValidator {
 
     }
 
-    public void generateValidators( HashMap< String, DataObject > doMap, HashMap< String, DOIValidator > cdcMap, AnyLNClass lnClass ) {
+    private void generateValidators( HashMap< String, DataObject > doMap, HashMap< String, DOIValidator > cdcMap, AnyLNClass lnClass ) {
         for( DataObject dObj : lnClass.getDataObject() ) {
             doMap.put( dObj.getName(), dObj );
             if( dObj.getRefersToCDC() != null ) {
@@ -110,7 +110,7 @@ public class AnyLNValidator {
         return res;
     }
 
-    public boolean checkCompulsory( AnyLN ln, DataObject dataObject, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
+    private boolean checkCompulsory( AnyLN ln, DataObject dataObject, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
         switch( dataObject.getPresCond() ) {
         case "M":
             if( ! checkedDO.contains( dataObject.getName() ) ) {
@@ -122,11 +122,15 @@ public class AnyLNValidator {
                         new Object[] { ln } ));
                 return false;
             }
+            break;
+        default:
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: AnyLNValidator.checkCompulsory( " + dataObject.getPresCond() + " )" );
+            break;
         }
         return true;
     }
 
-    public boolean updateCompulsory( DOI doi, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
+    private boolean updateCompulsory( DOI doi, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
         switch( doMap.get( doi.getName() ).getPresCond() ) {
         case "M":
         case "O":
@@ -149,11 +153,14 @@ public class AnyLNValidator {
                     "DO " + doi + " is forbidden in LN at line " + doi.getParentAnyLN().getLineNumber(),
                     new Object[] { doi } ));
             return false;
+        default:
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: AnyLNValidator.updateCompulsory( " + doMap.get( doi.getName() ).getPresCond() + " )" );
+            break;
         }
         return true;
     }
 
-    public boolean validateDOI( DOI doi, DiagnosticChain diagnostics ) {
+    private boolean validateDOI( DOI doi, DiagnosticChain diagnostics ) {
 
         AbstractRiseClipseConsole.getConsole().verbose( "found DO " + doi.getName() + " in LNClass " + lnClass );
 

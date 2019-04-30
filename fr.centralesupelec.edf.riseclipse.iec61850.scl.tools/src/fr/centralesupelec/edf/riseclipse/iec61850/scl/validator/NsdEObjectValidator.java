@@ -89,7 +89,7 @@ public class NsdEObjectValidator implements EValidator {
         return true;
     }
 
-    public boolean validateLN( AnyLN ln, DiagnosticChain diagnostics ) {
+    private boolean validateLN( AnyLN ln, DiagnosticChain diagnostics ) {
         AbstractRiseClipseConsole.getConsole().verbose( "" );
         AbstractRiseClipseConsole.getConsole().verbose( "NsdEObjectValidator.validateLN( " + ln.getLnClass() + " )" );
 
