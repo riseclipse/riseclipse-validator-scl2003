@@ -57,12 +57,12 @@ public class RiseClipseValidatorSCL {
     private static boolean oclValidation = false;
     private static boolean nsdValidation = false;
 
-    @NonNull private static final IRiseClipseConsole console = new TextRiseClipseConsole();
+    @NonNull private static IRiseClipseConsole console;
 
     private static void usage() {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         console.info(
-                "java -jar RiseClipseValidatorSCL.jar [--info | --verbose] [--make-explicit-links] [<oclFile> | <nsdFile> | <sclFile>]*" );
+                "java -jar RiseClipseValidatorSCL.jar [--info | --warning | --verbose] [--make-explicit-links] [--use-color] [<oclFile> | <nsdFile> | <sclFile>]*" );
         console.info( "Files ending with \".ocl\" are considered OCL files, "
                 + "files ending with \\\".nsd\\\" are considered NSD files, "
                 + "all others are considered SCL files" );
@@ -74,30 +74,43 @@ public class RiseClipseValidatorSCL {
         if( args.length == 0 ) usage();
 
         boolean makeExplicitLinks = false;
+        boolean useColor = false;
         boolean displayCopyright = true;
+        
+        int consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
 
         int posFiles = 0;
         for( int i = 0; i < args.length; ++i ) {
             if( args[i].startsWith( "--" ) ) {
                 posFiles = i + 1;
                 if( "--info".equals( args[i] ) ) {
-                    console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+                    consoleLevel = IRiseClipseConsole.INFO_LEVEL;
+                }
+                else if( "--warning".equals( args[i] ) ) {
+                    consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
                 }
                 else if( "--verbose".equals( args[i] ) ) {
-                    console.setLevel( IRiseClipseConsole.VERBOSE_LEVEL );
+                    consoleLevel = IRiseClipseConsole.VERBOSE_LEVEL;
                 }
                 else if( "--make-explicit-links".equals( args[i] ) ) {
                     makeExplicitLinks = true;
+                }
+                else if( "--use-color".equals( args[i] ) ) {
+                    useColor = true;
                 }
                 else if( "--do-not-display-copyright".equals( args[i] ) ) {
                     displayCopyright = false;
                 }
                 else {
+                    console = new TextRiseClipseConsole( useColor );
                     console.error( "Unrecognized option " + args[i] );
                     usage();
                 }
             }
         }
+        
+        console = new TextRiseClipseConsole( useColor );
+        console.setLevel( consoleLevel );
 
         if( displayCopyright ) {
             int level = console.setLevel( IRiseClipseConsole.INFO_LEVEL );
@@ -229,7 +242,7 @@ public class RiseClipseValidatorSCL {
                         List< ? > data = childDiagnostic.getData();
                         EObject object = ( EObject ) data.get( 0 );
                         if( data.size() == 1 ) {
-                            console.error( "\t" + childDiagnostic.getMessage() );
+                            console.error( childDiagnostic.getMessage() );
                         }
                         else if( data.get( 1 ) instanceof EAttribute ) {
                             EAttribute attribute = ( EAttribute ) data.get( 1 );
@@ -239,7 +252,7 @@ public class RiseClipseValidatorSCL {
                                     + childDiagnostic.getChildren().get( 0 ).getMessage() );
                         }
                         else {
-                            console.error( "\t" + childDiagnostic.getMessage() );
+                            console.error( childDiagnostic.getMessage() );
                         }
                     }
                 }
