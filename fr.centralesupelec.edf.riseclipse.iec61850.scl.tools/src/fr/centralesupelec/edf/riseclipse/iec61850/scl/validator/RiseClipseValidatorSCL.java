@@ -27,6 +27,7 @@ import java.util.Map;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.provider.SclItemProviderAdapterFactory;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities.SclModelLoader;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd.NsdValidator;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseFatalException;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;

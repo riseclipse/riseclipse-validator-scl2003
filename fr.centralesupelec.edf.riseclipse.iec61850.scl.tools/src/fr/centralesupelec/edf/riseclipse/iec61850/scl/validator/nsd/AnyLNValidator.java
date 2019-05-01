@@ -16,7 +16,7 @@
  *  Web site:
  *      http://wdi.supelec.fr/software/RiseClipse/
  */
-package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
+package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +31,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AnyLNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOI;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class AnyLNValidator {

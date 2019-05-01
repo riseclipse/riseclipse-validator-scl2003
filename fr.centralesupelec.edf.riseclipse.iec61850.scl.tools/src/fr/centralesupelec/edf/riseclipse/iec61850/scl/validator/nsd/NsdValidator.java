@@ -16,7 +16,7 @@
  *  Web site:
  *      http://wdi.supelec.fr/software/RiseClipse/
  */
-package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
+package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.jdt.annotation.NonNull;
