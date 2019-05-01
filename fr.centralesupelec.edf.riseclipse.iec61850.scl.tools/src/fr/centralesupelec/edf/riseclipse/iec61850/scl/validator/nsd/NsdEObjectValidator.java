@@ -69,9 +69,9 @@ public class NsdEObjectValidator implements EValidator {
     }
 
     private HashMap< String, LNodeTypeValidator > generateLNodeTypeValidators( LNClass lnClass ) {
-        HashMap< String, LNodeTypeValidator > lNodeTypeMap = new HashMap<>();
-        lNodeTypeMap.put( lnClass.getName(), new LNodeTypeValidator( lnClass ));
-        return lNodeTypeMap;
+        HashMap< String, LNodeTypeValidator > lntMap = new HashMap<>();
+        lntMap.put( lnClass.getName(), new LNodeTypeValidator( lnClass ));
+        return lntMap;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean defaultCase( EObject object ) {
-                AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NsdEObjectValidator.validate( " + object.eClass().getName() + " )" );
+                //AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NsdEObjectValidator.validate( " + object.eClass().getName() + " )" );
                 return true;
             }
             
@@ -119,8 +119,7 @@ public class NsdEObjectValidator implements EValidator {
     }
 
     private boolean validateAnyLN( AnyLN ln, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "" );
-        AbstractRiseClipseConsole.getConsole().verbose( "NsdEObjectValidator.validateLN( " + ln.getLnClass() + " )" );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] NsdEObjectValidator.validateAnyLN( " + ln.getLnClass() + " )" );
 
         // Check that LN has valid LNClass
         if( ! this.anyLNValidatorMap.containsKey( ln.getLnClass() )) {
@@ -128,33 +127,32 @@ public class NsdEObjectValidator implements EValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "LNClass " + ln.getLnClass() + " not found in NSD files for LN at line " + ln.getLineNumber(),
+                    "[NSD] LNClass " + ln.getLnClass() + " not found for AnyLN at line " + ln.getLineNumber(),
                     new Object[] { ln } ));
             return false;
         }
-        AbstractRiseClipseConsole.getConsole().verbose( "found LNClass " + ln.getLnClass() + " in NSD files for LN at line " + ln.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] found LNClass " + ln.getLnClass() + " for AnyLN at line " + ln.getLineNumber() );
 
         // AnyLNValidator validates LN content
-        return anyLNValidatorMap.get( ln.getLnClass() ).validateLN( ln, diagnostics );
+        return anyLNValidatorMap.get( ln.getLnClass() ).validateAnyLN( ln, diagnostics );
     }
 
     protected Boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "" );
-        AbstractRiseClipseConsole.getConsole().verbose( "NsdEObjectValidator.validateLNodeType( " + lNodeType.getLnClass() + " )" );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] NsdEObjectValidator.validateLNodeType( " + lNodeType.getLnClass() + " )" );
 
-        // Check that LN has valid LNClass
+        // Check that LNodeType has valid LNClass
         if( ! this.anyLNValidatorMap.containsKey( lNodeType.getLnClass() )) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "LNClass " + lNodeType.getLnClass() + " not found in NSD files for LN at line " + lNodeType.getLineNumber(),
+                    "[NSD] LNClass " + lNodeType.getLnClass() + " not found for LNodeType at line " + lNodeType.getLineNumber(),
                     new Object[] { lNodeType } ));
             return false;
         }
-        AbstractRiseClipseConsole.getConsole().verbose( "found LNClass " + lNodeType.getLnClass() + " in NSD files for LN at line " + lNodeType.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] LNClass " + lNodeType.getLnClass() + " found for LNodeType at line " + lNodeType.getLineNumber() );
 
-        // AnyLNValidator validates LN content
+        // LNodeTypeValidator validates LNodeType content
         return lNodeTypeValidatorMap.get( lNodeType.getLnClass() ).validateLNodeType( lNodeType, diagnostics );
     }
 

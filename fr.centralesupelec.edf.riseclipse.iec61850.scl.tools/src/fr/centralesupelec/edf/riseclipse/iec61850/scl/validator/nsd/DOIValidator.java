@@ -35,15 +35,15 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class DOIValidator {
 
-    private String cdc;
-    private HashMap< String, DataAttribute > daMap;
+    private String cdcName;
+    private HashMap< String, DataAttribute > dataAttributeMap;
 
     public DOIValidator( CDC cdc ) {
-        this.cdc = cdc.getName();
-        this.daMap = new HashMap<>(); // link between DAI (name) and its respective DataAttribute
+        this.cdcName = cdc.getName();
+        this.dataAttributeMap = new HashMap<>(); // link between DAI (name) and its respective DataAttribute
         
         for( DataAttribute da : cdc.getDataAttribute() ) {
-            this.daMap.put( da.getName(), da );
+            this.dataAttributeMap.put( da.getName(), da );
         }
     }
 
@@ -52,16 +52,16 @@ public class DOIValidator {
         HashSet< String > checkedDA = new HashSet<>();
 
         for( DAI dai : doi.getDAI() ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "validateDAI( " + dai.getName() + " ) (line" + dai.getLineNumber() + ")" );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD] validateDAI( " + dai.getName() + " ) (line " + dai.getLineNumber() + ")" );
 
             // Test if DAI is a possible DAI in this DOI
-            if( ! daMap.containsKey( dai.getName() ) ) {
+            if( ! dataAttributeMap.containsKey( dai.getName() ) ) {
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DAI " + dai.getName() + " (line" + dai.getLineNumber() + ") not found in CDC",
-                        new Object[] { doi, cdc } ));
+                        "[NSD] DAI " + dai.getName() + " (line " + dai.getLineNumber() + ") not found in CDC",
+                        new Object[] { doi, cdcName } ));
                 res = false;
                 continue;
             }
@@ -77,15 +77,15 @@ public class DOIValidator {
         }
 
         // Verify all necessary DAI were present
-        if( ! daMap.values().stream()
+        if( ! dataAttributeMap.values().stream()
                 .map( x -> checkCompulsory( doi, x, checkedDA, diagnostics ) )
                 .reduce( ( a, b ) -> a && b ).get() ) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "DOI (line " + doi.getLineNumber() + ") does not contain all mandatory DA from CDC ",
-                    new Object[] { doi, cdc } ));
+                    "[NSD] DOI (line " + doi.getLineNumber() + ") does not contain all mandatory DA from CDC",
+                    new Object[] { doi, cdcName } ));
             res = false;
         }
         return res;
@@ -99,20 +99,20 @@ public class DOIValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DA " + da.getName() + " not found in DOI (line " + doi.getLineNumber() + ")",
+                        "[NSD] DA " + da.getName() + " not found in DOI (line " + doi.getLineNumber() + ")",
                         new Object[] { da } ));
                 return false;
             }
             break;
         default:
-            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOIValidator.checkCompulsory( " + da.getPresCond() + " )" );
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOIValidator.checkCompulsory( presCond: " + da.getPresCond() + " )" );
             break;
         }
         return true;
     }
 
     public boolean updateCompulsory( DAI dai, HashSet< String > checked, DiagnosticChain diagnostics ) {
-        switch( daMap.get( dai.getName() ).getPresCond() ) {
+        switch( dataAttributeMap.get( dai.getName() ).getPresCond() ) {
         case "M":
         case "O":
             if( checked.contains( dai.getName() ) ) {
@@ -120,7 +120,7 @@ public class DOIValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DAI " + dai.getName() + " (line " + dai.getLineNumber() + ") cannot appear more than once",
+                        "[NSD] DAI " + dai.getName() + " (line " + dai.getLineNumber() + ") cannot appear more than once",
                         new Object[] { dai } ));
                 return false;
             }
@@ -133,11 +133,11 @@ public class DOIValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "DAI " + dai.getName() + " (line " + dai.getLineNumber() + ") is forbidden",
+                    "[NSD] DAI " + dai.getName() + " (line " + dai.getLineNumber() + ") is forbidden",
                     new Object[] { dai } ));
             return false;
         default:
-            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOIValidator.updateCompulsory( " + daMap.get( dai.getName() ).getPresCond() + " )" );
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOIValidator.updateCompulsory( presCond: " + dataAttributeMap.get( dai.getName() ).getPresCond() + " )" );
             break;
         }
         return true;
@@ -145,10 +145,10 @@ public class DOIValidator {
 
     public boolean validateDAI( DAI dai, DiagnosticChain diagnostics ) {
 
-        AbstractRiseClipseConsole.getConsole().verbose( "found DA " + dai.getName() + " in CDC " + cdc );
+        AbstractRiseClipseConsole.getConsole().verbose( "found DA " + dai.getName() + " in CDC " + cdcName );
 
         // DataAttributes that are BASIC have a BasicType which describes allowed Val of DA
-        DataAttribute da = daMap.get( dai.getName() );
+        DataAttribute da = dataAttributeMap.get( dai.getName() );
         if( da.getTypeKind().getName().equals( "BASIC" ) ) {
             for( Val val : dai.getVal() ) {
                 if( ! validateVal( val.getValue(), da.getType() )) {
@@ -156,13 +156,16 @@ public class DOIValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "Val " + val.getValue() + " (" + dai.getLineNumber() + ") of DA " + dai.getName() + " is not of type " + da.getType(),
+                            "[NSD] Val " + val.getValue() + " (" + dai.getLineNumber() + ") of DA " + dai.getName() + " is not of type " + da.getType(),
                             new Object[] { dai, val } ));
                      return false;
                 }
-                AbstractRiseClipseConsole.getConsole().verbose( "Val " + val.getValue() + " (" + dai.getLineNumber() + ") of DA " + dai.getName() +
+                AbstractRiseClipseConsole.getConsole().verbose( "[NSD] Val " + val.getValue() + " (" + dai.getLineNumber() + ") of DA " + dai.getName() +
                         " is of type " + da.getType() );
             }
+        }
+        else {
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOIValidator.validateDAI( kind: " + da.getTypeKind().getName() + " )" );
         }
 
         return true;

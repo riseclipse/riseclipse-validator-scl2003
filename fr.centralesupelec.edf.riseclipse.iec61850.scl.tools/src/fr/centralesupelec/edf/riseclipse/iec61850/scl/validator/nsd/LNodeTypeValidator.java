@@ -36,52 +36,53 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class LNodeTypeValidator {
 
-    private String lnClass;
-    private HashMap< String, DataObject > doMap;
-    private HashMap< String, DOValidator > cdcMap;
+    private String lnClassName;
+    private HashMap< String, DataObject > dataObjectMap;
+    private HashMap< String, DOValidator > doValidatorMap;
 
     public LNodeTypeValidator( LNClass lnClass ) {
-        this.lnClass = lnClass.getName();
-        this.doMap = new HashMap<>(); // link between DOI (name) and its respective DataObject
-        this.cdcMap = new HashMap<>(); // link between CDC (name) and its respective DOIValidator
+        this.lnClassName = lnClass.getName();
+        this.dataObjectMap = new HashMap<>(); // link between DOI (name) and its respective DataObject
+        this.doValidatorMap = new HashMap<>(); // link between CDC (name) and its respective DOIValidator
         
-        generateValidators( doMap, cdcMap, lnClass );
+        generateValidators( lnClass );
 
         // LNClass hierarchy taken into account
         AbstractLNClass parent = lnClass.getRefersToAbstractLNClass();
         while( parent != null ) {
-            generateValidators( doMap, cdcMap, parent );
+            generateValidators( parent );
             parent = parent.getRefersToAbstractLNClass();
         }
 
     }
 
-    private void generateValidators( HashMap< String, DataObject > doMap, HashMap< String, DOValidator > cdcMap, AnyLNClass lnClass ) {
+    private void generateValidators( AnyLNClass lnClass ) {
         for( DataObject dObj : lnClass.getDataObject() ) {
-            doMap.put( dObj.getName(), dObj );
+            dataObjectMap.put( dObj.getName(), dObj );
             if( dObj.getRefersToCDC() != null ) {
-                if( ! cdcMap.containsKey( dObj.getRefersToCDC().getName() )) {
-                    cdcMap.put( dObj.getRefersToCDC().getName(), new DOValidator( dObj.getRefersToCDC() ));
+                if( ! doValidatorMap.containsKey( dObj.getRefersToCDC().getName() )) {
+                    doValidatorMap.put( dObj.getRefersToCDC().getName(), new DOValidator( dObj.getRefersToCDC() ));
                 }
             }
         }
     }
 
     public boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] validateLNodeType( " + lNodeType.getId() + " )" );
         boolean res = true;
 
         HashSet< String > checkedDO = new HashSet<>();
 
         for( DO do_ : lNodeType.getDO() ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "validateDOI( " + do_.getName() + " )" );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD] validateDO( " + do_.getName() + " )" );
 
             // Test if DOI is a possible DOI in this LN
-            if( ! doMap.containsKey( do_.getName() ) ) {
+            if( ! dataObjectMap.containsKey( do_.getName() ) ) {
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DO " + do_.getName() + " in LN at line " + lNodeType.getLineNumber() + " not found in LNClass " + lNodeType.getLnClass(),
+                        "[NSD] DO " + do_.getName() + " in LN at line " + lNodeType.getLineNumber() + " not found in LNClass " + lNodeType.getLnClass(),
                         new Object[] { lNodeType } ));
                 continue;
             }
@@ -97,14 +98,14 @@ public class LNodeTypeValidator {
         }
 
         // Verify all necessary DOI were present
-        if( ! doMap.values().stream()
+        if( ! dataObjectMap.values().stream()
                 .map( x -> checkCompulsory( lNodeType, x, checkedDO, diagnostics ))
                 .reduce( ( a, b ) -> a && b ).get() ) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "LNodeType at line " + lNodeType.getLineNumber() + " does not contain all mandatory DO from class " + lNodeType.getLnClass(),
+                    "[NSD] LNodeType at line " + lNodeType.getLineNumber() + " does not contain all mandatory DO from class " + lNodeType.getLnClass(),
                     new Object[] { lNodeType } ));
             res = false;
         }
@@ -119,7 +120,7 @@ public class LNodeTypeValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DO " + dataObject.getName() + " is missing in LN at line " + lNodeType.getLineNumber(),
+                        "[NSD] DO " + dataObject.getName() + " is missing in LN at line " + lNodeType.getLineNumber(),
                         new Object[] { lNodeType } ));
                 return false;
             }
@@ -132,7 +133,7 @@ public class LNodeTypeValidator {
     }
 
     private boolean updateCompulsory( DO do_, HashSet< String > checkedDO, DiagnosticChain diagnostics ) {
-        switch( doMap.get( do_.getName() ).getPresCond() ) {
+        switch( dataObjectMap.get( do_.getName() ).getPresCond() ) {
         case "M":
         case "O":
             if( checkedDO.contains( do_.getName() )) {
@@ -140,7 +141,7 @@ public class LNodeTypeValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DO " + do_ + " cannot appear more than once in LN at line " + do_.getParentLNodeType().getLineNumber(),
+                        "[NSD] DO " + do_ + " cannot appear more than once in LN at line " + do_.getParentLNodeType().getLineNumber(),
                         new Object[] { do_ } ));
                 return false;
             }
@@ -151,23 +152,22 @@ public class LNodeTypeValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "DO " + do_ + " is forbidden in LN at line " + do_.getParentLNodeType().getLineNumber(),
+                    "[NSD] DO " + do_ + " is forbidden in LN at line " + do_.getParentLNodeType().getLineNumber(),
                     new Object[] { do_ } ));
             return false;
         default:
-            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: AnyLNValidator.updateCompulsory( " + doMap.get( do_.getName() ).getPresCond() + " )" );
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: AnyLNValidator.updateCompulsory( " + dataObjectMap.get( do_.getName() ).getPresCond() + " )" );
             break;
         }
         return true;
     }
 
     private boolean validateDO( DO do_, DiagnosticChain diagnostics ) {
-
-        AbstractRiseClipseConsole.getConsole().verbose( "found DO " + do_.getName() + " in LNClass " + lnClass );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] found DO " + do_.getName() + " in LNClass " + lnClassName );
 
         // DOIValidator validates DOI content
-        String cdc = doMap.get( do_.getName() ).getRefersToCDC().getName();
-        return cdcMap.get( cdc ).validateDO( do_, diagnostics );
+        String cdc = dataObjectMap.get( do_.getName() ).getRefersToCDC().getName();
+        return doValidatorMap.get( cdc ).validateDO( do_, diagnostics );
     }
 
 }

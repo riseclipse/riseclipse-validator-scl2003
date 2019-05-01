@@ -34,38 +34,38 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class DOValidator {
 
-    private String cdc;
-    private HashMap< String, DataAttribute > daMap;
+    private String cdcName;
+    private HashMap< String, DataAttribute > dataAttributeMap;
 
     public DOValidator( CDC cdc ) {
-        this.cdc = cdc.getName();
-        this.daMap = new HashMap<>(); // link between DAI (name) and its respective DataAttribute
+        this.cdcName = cdc.getName();
+        this.dataAttributeMap = new HashMap<>(); // link between DAI (name) and its respective DataAttribute
         
         for( DataAttribute da : cdc.getDataAttribute() ) {
-            this.daMap.put( da.getName(), da );
+            this.dataAttributeMap.put( da.getName(), da );
         }
     }
 
     public boolean validateDO( DO do_, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "validateDO( " + do_.getName() + " )" );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] validateDO( " + do_.getName() + " )" );
         boolean res = true;
         HashSet< String > checkedDA = new HashSet<>();
 
         if( do_.getRefersToDOType() == null ) {
-            AbstractRiseClipseConsole.getConsole().warning( "validateDO: DO " + do_.getName() + " has no RefersToDOType" );
+            AbstractRiseClipseConsole.getConsole().warning( "[NSD] validateDO: DO " + do_.getName() + " has no RefersToDOType" );
         }
         else {
             for( DA da : do_.getRefersToDOType().getDA() ) {
-                AbstractRiseClipseConsole.getConsole().verbose( "validateDO on DA " + da.getName() + " (line" + da.getLineNumber() + ")" );
+                AbstractRiseClipseConsole.getConsole().verbose( "[NSD] validateDO on DA " + da.getName() + " (line " + da.getLineNumber() + ")" );
     
                 // Test if DA is a possible DA in this DO
-                if( ! daMap.containsKey( da.getName() ) ) {
+                if( ! dataAttributeMap.containsKey( da.getName() ) ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "DA " + da.getName() + " (line" + da.getLineNumber() + ") not found in CDC",
-                            new Object[] { do_, cdc } ));
+                            "[NSD] DA " + da.getName() + " (line " + da.getLineNumber() + ") not found in CDC",
+                            new Object[] { do_, cdcName } ));
                     res = false;
                     continue;
                 }
@@ -76,15 +76,15 @@ public class DOValidator {
         }
 
         // Verify all necessary DA were present
-        if( ! daMap.values().stream()
+        if( ! dataAttributeMap.values().stream()
                 .map( x -> checkCompulsory( do_, x, checkedDA, diagnostics ) )
                 .reduce( ( a, b ) -> a && b ).get() ) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "DO (line " + do_.getLineNumber() + ") does not contain all mandatory DA from CDC ",
-                    new Object[] { do_, cdc } ));
+                    "[NSD] DO (line " + do_.getLineNumber() + ") does not contain all mandatory DA from CDC",
+                    new Object[] { do_, cdcName } ));
             res = false;
         }
         return res;
@@ -98,20 +98,20 @@ public class DOValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DA " + da.getName() + " not found in DO (line " + do_.getLineNumber() + ")",
+                        "[NSD] DA " + da.getName() + " not found in DO (line " + do_.getLineNumber() + ")",
                         new Object[] { da } ));
                 return false;
             }
             break;
         default:
-            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOValidator.checkCompulsory( " + da.getPresCond() + " )" );
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOValidator.checkCompulsory( presCond: " + da.getPresCond() + " )" );
             break;
         }
         return true;
     }
 
     public boolean updateCompulsory( DA da, HashSet< String > checked, DiagnosticChain diagnostics ) {
-        switch( daMap.get( da.getName() ).getPresCond() ) {
+        switch( dataAttributeMap.get( da.getName() ).getPresCond() ) {
         case "M":
         case "O":
             if( checked.contains( da.getName() ) ) {
@@ -119,7 +119,7 @@ public class DOValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "DA " + da.getName() + " (line " + da.getLineNumber() + ") cannot appear more than once",
+                        "[NSD] DA " + da.getName() + " (line " + da.getLineNumber() + ") cannot appear more than once",
                         new Object[] { da } ));
                 return false;
             }
@@ -132,11 +132,11 @@ public class DOValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "DA " + da.getName() + " (line " + da.getLineNumber() + ") is forbidden",
+                    "[NSD] DA " + da.getName() + " (line " + da.getLineNumber() + ") is forbidden",
                     new Object[] { da } ));
             return false;
         default:
-            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOIValidator.updateCompulsory( " + daMap.get( da.getName() ).getPresCond() + " )" );
+            AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: DOValidator.updateCompulsory( presCond: " + dataAttributeMap.get( da.getName() ).getPresCond() + " )" );
             break;
         }
         return true;
