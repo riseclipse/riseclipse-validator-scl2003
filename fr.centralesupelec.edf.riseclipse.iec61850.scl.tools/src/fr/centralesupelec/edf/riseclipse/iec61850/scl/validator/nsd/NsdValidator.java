@@ -38,11 +38,18 @@ public class NsdValidator {
         nsdLoader.load( nsdFile );
     }
     
-    public void prepare( @NonNull ComposedEValidator validator, IRiseClipseConsole console ) {
+    public void prepare( @NonNull ComposedEValidator validator, IRiseClipseConsole console, boolean displayNsdMessages ) {
+        int level = 0;
+        if( ! displayNsdMessages ) {
+            level = console.setLevel( IRiseClipseConsole.ERROR_LEVEL );            
+        }
         nsdLoader.getResourceSet().finalizeLoad( console );
         NsdEObjectValidator nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet() );
         nsdEObjectValidator.initializeValidationData();
         validator.addChild( nsdEObjectValidator );
+        if( ! displayNsdMessages ) {
+            console.setLevel( level );            
+        }
     }
 
 }

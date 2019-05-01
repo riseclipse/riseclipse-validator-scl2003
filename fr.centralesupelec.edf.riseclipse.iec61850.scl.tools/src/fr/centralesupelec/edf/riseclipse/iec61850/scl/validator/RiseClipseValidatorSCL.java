@@ -77,6 +77,7 @@ public class RiseClipseValidatorSCL {
         boolean makeExplicitLinks = false;
         boolean useColor = false;
         boolean displayCopyright = true;
+        boolean displayNsdMessages = false;
         
         int consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
 
@@ -101,6 +102,9 @@ public class RiseClipseValidatorSCL {
                 }
                 else if( "--do-not-display-copyright".equals( args[i] ) ) {
                     displayCopyright = false;
+                }
+                else if( "--display-nsd-messages".equals( args[i] ) ) {
+                    displayNsdMessages = true;
                 }
                 else {
                     console = new TextRiseClipseConsole( useColor );
@@ -138,7 +142,7 @@ public class RiseClipseValidatorSCL {
             }
         }
 
-        prepare( oclFiles, nsdFiles );
+        prepare( oclFiles, nsdFiles, displayNsdMessages );
         for( int i = 0; i < sclFiles.size(); ++i ) {
             run( makeExplicitLinks, sclFiles.get( i ));
         }
@@ -165,7 +169,7 @@ public class RiseClipseValidatorSCL {
         console.info( "" );
     }
 
-    private static void prepare( ArrayList< @NonNull String > oclFiles, ArrayList< @NonNull String > nsdFiles ) {
+    private static void prepare( ArrayList< @NonNull String > oclFiles, ArrayList< @NonNull String > nsdFiles, boolean displayNsdMessages ) {
         SclPackage sclPg = SclPackage.eINSTANCE;
         if( sclPg == null ) {
             throw new RiseClipseFatalException( "SCL package not found", null );
@@ -187,7 +191,7 @@ public class RiseClipseValidatorSCL {
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
             }
-            nsdValidator.prepare( validator, console );
+            nsdValidator.prepare( validator, console, displayNsdMessages );
         }
 
         sclLoader = new SclModelLoader( console );
