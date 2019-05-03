@@ -90,7 +90,7 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseAnyLN( AnyLN anyLN ) {
-                return validateAnyLN( anyLN, diagnostics );
+                return true;//validateAnyLN( anyLN, diagnostics );
             }
 
             @Override

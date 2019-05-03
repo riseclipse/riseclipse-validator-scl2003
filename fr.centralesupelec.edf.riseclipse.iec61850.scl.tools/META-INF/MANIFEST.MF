@@ -22,4 +22,5 @@ Require-Bundle: org.eclipse.core.runtime,
  fr.centralesupelec.edf.riseclipse.iec61850.nsd,
  fr.centralesupelec.edf.riseclipse.iec61850.nsd.edit,
  fr.centralesupelec.edf.riseclipse.iec61850.nsd.utilities,
- org.eclipse.ocl.xtext.oclinecore
+ org.eclipse.ocl.xtext.oclinecore,
+ org.apache.commons.lang3
