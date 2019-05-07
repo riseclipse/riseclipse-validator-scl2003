@@ -66,6 +66,7 @@ public class RiseClipseValidatorSCL {
                 "java -jar RiseClipseValidatorSCL.jar [--info | --warning | --verbose] [--make-explicit-links] [--use-color] [<oclFile> | <nsdFile> | <sclFile>]*" );
         console.info( "Files ending with \".ocl\" are considered OCL files, "
                 + "files ending with \\\".nsd\\\" are considered NSD files, "
+                + "files ending with \\\".nsdoc\\\" are considered NSDoc files, "
                 + "all others are considered SCL files" );
         System.exit( -1 );
     }
@@ -129,11 +130,15 @@ public class RiseClipseValidatorSCL {
         ArrayList< @NonNull String > nsdFiles = new ArrayList<>();
         ArrayList< @NonNull String > sclFiles = new ArrayList<>();
         for( int i = posFiles; i < args.length; ++i ) {
-            if( args[i].endsWith( ".ocl" ) ) {
+            if( args[i].endsWith( ".ocl" )) {
                 oclFiles.add( args[i] );
                 oclValidation = true;
             }
-            else if( args[i].endsWith( ".nsd" ) ) {
+            else if( args[i].endsWith( ".nsd" )) {
+                nsdFiles.add( args[i] );
+                nsdValidation = true;
+            }
+            else if( args[i].endsWith( ".nsdoc" )) {
                 nsdFiles.add( args[i] );
                 nsdValidation = true;
             }
