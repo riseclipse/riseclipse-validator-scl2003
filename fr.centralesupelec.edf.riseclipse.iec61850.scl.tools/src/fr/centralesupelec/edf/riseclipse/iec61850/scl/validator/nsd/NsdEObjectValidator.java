@@ -47,19 +47,25 @@ public class NsdEObjectValidator implements EValidator {
     }
 
     public void initializeValidationData() {
-        this.anyLNValidatorMap = this.nsdResourceSet.getLNClassStream()
+        this.anyLNValidatorMap =
+                nsdResourceSet
+                .getLNClassStream()
                 .map( lnClass -> generateAnyLNValidators( lnClass ) )
                 .reduce( ( a, b ) -> {
                     a.putAll( b );
                     return a;
-                } ).get();
+                } )
+                .orElse( new HashMap<>() );
 
-        this.lNodeTypeValidatorMap = this.nsdResourceSet.getLNClassStream()
+        this.lNodeTypeValidatorMap =
+                nsdResourceSet
+                .getLNClassStream()
                 .map( lnClass -> generateLNodeTypeValidators( lnClass ) )
                 .reduce( ( a, b ) -> {
                     a.putAll( b );
                     return a;
-                } ).get();
+                } )
+                .orElse( new HashMap<>() );
     }
 
     private HashMap< String, AnyLNValidator > generateAnyLNValidators( LNClass lnClass ) {
