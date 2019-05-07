@@ -58,7 +58,7 @@ public class RiseClipseValidatorSCL {
     private static boolean oclValidation = false;
     private static boolean nsdValidation = false;
 
-    @NonNull private static IRiseClipseConsole console;
+    private static IRiseClipseConsole console;
 
     private static void usage() {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
@@ -247,17 +247,34 @@ public class RiseClipseValidatorSCL {
                         List< ? > data = childDiagnostic.getData();
                         EObject object = ( EObject ) data.get( 0 );
                         if( data.size() == 1 ) {
-                            console.error( childDiagnostic.getMessage() );
+                            if( childDiagnostic.getSeverity() == Diagnostic.ERROR ) {
+                                console.error( childDiagnostic.getMessage() );
+                            }
+                            else {
+                                console.warning( childDiagnostic.getMessage() );
+                            }
                         }
                         else if( data.get( 1 ) instanceof EAttribute ) {
                             EAttribute attribute = ( EAttribute ) data.get( 1 );
                             if( attribute == null ) continue;
-                            console.error( "\tAttribute " + attribute.getName() + " of "
-                                    + substitutionLabelProvider.getObjectLabel( object ) + " : "
-                                    + childDiagnostic.getChildren().get( 0 ).getMessage() );
+                            if( childDiagnostic.getSeverity() == Diagnostic.ERROR ) {
+                                console.error( "\tAttribute " + attribute.getName() + " of "
+                                        + substitutionLabelProvider.getObjectLabel( object ) + " : "
+                                        + childDiagnostic.getChildren().get( 0 ).getMessage() );
+                            }
+                            else {
+                                console.warning( "\tAttribute " + attribute.getName() + " of "
+                                        + substitutionLabelProvider.getObjectLabel( object ) + " : "
+                                        + childDiagnostic.getChildren().get( 0 ).getMessage() );
+                            }
                         }
                         else {
-                            console.error( childDiagnostic.getMessage() );
+                            if( childDiagnostic.getSeverity() == Diagnostic.ERROR ) {
+                                console.error( childDiagnostic.getMessage() );
+                            }
+                            else {
+                                console.warning( childDiagnostic.getMessage() );
+                            }
                         }
                     }
                 }
