@@ -12,6 +12,7 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AnyLNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Doc;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAI;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
@@ -40,6 +41,7 @@ public class PresenceConditionValidator {
     private static class SingleOrMultiDO {
     }
     private static class SingleDO extends SingleOrMultiDO {
+        @SuppressWarnings( "unused" )
         DO do_;
 
         SingleDO( DO do_ ) {
@@ -51,10 +53,6 @@ public class PresenceConditionValidator {
         
         void add( Integer number, DO do_ ) {
             this.numberedDOs.put( number, do_ );
-        }
-
-        int size() {
-            return numberedDOs.size();
         }
     }
         
@@ -643,7 +641,7 @@ public class PresenceConditionValidator {
         boolean res = true;
         
         if( base != null ) {
-            res = base.validate( lNodeType, diagnostics );
+            res = base.validate( lNodeType, anyLNClassName, diagnostics );
         }
         
         // presCond: "M"
@@ -1033,13 +1031,25 @@ public class PresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseOptional != null ) {
             for( Entry< String, String > entry : mandatoryIfTextConditionElseOptional.entrySet() ) {
+                String doc = anyLNClass
+                        .getDataObject()
+                        .stream()
+                        .filter( d -> d.getName().equals( entry.getKey() ))
+                        .findFirst()
+                        .map( x -> x.getRefersToPresCondArgsDoc() )
+                        .map( p -> p.getMixed() )
+                        .map( p -> p.get( 0 ) )
+                        .map( p -> p.getValue() )
+                        .map(  p -> p.toString() )
+                        .orElse( null );
+
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
                         "[NSD] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
-                                + anyLNClassName + " if textual condition " + entry.getValue() + " (not evaluated) is true, else optional. It is "
-                                + ( presentDO.get( entry.getKey() ) == null ? "absent" : "present" ),
+                                + anyLNClassName + " if textual condition number " + entry.getValue() + " (not evaluated) is true, else optional. It is "
+                                + ( presentDO.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                         new Object[] { lNodeType } ));
             }
         }
@@ -1051,13 +1061,25 @@ public class PresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseForbidden != null ) {
             for( Entry< String, String > entry : mandatoryIfTextConditionElseForbidden.entrySet() ) {
+                String doc = anyLNClass
+                        .getDataObject()
+                        .stream()
+                        .filter( d -> d.getName().equals( entry.getKey() ))
+                        .findFirst()
+                        .map( x -> x.getRefersToPresCondArgsDoc() )
+                        .map( p -> p.getMixed() )
+                        .map( p -> p.get( 0 ) )
+                        .map( p -> p.getValue() )
+                        .map(  p -> p.toString() )
+                        .orElse( null );
+
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
                         "[NSD] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
-                                + anyLNClassName + " if textual condition " + entry.getValue() + " (not evaluated) is true, else forbidden. It is " 
-                                + ( presentDO.get( entry.getKey() ) == null ? "absent" : "present" ),
+                                + anyLNClassName + " if textual condition number " + entry.getValue() + " (not evaluated) is true, else forbidden. It is " 
+                                + ( presentDO.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                         new Object[] { lNodeType } ));
             }
         }
@@ -1069,13 +1091,25 @@ public class PresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalIfTextConditionElseForbidden != null ) {
             for( Entry< String, String > entry : optionalIfTextConditionElseForbidden.entrySet() ) {
+                String doc = anyLNClass
+                        .getDataObject()
+                        .stream()
+                        .filter( d -> d.getName().equals( entry.getKey() ))
+                        .findFirst()
+                        .map( x -> x.getRefersToPresCondArgsDoc() )
+                        .map( p -> p.getMixed() )
+                        .map( p -> p.get( 0 ) )
+                        .map( p -> p.getValue() )
+                        .map(  p -> p.toString() )
+                        .orElse( null );
+
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
                         "[NSD] DO " + entry.getKey() + " is optional in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
-                                + anyLNClassName + " if textual condition " + entry.getValue() + " (not evaluated) is true, else forbidden. It is " 
-                                + ( presentDO.get( entry.getKey() ) == null ? "absent" : "present" ),
+                                + anyLNClassName + " if textual condition number " + entry.getValue() + " (not evaluated) is true, else forbidden. It is " 
+                                + ( presentDO.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                         new Object[] { lNodeType } ));
             }
         }
