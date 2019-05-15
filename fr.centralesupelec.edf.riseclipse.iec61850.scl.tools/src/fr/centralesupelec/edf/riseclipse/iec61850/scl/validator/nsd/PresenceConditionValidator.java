@@ -13,10 +13,12 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AnyLNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOI;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LN0;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
@@ -561,11 +563,39 @@ public class PresenceConditionValidator {
             if( base != null ) {
                 return base.addDO( do_, anyLNClassName, diagnostics );
             }
+            // A specific DO may be added if its DOType contains a DA with name "dataNs"
+            if( do_.getRefersToDOType() != null ) {
+                Optional< DA > da =
+                        do_
+                        .getRefersToDOType()
+                        .getDA()
+                        .stream()
+                        .filter( d -> "dataNs".equals( d.getName() ))
+                        .findAny();
+                if( da.isPresent() ) {
+                    String value = " without value";
+                    if( da.get().getVal().size() > 0 ) {
+                        value = " with value [";
+                        for( Val v : da.get().getVal() ) {
+                            value += " " + v.getValue();
+                        }
+                        value += " ]";
+                    }
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.INFO,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + " is specific and has DA \"dataNs\"" + value,
+                            new Object[] { do_ } ));
+                    return true;
+                }
+            }
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") not found in LNClass " + anyLNClassName,
+                    "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") not found in LNClass "
+                            + anyLNClassName + " and DA \"dataNs\" not found",
                     new Object[] { do_ } ));
             return false;
         }
