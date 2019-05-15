@@ -20,6 +20,7 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
@@ -31,6 +32,8 @@ import org.eclipse.emf.ecore.EValidator;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.util.SclSwitch;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
@@ -125,7 +128,7 @@ public class NsdEObjectValidator implements EValidator {
     }
 
     private boolean validateAnyLN( AnyLN ln, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] NsdEObjectValidator.validateAnyLN( " + ln.getLnClass() + " )" );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validate] NsdEObjectValidator.validateAnyLN( " + ln.getLnClass() + " )" );
 
         // Check that LN has valid LNClass
         if( ! this.anyLNValidatorMap.containsKey( ln.getLnClass() )) {
@@ -133,33 +136,65 @@ public class NsdEObjectValidator implements EValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD] LNClass " + ln.getLnClass() + " not found for AnyLN at line " + ln.getLineNumber(),
+                    "[NSD validate] LNClass " + ln.getLnClass() + " not found for AnyLN at line " + ln.getLineNumber(),
                     new Object[] { ln } ));
             return false;
         }
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] found LNClass " + ln.getLnClass() + " for AnyLN at line " + ln.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validate] found LNClass " + ln.getLnClass() + " for AnyLN at line " + ln.getLineNumber() );
 
         // AnyLNValidator validates LN content
         return anyLNValidatorMap.get( ln.getLnClass() ).validateAnyLN( ln, diagnostics );
     }
 
     protected Boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] NsdEObjectValidator.validateLNodeType( " + lNodeType.getLnClass() + " )" );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validate] NsdEObjectValidator.validateLNodeType( " + lNodeType.getLnClass() + " )" );
 
         // Check that LNodeType has valid LNClass
-        if( ! this.anyLNValidatorMap.containsKey( lNodeType.getLnClass() )) {
-            diagnostics.add( new BasicDiagnostic(
-                    Diagnostic.ERROR,
-                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                    0,
-                    "[NSD] LNClass " + lNodeType.getLnClass() + " not found for LNodeType at line " + lNodeType.getLineNumber(),
-                    new Object[] { lNodeType } ));
-            return false;
-        }
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD] LNClass " + lNodeType.getLnClass() + " found for LNodeType at line " + lNodeType.getLineNumber() );
+        if( this.anyLNValidatorMap.containsKey( lNodeType.getLnClass() )) {
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validate] LNClass " + lNodeType.getLnClass() + " found for LNodeType at line " + lNodeType.getLineNumber() );
 
-        // LNodeTypeValidator validates LNodeType content
-        return lNodeTypeValidatorMap.get( lNodeType.getLnClass() ).validateLNodeType( lNodeType, diagnostics );
+            // LNodeTypeValidator validates LNodeType content
+            return lNodeTypeValidatorMap.get( lNodeType.getLnClass() ).validateLNodeType( lNodeType, diagnostics );
+        }
+        
+        // A specific LNodeType:
+        // - must have a DO with name "NamPlt"
+        // - its DOType must have a DA with name "lnNs"
+        Optional< DOType > doType =
+                lNodeType
+                .getDO()
+                .stream()
+                .filter( d -> "NamPlt".equals( d.getName() ))
+                .findAny()
+                .map( d -> d.getRefersToDOType() );
+        if( doType.isPresent() ) {
+            Optional< DA > da =
+                    doType
+                    .get()
+                    .getDA()
+                    .stream()
+                    .filter( d -> "lnNs".equals( d.getName() ))
+                    .findAny();
+            if( da.isPresent() ) {
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.INFO,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "[NSD validate] LNodeType at line " + lNodeType.getLineNumber() + " with lnClass " + lNodeType.getLnClass() + " is specific and has DA \"lnNs\" in DO \"NamPlt\"",
+                        new Object[] { lNodeType } ));
+                return true;
+            }
+                
+        }
+
+        diagnostics.add( new BasicDiagnostic(
+                Diagnostic.ERROR,
+                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                0,
+                "[NSD validate] LNClass " + lNodeType.getLnClass() + " not found for LNodeType at line " + lNodeType.getLineNumber()
+                + " and DA \"lnNs\" in DO \"NamPlt\" not found",
+                new Object[] { lNodeType } ));
+        return false;
     }
 
 }
