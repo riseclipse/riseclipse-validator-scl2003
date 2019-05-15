@@ -12,12 +12,9 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AnyLNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Doc;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAI;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOI;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.LDevice;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LN0;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
@@ -148,7 +145,7 @@ public class PresenceConditionValidator {
         case "na" :
             // Element is not applicable
             // -> TODO: what does it mean ? what do we have to check ?
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"na\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"na\" in PresenceCondition" );
 //            if( notApplicable == null ) notApplicable = new HashSet<>();
 //            notApplicable.add( name );
             break;
@@ -346,7 +343,7 @@ public class PresenceConditionValidator {
             // One or more elements shall be present; all instances have an instance number within range [min, max] (see IEC 61850-7-1)
             // -> TODO: not sure what is the instance number, it is assumed to be the suffix of DO name
             if( mandatoryMultiRange == null ) mandatoryMultiRange = new HashMap<>();
-            String[] limits1 = presCondArgs.split( "\\d[ ,]+\\d" );
+            String[] limits1 = presCondArgs.split( "[ ,]+" );
             if( limits1.length != 2 ) {
                 console.warning( "NSD: argument of PresenceCondition \"MmultiRange\" is not two integers" );
                 break;
@@ -368,7 +365,7 @@ public class PresenceConditionValidator {
             // Zero or more elements may be present; all instances have an instance number within range [min, max] (see IEC 61850-7-1)
             // -> TODO: not sure what is the instance number, it is assumed to be the suffix of DO name
             if( optionalMultiRange == null ) optionalMultiRange = new HashMap<>();
-            String[] limits2 = presCondArgs.split( "\\d[ ,]+\\d" );
+            String[] limits2 = presCondArgs.split( "[ ,]+" );
             if( limits2.length != 2 ) {
                 console.warning( "NSD: argument of PresenceCondition \"OmultiRange\" is not two integers" );
                 break;
@@ -388,7 +385,7 @@ public class PresenceConditionValidator {
         case "MFsubst" :
             // Element is mandatory if substitution is supported (for substitution, see IEC 61850-7-3), otherwise forbidden
             // TODO: how do we know if substitution is supported ?
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MFsubst\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MFsubst\" in PresenceCondition" );
 //            if( mandatoryIfSubstitutionElseForbidden == null ) mandatoryIfSubstitutionElseForbidden = new HashSet<>();
 //            mandatoryIfSubstitutionElseForbidden.add( name );
             break;
@@ -405,14 +402,14 @@ public class PresenceConditionValidator {
         case "MOlnNs" :
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MOlnNs\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOlnNs\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional = new HashSet<>();
 //            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional.add( name );
             break;
         case "MOdataNs" :
             // Element is mandatory if the name space of its data object deviates from the name space of its logical node,
             // otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MOdataNs\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOdataNs\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional = new HashSet<>();
 //            mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional.add( name );
             break;
@@ -420,28 +417,28 @@ public class PresenceConditionValidator {
             // Element is mandatory* if any sibling elements of type AnalogueValue include 'i' as a child, otherwise forbidden.
             // *Even though devices without floating point capability cannot exchange floating point values through ACSI services,
             // the description of scaling remains mandatory for their (SCL) configuration
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MFscaledAV\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MFscaledAV\" in PresenceCondition" );
 //            if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
 //            mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
             break;
         case "MFscaledMagV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'mag' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
 //            if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
 //            mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
             break;
         case "MFscaledAngV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'ang' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
 //            if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
 //            mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
             break;
         case "MOrms" :
             // Element is mandatory if the harmonic values in the context are calculated as a ratio to RMS value
             // (value of data attribute 'hvRef' is 'rms'), optional otherwise
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MOrms\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOrms\" in PresenceCondition" );
 //            if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional == null ) mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional = new HashSet<>();
 //            mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional.add( name );
             break;
@@ -452,28 +449,28 @@ public class PresenceConditionValidator {
             break;
         case "MOoperTm" :
             // Element is mandatory if at least one controlled object on the IED supports time activation service; otherwise it is optional
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MOoperTm\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOoperTm\" in PresenceCondition" );
 //            if( mandatoryIfControlSupportsTimeElseOptional == null ) mandatoryIfControlSupportsTimeElseOptional = new HashSet<>();
 //            mandatoryIfControlSupportsTimeElseOptional.add( name );
             break;
         case "MmultiF" :
             // Parameter sibling: sibling element name.
             // One or more elements must be present if sibling element is present, otherwise forbidden
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MmultiF\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MmultiF\" in PresenceCondition" );
 //            if( oneOrMoreIfSiblingPresentElseForbidden == null ) oneOrMoreIfSiblingPresentElseForbidden = new HashMap<>();
 //            oneOrMoreIfSiblingPresentElseForbidden.put( name, presCondArgs );
             break;
         case "MOsbo" :
             // Element is mandatory if declared control model supports 'sbo-with-normal-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MOsbo\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOsbo\" in PresenceCondition" );
 //            if( mandatoryIfControlSupportsSecurity1ElseOptional == null ) mandatoryIfControlSupportsSecurity1ElseOptional = new HashSet<>();
 //            mandatoryIfControlSupportsSecurity1ElseOptional.add( name );
             break;
         case "MOenhanced" :
             // Element is mandatory if declared control model supports 'direct-with-enhanced-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MOenhanced\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOenhanced\" in PresenceCondition" );
 //            if( mandatoryIfControlSupportsSecurity2ElseOptional == null ) mandatoryIfControlSupportsSecurity2ElseOptional = new HashSet<>();
 //            mandatoryIfControlSupportsSecurity2ElseOptional.add( name );
             break;
@@ -481,7 +478,7 @@ public class PresenceConditionValidator {
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
             // TODO: same as "MOlnNs" ?
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MONamPlt\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MONamPlt\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 = new HashSet<>();
 //            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2.add( name );
             break;
@@ -494,13 +491,13 @@ public class PresenceConditionValidator {
         case "MORange" :
             // Element is mandatory if the measured value associated (amplitude respectively angle) exposes the range eventing
             // (with the attribute range respectively rangeAng)
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"MORange\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MORange\" in PresenceCondition" );
 //            if( mandatoryIfMeasuredValueExposesRange == null ) mandatoryIfMeasuredValueExposesRange = new HashSet<>();
 //            mandatoryIfMeasuredValueExposesRange.add( name );
             break;
         case "OMSynPh" :
             // This attribute is optional if value of 'phsRef'' is Synchrophasor otherwise Mandatory]]></Doc>
-            console.warning( "[NSD] NOT IMPLEMENTED" + name + " declared as \"OMSynPh\" in PresenceCondition" );
+            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"OMSynPh\" in PresenceCondition" );
 //            if( optionalIfPhsRefIsSynchrophasorElseMandatory == null ) optionalIfPhsRefIsSynchrophasorElseMandatory = new HashSet<>();
 //            optionalIfPhsRefIsSynchrophasorElseMandatory.add( name );
             break;
