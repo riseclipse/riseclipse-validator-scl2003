@@ -63,7 +63,7 @@ public class PresenceConditionValidator {
     private HashSet< String > mandatoryMulti;
     private HashSet< String > optionalMulti;
     private HashMap< Integer, HashSet< String > > atLeastOne;
-    private HashMap< Integer, HashSet< String > > atMostOne;
+    private HashSet< String > atMostOne;
     private HashMap< Integer, HashSet< String > > allOrNonePerGroup;
     private HashMap< Integer, HashSet< String > > allOnlyOneGroup;
     private HashMap< Integer, HashSet< String > > allAtLeastOneGroup;
@@ -183,23 +183,9 @@ public class PresenceConditionValidator {
             }
         case "AtMostOne" :
             // At most one of marked elements shall be present
-            if( atMostOne == null ) atMostOne = new HashMap<>();
-            try {
-                Integer arg = Integer.valueOf( presCondArgs );
-                if( arg <= 0 ) {
-                    console.warning( "NSD: argument of PresenceCondition \"AtMostOne\" is not a positive integer" );
-                    break;
-                }
-                if( ! atMostOne.containsKey( arg )) {
-                    atMostOne.put( arg, new HashSet<>() );
-                }
-                atMostOne.get( arg ).add( name );
-                break;
-            }
-            catch( NumberFormatException e ) {
-                console.warning( "NSD: argument of PresenceCondition \"AtMostOne\" is not an integer" );
-                break;
-            }
+            if( atMostOne == null ) atMostOne = new HashSet<>();
+            atMostOne.add( name );
+            break;
         case "AllOrNonePerGroup" :
             // Parameter n: group number (> 0).
             // All or none of the elements of a group n shall be present
@@ -794,22 +780,20 @@ public class PresenceConditionValidator {
         // At most one of marked elements shall be present
         // Usage in standard NSD files (version 2007B): DataObject
         if( atMostOne != null ) {
-            for( Entry< Integer, HashSet< String > > e1 : atMostOne.entrySet() ) {
-                int groupCount = 0;
-                for( String member : e1.getValue() ) {
-                    if( presentDO.get( member ) != null ) {
-                        ++groupCount;
-                    }
+            int count = 0;
+            for( String s : atMostOne ) {
+                if( presentDO.get( s ) != null ) {
+                    ++count;
                 }
-                if( groupCount > 1 ) {
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.ERROR,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            "[NSD] group " + e1.getKey() + " has more than one element in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
-                            new Object[] { lNodeType } ));
-                    res = false;
-                }
+            }
+            if( count > 1 ) {
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "[NSD] LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName + " has more than one element marked AtMostOne",
+                        new Object[] { lNodeType } ));
+                res = false;
             }
         }
         
