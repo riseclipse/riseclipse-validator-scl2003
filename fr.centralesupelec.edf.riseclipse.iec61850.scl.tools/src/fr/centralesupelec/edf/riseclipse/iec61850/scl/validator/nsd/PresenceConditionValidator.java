@@ -121,7 +121,7 @@ public class PresenceConditionValidator {
     
     private void addSpecification( String name, String presCond, String presCondArgs ) {
         if( presentDO.containsKey( name )) {
-            console.warning( "[NSD] " + name + " has already been added to PresenceConditionValidator" );
+            console.warning( "[NSD setup] " + name + " has already been added to PresenceConditionValidator" );
             return;
         }
         presentDO.put( name, null );
@@ -145,7 +145,7 @@ public class PresenceConditionValidator {
         case "na" :
             // Element is not applicable
             // -> TODO: what does it mean ? what do we have to check ?
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"na\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"na\" in PresenceCondition" );
 //            if( notApplicable == null ) notApplicable = new HashSet<>();
 //            notApplicable.add( name );
             break;
@@ -168,7 +168,7 @@ public class PresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "NSD: argument of PresenceCondition \"AtLeastOne\" is not a positive integer" );
+                    console.warning( "[NSD setup] argument of PresenceCondition \"AtLeastOne\" is not a positive integer" );
                     break;
                 }
                 if( ! atLeastOne.containsKey( arg )) {
@@ -178,7 +178,7 @@ public class PresenceConditionValidator {
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "NSD: argument of PresenceCondition \"AtLeastOne\" is not an integer" );
+                console.warning( "[NSD setup] argument of PresenceCondition \"AtLeastOne\" is not an integer" );
                 break;
             }
         case "AtMostOne" :
@@ -193,7 +193,7 @@ public class PresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "NSD: argument of PresenceCondition \"AllOrNonePerGroup\" is not a positive integer" );
+                    console.warning( "[NSD setup] argument of PresenceCondition \"AllOrNonePerGroup\" is not a positive integer" );
                     break;
                 }
                 if( ! allOrNonePerGroup.containsKey( arg )) {
@@ -203,7 +203,7 @@ public class PresenceConditionValidator {
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "NSD: argument of PresenceCondition \"AllOrNonePerGroup\" is not an integer" );
+                console.warning( "[NSD setup] argument of PresenceCondition \"AllOrNonePerGroup\" is not an integer" );
                 break;
             }
         case "AllOnlyOneGroup" :
@@ -213,7 +213,7 @@ public class PresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "NSD: argument of PresenceCondition \"AllOnlyOneGroup\" is not a positive integer" );
+                    console.warning( "[NSD setup] argument of PresenceCondition \"AllOnlyOneGroup\" is not a positive integer" );
                     break;
                 }
                 if( ! allOnlyOneGroup.containsKey( arg )) {
@@ -223,7 +223,7 @@ public class PresenceConditionValidator {
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "NSD: argument of PresenceCondition \"AllOnlyOneGroup\" is not an integer" );
+                console.warning( "[NSD setup] argument of PresenceCondition \"AllOnlyOneGroup\" is not an integer" );
                 break;
             }
         case "AllAtLeastOneGroup" :
@@ -233,7 +233,7 @@ public class PresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "NSD: argument of PresenceCondition \"AllAtLeastOneGroup\" is not a positive integer" );
+                    console.warning( "[NSD setup] argument of PresenceCondition \"AllAtLeastOneGroup\" is not a positive integer" );
                     break;
                 }
                 if( ! allAtLeastOneGroup.containsKey( arg )) {
@@ -243,7 +243,7 @@ public class PresenceConditionValidator {
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "NSD: argument of PresenceCondition \"AllAtLeastOneGroup\" is not an integer" );
+                console.warning( "[NSD setup] argument of PresenceCondition \"AllAtLeastOneGroup\" is not an integer" );
                 break;
             }
         case "MF" :
@@ -278,14 +278,14 @@ public class PresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "NSD: argument of PresenceCondition \"MOcond\" is not a positive integer" );
+                    console.warning( "[NSD setup] argument of PresenceCondition \"MOcond\" is not a positive integer" );
                     break;
                 }
                 mandatoryIfTextConditionElseOptional.put( name, presCondArgs );
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "NSD: argument of PresenceCondition \"MOcond\" is not an integer" );
+                console.warning( "[NSD setup] argument of PresenceCondition \"MOcond\" is not an integer" );
                 break;
             }
         case "MFcond" :
@@ -296,14 +296,14 @@ public class PresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "NSD: argument of PresenceCondition \"MFcond\" is not a positive integer" );
+                    console.warning( "[NSD setup] argument of PresenceCondition \"MFcond\" is not a positive integer" );
                     break;
                 }
                 mandatoryIfTextConditionElseForbidden.put( name, presCondArgs );
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "NSD: argument of PresenceCondition \"MFcond\" is not an integer" );
+                console.warning( "[NSD setup] argument of PresenceCondition \"MFcond\" is not an integer" );
                 break;
             }
         case "OFcond" :
@@ -314,14 +314,14 @@ public class PresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "NSD: argument of PresenceCondition \"MFcond\" is not a positive integer" );
+                    console.warning( "[NSD setup] argument of PresenceCondition \"MFcond\" is not a positive integer" );
                     break;
                 }
                 optionalIfTextConditionElseForbidden.put( name, presCondArgs );
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "NSD: argument of PresenceCondition \"MFcond\" is not an integer" );
+                console.warning( "[NSD setup] argument of PresenceCondition \"MFcond\" is not an integer" );
                 break;
             }
         case "MmultiRange" :
@@ -331,17 +331,17 @@ public class PresenceConditionValidator {
             if( mandatoryMultiRange == null ) mandatoryMultiRange = new HashMap<>();
             String[] limits1 = presCondArgs.split( "[ ,]+" );
             if( limits1.length != 2 ) {
-                console.warning( "NSD: argument of PresenceCondition \"MmultiRange\" is not two integers" );
+                console.warning( "[NSD setup] argument of PresenceCondition \"MmultiRange\" is not two integers" );
                 break;
             }
             Integer min1 = Integer.valueOf( limits1[0] );
             if( min1 <= 0 ) {
-                console.warning( "NSD: first argument of PresenceCondition \"MmultiRange\" is not a positive integer" );
+                console.warning( "[NSD setup] first argument of PresenceCondition \"MmultiRange\" is not a positive integer" );
                 break;
             }
             Integer max1 = Integer.valueOf( limits1[1] );
             if( max1 <= 0 ) {
-                console.warning( "NSD: second argument of PresenceCondition \"MmultiRange\" is not a positive integer" );
+                console.warning( "[NSD setup] second argument of PresenceCondition \"MmultiRange\" is not a positive integer" );
                 break;
             }
             mandatoryMultiRange.put( name, Pair.of( min1, max1 ));
@@ -353,17 +353,17 @@ public class PresenceConditionValidator {
             if( optionalMultiRange == null ) optionalMultiRange = new HashMap<>();
             String[] limits2 = presCondArgs.split( "[ ,]+" );
             if( limits2.length != 2 ) {
-                console.warning( "NSD: argument of PresenceCondition \"OmultiRange\" is not two integers" );
+                console.warning( "[NSD setup] argument of PresenceCondition \"OmultiRange\" is not two integers" );
                 break;
             }
             Integer min2 = Integer.valueOf( limits2[0] );
             if( min2 <= 0 ) {
-                console.warning( "NSD: first argument of PresenceCondition \"OmultiRange\" is not a positive integer" );
+                console.warning( "[NSD setup] first argument of PresenceCondition \"OmultiRange\" is not a positive integer" );
                 break;
             }
             Integer max2 = Integer.valueOf( limits2[1] );
             if( max2 <= 0 ) {
-                console.warning( "NSD: second argument of PresenceCondition \"OmultiRange\" is not a positive integer" );
+                console.warning( "[NSD setup] second argument of PresenceCondition \"OmultiRange\" is not a positive integer" );
                 break;
             }
             optionalMultiRange.put( name, Pair.of( min2, max2 ));
@@ -371,7 +371,7 @@ public class PresenceConditionValidator {
         case "MFsubst" :
             // Element is mandatory if substitution is supported (for substitution, see IEC 61850-7-3), otherwise forbidden
             // TODO: how do we know if substitution is supported ?
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MFsubst\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MFsubst\" in PresenceCondition" );
 //            if( mandatoryIfSubstitutionElseForbidden == null ) mandatoryIfSubstitutionElseForbidden = new HashSet<>();
 //            mandatoryIfSubstitutionElseForbidden.add( name );
             break;
@@ -388,14 +388,14 @@ public class PresenceConditionValidator {
         case "MOlnNs" :
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOlnNs\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOlnNs\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional = new HashSet<>();
 //            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional.add( name );
             break;
         case "MOdataNs" :
             // Element is mandatory if the name space of its data object deviates from the name space of its logical node,
             // otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOdataNs\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOdataNs\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional = new HashSet<>();
 //            mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional.add( name );
             break;
@@ -403,28 +403,28 @@ public class PresenceConditionValidator {
             // Element is mandatory* if any sibling elements of type AnalogueValue include 'i' as a child, otherwise forbidden.
             // *Even though devices without floating point capability cannot exchange floating point values through ACSI services,
             // the description of scaling remains mandatory for their (SCL) configuration
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MFscaledAV\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MFscaledAV\" in PresenceCondition" );
 //            if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
 //            mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
             break;
         case "MFscaledMagV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'mag' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
 //            if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
 //            mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
             break;
         case "MFscaledAngV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'ang' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
 //            if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
 //            mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
             break;
         case "MOrms" :
             // Element is mandatory if the harmonic values in the context are calculated as a ratio to RMS value
             // (value of data attribute 'hvRef' is 'rms'), optional otherwise
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOrms\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOrms\" in PresenceCondition" );
 //            if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional == null ) mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional = new HashSet<>();
 //            mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional.add( name );
             break;
@@ -435,28 +435,28 @@ public class PresenceConditionValidator {
             break;
         case "MOoperTm" :
             // Element is mandatory if at least one controlled object on the IED supports time activation service; otherwise it is optional
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOoperTm\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOoperTm\" in PresenceCondition" );
 //            if( mandatoryIfControlSupportsTimeElseOptional == null ) mandatoryIfControlSupportsTimeElseOptional = new HashSet<>();
 //            mandatoryIfControlSupportsTimeElseOptional.add( name );
             break;
         case "MmultiF" :
             // Parameter sibling: sibling element name.
             // One or more elements must be present if sibling element is present, otherwise forbidden
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MmultiF\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MmultiF\" in PresenceCondition" );
 //            if( oneOrMoreIfSiblingPresentElseForbidden == null ) oneOrMoreIfSiblingPresentElseForbidden = new HashMap<>();
 //            oneOrMoreIfSiblingPresentElseForbidden.put( name, presCondArgs );
             break;
         case "MOsbo" :
             // Element is mandatory if declared control model supports 'sbo-with-normal-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOsbo\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOsbo\" in PresenceCondition" );
 //            if( mandatoryIfControlSupportsSecurity1ElseOptional == null ) mandatoryIfControlSupportsSecurity1ElseOptional = new HashSet<>();
 //            mandatoryIfControlSupportsSecurity1ElseOptional.add( name );
             break;
         case "MOenhanced" :
             // Element is mandatory if declared control model supports 'direct-with-enhanced-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MOenhanced\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOenhanced\" in PresenceCondition" );
 //            if( mandatoryIfControlSupportsSecurity2ElseOptional == null ) mandatoryIfControlSupportsSecurity2ElseOptional = new HashSet<>();
 //            mandatoryIfControlSupportsSecurity2ElseOptional.add( name );
             break;
@@ -464,7 +464,7 @@ public class PresenceConditionValidator {
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
             // TODO: same as "MOlnNs" ?
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MONamPlt\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MONamPlt\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 = new HashSet<>();
 //            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2.add( name );
             break;
@@ -477,18 +477,18 @@ public class PresenceConditionValidator {
         case "MORange" :
             // Element is mandatory if the measured value associated (amplitude respectively angle) exposes the range eventing
             // (with the attribute range respectively rangeAng)
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"MORange\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MORange\" in PresenceCondition" );
 //            if( mandatoryIfMeasuredValueExposesRange == null ) mandatoryIfMeasuredValueExposesRange = new HashSet<>();
 //            mandatoryIfMeasuredValueExposesRange.add( name );
             break;
         case "OMSynPh" :
             // This attribute is optional if value of 'phsRef'' is Synchrophasor otherwise Mandatory]]></Doc>
-            console.warning( "[NSD] NOT IMPLEMENTED: " + name + " declared as \"OMSynPh\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"OMSynPh\" in PresenceCondition" );
 //            if( optionalIfPhsRefIsSynchrophasorElseMandatory == null ) optionalIfPhsRefIsSynchrophasorElseMandatory = new HashSet<>();
 //            optionalIfPhsRefIsSynchrophasorElseMandatory.add( name );
             break;
         default:
-            console.warning( "[NSD] the PresenceCondition " + presCond + " of AnyLNClass " + name + " is unknown" );
+            console.warning( "[NSD setup] the PresenceCondition " + presCond + " of AnyLNClass " + name + " is unknown" );
             break;
         }
         
@@ -499,42 +499,42 @@ public class PresenceConditionValidator {
         if( mandatoryIfSiblingPresentElseForbidden != null ) {
             for( Entry< String, String > e : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
-                    console.warning( "[NSD] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
+                    console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
         if( mandatoryIfSiblingPresentElseOptional != null ) {
             for( Entry< String, String > e : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
-                    console.warning( "[NSD] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
+                    console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
         if( optionalIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > e : optionalIfSiblingPresentElseMandatory.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
-                    console.warning( "[NSD] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
+                    console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
         if( forbiddenIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > e : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
-                    console.warning( "[NSD] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
+                    console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
 //        if( oneOrMoreIfSiblingPresentElseForbidden != null ) {
 //            for( Entry< String, String > e : oneOrMoreIfSiblingPresentElseForbidden.entrySet() ) {
 //                if( ! presentDO.containsKey( e.getValue() )) {
-//                    console.warning( "[NSD] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
+//                    console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
 //                }
 //            }
 //        }
         if( optionalIfSiblingPresentElseForbidden != null ) {
             for( Entry< String, String > e : optionalIfSiblingPresentElseForbidden.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
-                    console.warning( "[NSD] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
+                    console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
@@ -554,7 +554,7 @@ public class PresenceConditionValidator {
             names = new String[] { do_.getName() };
         }
         if( names.length == 0 ) {
-            console.error( "[NSD] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
+            console.error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
             return false;
         }
         if( ! presentDO.containsKey( names[0] )) {
@@ -565,7 +565,7 @@ public class PresenceConditionValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") not found in LNClass " + anyLNClassName,
+                    "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") not found in LNClass " + anyLNClassName,
                     new Object[] { do_ } ));
             return false;
         }
@@ -576,7 +576,7 @@ public class PresenceConditionValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") already present in LNClass " + anyLNClassName,
+                        "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") already present in LNClass " + anyLNClassName,
                         new Object[] { do_ } ));
                 return false;
             }
@@ -592,7 +592,7 @@ public class PresenceConditionValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") already present without instance number in LNClass " + anyLNClassName,
+                        "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") already present without instance number in LNClass " + anyLNClassName,
                         new Object[] { do_ } ));
                 return false;
             }
@@ -605,14 +605,14 @@ public class PresenceConditionValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") already present with same instance number in LNClass " + anyLNClassName,
+                        "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + ") already present with same instance number in LNClass " + anyLNClassName,
                         new Object[] { do_ } ));
                 return false;
             }
             m.add( number, do_ );
             return true;
         }
-        console.warning( "[NSD] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + "has an unrecognized name" );
+        console.warning( "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + "has an unrecognized name" );
         return false;
     }
     
@@ -637,7 +637,7 @@ public class PresenceConditionValidator {
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                           0,
-                          "[NSD] DO " + name + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                          "[NSD validation] DO " + name + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                           new Object[] { lNodeType } ));
                   res = false;
                 }
@@ -646,7 +646,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] DO " + name + " should not have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] DO " + name + " should not have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                   }
@@ -665,7 +665,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] DO " + name + " should not have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] DO " + name + " should not have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                   }
@@ -682,7 +682,7 @@ public class PresenceConditionValidator {
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                           0,
-                          "[NSD] DO " + name + " is forbidden in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                          "[NSD validation] DO " + name + " is forbidden in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                           new Object[] { lNodeType } ));
                   res = false;
                 }
@@ -691,7 +691,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] DO " + name + " should not have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] DO " + name + " should not have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                   }
@@ -716,7 +716,7 @@ public class PresenceConditionValidator {
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                           0,
-                          "[NSD] At least one DO " + name + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                          "[NSD validation] At least one DO " + name + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                           new Object[] { lNodeType } ));
                   res = false;
                 }
@@ -725,7 +725,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] DO " + name + " should have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] DO " + name + " should have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                 }
@@ -744,7 +744,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] DO " + name + " should have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] DO " + name + " should have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                 }
@@ -769,7 +769,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] group " + e1.getKey() + " has no elements in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] group " + e1.getKey() + " has no elements in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                 }
@@ -791,7 +791,7 @@ public class PresenceConditionValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD] LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName + " has more than one element marked AtMostOne",
+                        "[NSD validation] LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName + " has more than one element marked AtMostOne",
                         new Object[] { lNodeType } ));
                 res = false;
             }
@@ -814,7 +814,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] group " + e1.getKey() + " has neither none nor all elements in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] group " + e1.getKey() + " has neither none nor all elements in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                 }
@@ -839,7 +839,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] group " + e1.getKey() + " has neither none nor all elements in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] group " + e1.getKey() + " has neither none nor all elements in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                 }
@@ -852,7 +852,7 @@ public class PresenceConditionValidator {
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD] LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName + " has several groups with all elements",
+                                "[NSD validation] LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName + " has several groups with all elements",
                                 new Object[] { lNodeType } ));
                         res = false;
                     }
@@ -863,7 +863,7 @@ public class PresenceConditionValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD] no group in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName + " has all elements",
+                        "[NSD validation] no group in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName + " has all elements",
                         new Object[] { lNodeType } ));
                 res = false;
             }
@@ -891,7 +891,7 @@ public class PresenceConditionValidator {
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD] no group in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName + " has all elements",
+                        "[NSD validation] no group in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName + " has all elements",
                         new Object[] { lNodeType } ));
                 res = false;
             }
@@ -909,7 +909,7 @@ public class PresenceConditionValidator {
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                         + anyLNClassName + " because sibling " + entry.getValue() + " is present",
                                 new Object[] { lNodeType } ));
                         res = false;
@@ -921,7 +921,7 @@ public class PresenceConditionValidator {
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD] DO " + entry.getKey() + " is forbidden in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] DO " + entry.getKey() + " is forbidden in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                         + anyLNClassName + " because sibling " + entry.getValue() + " is not present",
                                 new Object[] { lNodeType } ));
                         res = false;
@@ -942,7 +942,7 @@ public class PresenceConditionValidator {
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                         + anyLNClassName + " because sibling " + entry.getValue() + " is present",
                                 new Object[] { lNodeType } ));
                         res = false;
@@ -963,7 +963,7 @@ public class PresenceConditionValidator {
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                         + anyLNClassName + " because sibling " + entry.getValue() + " is not present",
                                 new Object[] { lNodeType } ));
                         res = false;
@@ -984,7 +984,7 @@ public class PresenceConditionValidator {
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD] DO " + entry.getKey() + " is forbidden in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] DO " + entry.getKey() + " is forbidden in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                         + anyLNClassName + " because sibling " + entry.getValue() + " is present",
                                 new Object[] { lNodeType } ));
                         res = false;
@@ -996,7 +996,7 @@ public class PresenceConditionValidator {
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                         + anyLNClassName + " because sibling " + entry.getValue() + " is not present",
                                 new Object[] { lNodeType } ));
                         res = false;
@@ -1028,7 +1028,7 @@ public class PresenceConditionValidator {
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                        "[NSD validation] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                 + anyLNClassName + " if textual condition number " + entry.getValue() + " (not evaluated) is true, else optional. It is "
                                 + ( presentDO.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                         new Object[] { lNodeType } ));
@@ -1058,7 +1058,7 @@ public class PresenceConditionValidator {
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                        "[NSD validation] DO " + entry.getKey() + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                 + anyLNClassName + " if textual condition number " + entry.getValue() + " (not evaluated) is true, else forbidden. It is " 
                                 + ( presentDO.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                         new Object[] { lNodeType } ));
@@ -1088,7 +1088,7 @@ public class PresenceConditionValidator {
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD] DO " + entry.getKey() + " is optional in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                        "[NSD validation] DO " + entry.getKey() + " is optional in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                 + anyLNClassName + " if textual condition number " + entry.getValue() + " (not evaluated) is true, else forbidden. It is " 
                                 + ( presentDO.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                         new Object[] { lNodeType } ));
@@ -1106,7 +1106,7 @@ public class PresenceConditionValidator {
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                           0,
-                          "[NSD] At least one DO " + name + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                          "[NSD validation] At least one DO " + name + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                           new Object[] { lNodeType } ));
                   res = false;
                 }
@@ -1115,7 +1115,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] DO " + name + " should have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] DO " + name + " should have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                 }
@@ -1129,7 +1129,7 @@ public class PresenceConditionValidator {
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD] DO " + name + " should have an instance number in range [" + min + "," + max + "] in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                                    "[NSD validation] DO " + name + " should have an instance number in range [" + min + "," + max + "] in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                                     new Object[] { lNodeType } ));
                             res = false;
                         }
@@ -1151,7 +1151,7 @@ public class PresenceConditionValidator {
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD] DO " + name + " should have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                            "[NSD validation] DO " + name + " should have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
                 }
@@ -1165,7 +1165,7 @@ public class PresenceConditionValidator {
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD] DO " + name + " should have an instance number in range [" + min + "," + max + "] in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                                    "[NSD validation] DO " + name + " should have an instance number in range [" + min + "," + max + "] in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                                     new Object[] { lNodeType } ));
                             res = false;
                         }
@@ -1194,7 +1194,7 @@ public class PresenceConditionValidator {
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD] DO " + name + " is mandatory in LN0 in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                                    "[NSD validation] DO " + name + " is mandatory in LN0 in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                                     new Object[] { lNodeType } ));
                             res = false;
                         }
@@ -1215,7 +1215,7 @@ public class PresenceConditionValidator {
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD] DO " + name + " is mandatory in LN0 in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                                    "[NSD validation] DO " + name + " is mandatory in LN0 in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                                     new Object[] { lNodeType } ));
                             res = false;
                         }
@@ -1226,7 +1226,7 @@ public class PresenceConditionValidator {
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD] DO " + name + " is forbidden in LN in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+                                    "[NSD validation] DO " + name + " is forbidden in LN in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                                     new Object[] { lNodeType } ));
                             res = false;
                         }
@@ -1251,7 +1251,7 @@ public class PresenceConditionValidator {
                             .filter( doi -> "NamPlt".equals( doi.getName() ))
                             .findFirst();
                     if( ! namPlt1.isPresent() ) {
-                        console.warning( "[NSD] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
+                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
                                        + ") in AnyLN (line " + anyLN.getLineNumber() + ") : cannot find DOI \"NamPlt\" in AnyLN" );
                         continue;
                     }
@@ -1263,12 +1263,12 @@ public class PresenceConditionValidator {
                             .filter( dai -> "lnNs".equals( dai.getName() ))
                             .findFirst();
                     if( ! lnNs.isPresent() ) {
-                        console.warning( "[NSD] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
+                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
                                        + ") in AnyLN (line " + anyLN.getLineNumber() + ") : cannot find DAI \"lnNs\"" );
                         continue;
                     }
                     if( ! lnNs.get().isSetVal() )  {
-                        console.warning( "[NSD] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
+                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
                                        + ") in AnyLN (line " + anyLN.getLineNumber() + ") : no Val in \"lnNs\"" );
                         continue;
                     }
@@ -1281,7 +1281,7 @@ public class PresenceConditionValidator {
                             .filter( doi -> "NamPlt".equals( doi.getName() ))
                             .findFirst();
                     if( ! namPlt2.isPresent() ) {
-                        console.warning( "[NSD] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
+                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
                                        + ") in AnyLN (line " + anyLN.getLineNumber() + ") : cannot find DOI \"NamPlt\" in LN0" );
                         continue;
                     }
@@ -1293,12 +1293,12 @@ public class PresenceConditionValidator {
                             .filter( dai -> "ldNs".equals( dai.getName() ))
                             .findFirst();
                     if( ! ldNs.isPresent() ) {
-                        console.warning( "[NSD] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
+                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
                                        + ") in AnyLN (line " + anyLN.getLineNumber() + ") : cannot find DAI \"ldNs\"" );
                         continue;
                     }
                     if( ! ldNs.get().isSetVal() )  {
-                        console.warning( "[NSD] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
+                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
                                        + ") in AnyLN (line " + anyLN.getLineNumber() + ") : no Val in \"ldNs\"" );
                         continue;
                     }
@@ -1309,7 +1309,7 @@ public class PresenceConditionValidator {
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD] DO " + name + " is mandatory in LN in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                                    "[NSD validation] DO " + name + " is mandatory in LN in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                             + anyLNClassName + " because logical node name space deviates from logical device name space",
                                     new Object[] { lNodeType } ));
                             res = false;
@@ -1386,7 +1386,7 @@ public class PresenceConditionValidator {
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD] DO " + name + " is mandatory in LN in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                                    "[NSD validation] DO " + name + " is mandatory in LN in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                             + anyLNClassName + " in the context of a root logical device",
                                     new Object[] { lNodeType } ));
                             res = false;
@@ -1452,7 +1452,7 @@ public class PresenceConditionValidator {
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD] DO " + entry.getKey() + " is forbidden in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] DO " + entry.getKey() + " is forbidden in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass "
                                         + anyLNClassName + " because sibling " + entry.getValue() + " is not present",
                                 new Object[] { lNodeType } ));
                         res = false;
