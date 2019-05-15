@@ -63,7 +63,7 @@ public class RiseClipseValidatorSCL {
     private static void usage() {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         console.info( "java -jar RiseClipseValidatorSCL.jar --help" );
-        console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose | --info | --warning | --error] [--make-explicit-links] (<oclFile> | <nsdFile> | <sclFile>)*" );
+        console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose | --info | --warning | --error] [--make-explicit-links] (<oclFile> | <nsdFile> | <sclFile>)+" );
         console.info( "Files ending with \".ocl\" are considered OCL files, "
                 + "files ending with \".nsd\" are considered NSD files, "
                 + "files ending with \".nsdoc\" are considered NSDoc files, "
@@ -102,7 +102,10 @@ public class RiseClipseValidatorSCL {
 
     public static void main( @NonNull String[] args ) {
 
-        if( args.length == 0 ) usage();
+        if( args.length == 0 ) {
+            console = new TextRiseClipseConsole( false );
+            usage();
+        }
 
         boolean makeExplicitLinks = false;
         boolean useColor = false;
