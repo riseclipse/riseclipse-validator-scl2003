@@ -62,13 +62,42 @@ public class RiseClipseValidatorSCL {
 
     private static void usage() {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-        console.info(
-                "java -jar RiseClipseValidatorSCL.jar [--info | --warning | --verbose] [--make-explicit-links] [--use-color] [<oclFile> | <nsdFile> | <sclFile>]*" );
+        console.info( "java -jar RiseClipseValidatorSCL.jar --help" );
+        console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose | --info | --warning | --error] [--make-explicit-links] (<oclFile> | <nsdFile> | <sclFile>)*" );
         console.info( "Files ending with \".ocl\" are considered OCL files, "
-                + "files ending with \\\".nsd\\\" are considered NSD files, "
-                + "files ending with \\\".nsdoc\\\" are considered NSDoc files, "
+                + "files ending with \".nsd\" are considered NSD files, "
+                + "files ending with \".nsdoc\" are considered NSDoc files, "
                 + "all others are considered SCL files" );
         System.exit( -1 );
+    }
+
+    private static void help() {
+        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+        displayLegal();
+        console.info( "java -jar RiseClipseValidatorSCL.jar option* file*" );
+        console.info( "\tFiles ending with \".ocl\" are considered OCL files," );
+        console.info( "\tfiles ending with \".nsd\" are considered NSD files," );
+        console.info( "\tfiles ending with \".nsdoc\" are considered NSDoc files," );
+        console.info( "\tall others are considered SCL files." );
+        console.info( "" );
+        console.info( "The following options are recognized:" );
+        console.info( "\t--verbose" );
+        console.info( "\t--info" );
+        console.info( "\t--warning" );
+        console.info( "\t--error" );
+        console.info( "\t\tThe amount of messages displayed is chosen according to this option, default is --warning." );
+        console.info( "\t--use-color" );
+        console.info( "\t\tcolors (using ANSI escape sequences) are used on message prefixes." );
+        console.info( "\t--make-explicit-links" );
+        console.info( "\t\tImplicit links in SCL files are made explicit, this is usually needed for complete validation. "
+                + "Warnings are displayed when problems are detected. Infos are displayed about explicit links being made. "
+                + "Verbosity is about how explicit links are made." );
+        console.info( "\t--display-nsd-messages" );
+        console.info( "\t\tOnly errors detected in NSD files are displayed by default. "
+                + "This option allows for other messages to be displayed (according to the chosen level).");
+        console.info( "\t--do-not-display-copyright" );
+        console.info( "\t\tThe tool information is not displayed at the beginning." );
+        System.exit( 0 );
     }
 
     public static void main( @NonNull String[] args ) {
@@ -86,14 +115,21 @@ public class RiseClipseValidatorSCL {
         for( int i = 0; i < args.length; ++i ) {
             if( args[i].startsWith( "--" ) ) {
                 posFiles = i + 1;
-                if( "--info".equals( args[i] ) ) {
+                if( "--help".equals( args[i] ) ) {
+                    console = new TextRiseClipseConsole( useColor );
+                    help();
+                }
+                else if( "--verbose".equals( args[i] ) ) {
+                    consoleLevel = IRiseClipseConsole.VERBOSE_LEVEL;
+                }
+                else if( "--info".equals( args[i] ) ) {
                     consoleLevel = IRiseClipseConsole.INFO_LEVEL;
                 }
                 else if( "--warning".equals( args[i] ) ) {
                     consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
                 }
-                else if( "--verbose".equals( args[i] ) ) {
-                    consoleLevel = IRiseClipseConsole.VERBOSE_LEVEL;
+                else if( "--error".equals( args[i] ) ) {
+                    consoleLevel = IRiseClipseConsole.ERROR_LEVEL;
                 }
                 else if( "--make-explicit-links".equals( args[i] ) ) {
                     makeExplicitLinks = true;
@@ -160,7 +196,7 @@ public class RiseClipseValidatorSCL {
         console.info(
                 "which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html" );
         console.info( "" );
-        console.info( "This file is part of the RiseClipse tool." );
+        console.info( "This tool is part of RiseClipse." );
         console.info( "Contributors:" );
         console.info( "    Computer Science Department, CentraleSupélec" );
         console.info( "    EDF R&D" );
@@ -170,7 +206,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a3 (9 may 2019)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a4 (16 may 2019)" );
         console.info( "" );
     }
 
