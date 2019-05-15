@@ -170,7 +170,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 (11 april 2019)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a3 (9 may 2019)" );
         console.info( "" );
     }
 
@@ -243,45 +243,30 @@ public class RiseClipseValidatorSCL {
         for( int n = 0; n < resource.getContents().size(); ++n ) {
             Diagnostic diagnostic = Diagnostician.INSTANCE.validate( resource.getContents().get( n ), context );
 
-            if( diagnostic.getSeverity() == Diagnostic.ERROR || diagnostic.getSeverity() == Diagnostic.WARNING ) {
-                for( Iterator< Diagnostic > i = diagnostic.getChildren().iterator(); i.hasNext(); ) {
-                    Diagnostic childDiagnostic = i.next();
-                    switch( childDiagnostic.getSeverity() ) {
-                    case Diagnostic.ERROR:
-                    case Diagnostic.WARNING:
-                        List< ? > data = childDiagnostic.getData();
-                        EObject object = ( EObject ) data.get( 0 );
-                        if( data.size() == 1 ) {
-                            if( childDiagnostic.getSeverity() == Diagnostic.ERROR ) {
-                                console.error( childDiagnostic.getMessage() );
-                            }
-                            else {
-                                console.warning( childDiagnostic.getMessage() );
-                            }
-                        }
-                        else if( data.get( 1 ) instanceof EAttribute ) {
-                            EAttribute attribute = ( EAttribute ) data.get( 1 );
-                            if( attribute == null ) continue;
-                            if( childDiagnostic.getSeverity() == Diagnostic.ERROR ) {
-                                console.error( "\tAttribute " + attribute.getName() + " of "
-                                        + substitutionLabelProvider.getObjectLabel( object ) + " : "
-                                        + childDiagnostic.getChildren().get( 0 ).getMessage() );
-                            }
-                            else {
-                                console.warning( "\tAttribute " + attribute.getName() + " of "
-                                        + substitutionLabelProvider.getObjectLabel( object ) + " : "
-                                        + childDiagnostic.getChildren().get( 0 ).getMessage() );
-                            }
-                        }
-                        else {
-                            if( childDiagnostic.getSeverity() == Diagnostic.ERROR ) {
-                                console.error( childDiagnostic.getMessage() );
-                            }
-                            else {
-                                console.warning( childDiagnostic.getMessage() );
-                            }
-                        }
-                    }
+            for( Iterator< Diagnostic > i = diagnostic.getChildren().iterator(); i.hasNext(); ) {
+                Diagnostic childDiagnostic = i.next();
+                
+                List< ? > data = childDiagnostic.getData();
+                EObject object = ( EObject ) data.get( 0 );
+                String message = childDiagnostic.getMessage();
+                if(( data.size() > 1 ) && ( data.get( 1 ) instanceof EAttribute )) {
+                    EAttribute attribute = ( EAttribute ) data.get( 1 );
+                    if( attribute == null ) continue;
+                    message = "\tAttribute " + attribute.getName() + " of "
+                                + substitutionLabelProvider.getObjectLabel( object ) + " : "
+                                + childDiagnostic.getChildren().get( 0 ).getMessage();
+                }
+
+                switch( childDiagnostic.getSeverity() ) {
+                case Diagnostic.INFO:
+                    console.info( message );
+                    break;
+                case Diagnostic.WARNING:
+                    console.warning( message );
+                    break;
+                case Diagnostic.ERROR:
+                    console.error( message );
+                    break;
                 }
             }
         }
