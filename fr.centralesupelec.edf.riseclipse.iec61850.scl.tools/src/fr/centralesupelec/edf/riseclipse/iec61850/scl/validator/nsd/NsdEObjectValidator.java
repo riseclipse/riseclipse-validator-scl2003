@@ -29,7 +29,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
@@ -43,45 +42,21 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 public class NsdEObjectValidator implements EValidator {
 
     private NsdResourceSetImpl nsdResourceSet;
-    private HashMap< String, AnyLNValidator > anyLNValidatorMap;
-    private HashMap<String,LNodeTypeValidator> lNodeTypeValidatorMap;
+    private HashMap< String, AnyLNValidator > anyLNValidatorMap = new HashMap<>();
+    private HashMap<String,LNodeTypeValidator> lNodeTypeValidatorMap = new HashMap<>();
 
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
         this.nsdResourceSet = nsdResourceSet;
     }
 
     public void initializeValidationData() {
-        this.anyLNValidatorMap =
-                nsdResourceSet
-                .getLNClassStream()
-                .map( lnClass -> generateAnyLNValidators( lnClass ) )
-                .reduce( ( a, b ) -> {
-                    a.putAll( b );
-                    return a;
-                } )
-                .orElse( new HashMap<>() );
+        nsdResourceSet
+        .getLNClassStream()
+        .forEach( lnClass -> anyLNValidatorMap.put( lnClass.getName(), new AnyLNValidator( lnClass )));
 
-        this.lNodeTypeValidatorMap =
-                nsdResourceSet
-                .getLNClassStream()
-                .map( lnClass -> generateLNodeTypeValidators( lnClass ) )
-                .reduce( ( a, b ) -> {
-                    a.putAll( b );
-                    return a;
-                } )
-                .orElse( new HashMap<>() );
-    }
-
-    private HashMap< String, AnyLNValidator > generateAnyLNValidators( LNClass lnClass ) {
-        HashMap< String, AnyLNValidator > lnMap = new HashMap<>();
-        lnMap.put( lnClass.getName(), new AnyLNValidator( lnClass ));
-        return lnMap;
-    }
-
-    private HashMap< String, LNodeTypeValidator > generateLNodeTypeValidators( LNClass lnClass ) {
-        HashMap< String, LNodeTypeValidator > lntMap = new HashMap<>();
-        lntMap.put( lnClass.getName(), new LNodeTypeValidator( lnClass ));
-        return lntMap;
+        nsdResourceSet
+        .getLNClassStream()
+        .forEach( lnClass -> lNodeTypeValidatorMap.put( lnClass.getName(), new LNodeTypeValidator( lnClass )));
     }
 
     @Override
