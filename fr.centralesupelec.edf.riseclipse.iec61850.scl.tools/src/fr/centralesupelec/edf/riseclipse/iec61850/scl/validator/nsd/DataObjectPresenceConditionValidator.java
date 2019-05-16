@@ -1,3 +1,21 @@
+/**
+ *  Copyright (c) 2019 CentraleSupélec & EDF.
+ *  All rights reserved. This program and the accompanying materials
+ *  are made available under the terms of the Eclipse Public License v1.0
+ *  which accompanies this distribution, and is available at
+ *  http://www.eclipse.org/legal/epl-v10.html
+ * 
+ *  This file is part of the RiseClipse tool
+ *  
+ *  Contributors:
+ *      Computer Science Department, CentraleSupélec
+ *      EDF R&D
+ *  Contacts:
+ *      dominique.marcadet@centralesupelec.fr
+ *      aurelie.dehouck-neveu@edf.fr
+ *  Web site:
+ *      http://wdi.supelec.fr/software/RiseClipse/
+ */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import java.util.HashMap;
@@ -11,7 +29,6 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AnyLNClass;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
@@ -23,19 +40,19 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValida
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
-public class PresenceConditionValidator {
+public class DataObjectPresenceConditionValidator {
     
-    private static HashMap< String, PresenceConditionValidator > validators = new HashMap<>();
+    private static HashMap< String, DataObjectPresenceConditionValidator > validators = new HashMap<>();
     
-    public static PresenceConditionValidator get( AnyLNClass anyLNClass ) {
+    public static DataObjectPresenceConditionValidator get( AnyLNClass anyLNClass ) {
         if( ! validators.containsKey( anyLNClass.getName() )) {
-            validators.put( anyLNClass.getName(), new PresenceConditionValidator( anyLNClass ));
+            validators.put( anyLNClass.getName(), new DataObjectPresenceConditionValidator( anyLNClass ));
         }
         return validators.get( anyLNClass.getName() );
     }
     
     private AnyLNClass anyLNClass;
-    private PresenceConditionValidator base;
+    private DataObjectPresenceConditionValidator base;
     
     private static class SingleOrMultiDO {
     }
@@ -99,12 +116,14 @@ public class PresenceConditionValidator {
     
     private final IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
     
-    private PresenceConditionValidator( AnyLNClass anyLNClass ) {
+    private DataObjectPresenceConditionValidator( AnyLNClass anyLNClass ) {
         this.anyLNClass = anyLNClass;
         
-        for( DataObject dObj : anyLNClass.getDataObject() ) {
-            addSpecification( dObj.getName(), dObj.getPresCond(), dObj.getPresCondArgs() );
-        }
+        anyLNClass
+        .getDataObject()
+        .stream()
+        .forEach( d -> addSpecification( d.getName(), d.getPresCond(), d.getPresCondArgs() ) );
+        
         checkSpecification();
         
         AnyLNClass parent = anyLNClass.getRefersToAbstractLNClass();
@@ -123,7 +142,7 @@ public class PresenceConditionValidator {
     
     private void addSpecification( String name, String presCond, String presCondArgs ) {
         if( presentDO.containsKey( name )) {
-            console.warning( "[NSD setup] " + name + " has already been added to PresenceConditionValidator" );
+            console.warning( "[NSD setup] " + name + " has already been added to DataObjectPresenceConditionValidator" );
             return;
         }
         presentDO.put( name, null );
@@ -147,7 +166,7 @@ public class PresenceConditionValidator {
         case "na" :
             // Element is not applicable
             // -> TODO: what does it mean ? what do we have to check ?
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"na\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"na\" in PresenceCondition" );
 //            if( notApplicable == null ) notApplicable = new HashSet<>();
 //            notApplicable.add( name );
             break;
@@ -373,7 +392,7 @@ public class PresenceConditionValidator {
         case "MFsubst" :
             // Element is mandatory if substitution is supported (for substitution, see IEC 61850-7-3), otherwise forbidden
             // TODO: how do we know if substitution is supported ?
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MFsubst\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MFsubst\" in PresenceCondition" );
 //            if( mandatoryIfSubstitutionElseForbidden == null ) mandatoryIfSubstitutionElseForbidden = new HashSet<>();
 //            mandatoryIfSubstitutionElseForbidden.add( name );
             break;
@@ -390,14 +409,14 @@ public class PresenceConditionValidator {
         case "MOlnNs" :
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOlnNs\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOlnNs\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional = new HashSet<>();
 //            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional.add( name );
             break;
         case "MOdataNs" :
             // Element is mandatory if the name space of its data object deviates from the name space of its logical node,
             // otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOdataNs\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOdataNs\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional = new HashSet<>();
 //            mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional.add( name );
             break;
@@ -405,28 +424,28 @@ public class PresenceConditionValidator {
             // Element is mandatory* if any sibling elements of type AnalogueValue include 'i' as a child, otherwise forbidden.
             // *Even though devices without floating point capability cannot exchange floating point values through ACSI services,
             // the description of scaling remains mandatory for their (SCL) configuration
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MFscaledAV\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MFscaledAV\" in PresenceCondition" );
 //            if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
 //            mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
             break;
         case "MFscaledMagV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'mag' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
 //            if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
 //            mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
             break;
         case "MFscaledAngV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'ang' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
 //            if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
 //            mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
             break;
         case "MOrms" :
             // Element is mandatory if the harmonic values in the context are calculated as a ratio to RMS value
             // (value of data attribute 'hvRef' is 'rms'), optional otherwise
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOrms\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOrms\" in PresenceCondition" );
 //            if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional == null ) mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional = new HashSet<>();
 //            mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional.add( name );
             break;
@@ -437,28 +456,28 @@ public class PresenceConditionValidator {
             break;
         case "MOoperTm" :
             // Element is mandatory if at least one controlled object on the IED supports time activation service; otherwise it is optional
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOoperTm\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOoperTm\" in PresenceCondition" );
 //            if( mandatoryIfControlSupportsTimeElseOptional == null ) mandatoryIfControlSupportsTimeElseOptional = new HashSet<>();
 //            mandatoryIfControlSupportsTimeElseOptional.add( name );
             break;
         case "MmultiF" :
             // Parameter sibling: sibling element name.
             // One or more elements must be present if sibling element is present, otherwise forbidden
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MmultiF\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MmultiF\" in PresenceCondition" );
 //            if( oneOrMoreIfSiblingPresentElseForbidden == null ) oneOrMoreIfSiblingPresentElseForbidden = new HashMap<>();
 //            oneOrMoreIfSiblingPresentElseForbidden.put( name, presCondArgs );
             break;
         case "MOsbo" :
             // Element is mandatory if declared control model supports 'sbo-with-normal-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOsbo\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOsbo\" in PresenceCondition" );
 //            if( mandatoryIfControlSupportsSecurity1ElseOptional == null ) mandatoryIfControlSupportsSecurity1ElseOptional = new HashSet<>();
 //            mandatoryIfControlSupportsSecurity1ElseOptional.add( name );
             break;
         case "MOenhanced" :
             // Element is mandatory if declared control model supports 'direct-with-enhanced-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MOenhanced\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOenhanced\" in PresenceCondition" );
 //            if( mandatoryIfControlSupportsSecurity2ElseOptional == null ) mandatoryIfControlSupportsSecurity2ElseOptional = new HashSet<>();
 //            mandatoryIfControlSupportsSecurity2ElseOptional.add( name );
             break;
@@ -466,7 +485,7 @@ public class PresenceConditionValidator {
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
             // TODO: same as "MOlnNs" ?
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MONamPlt\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MONamPlt\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 = new HashSet<>();
 //            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2.add( name );
             break;
@@ -479,13 +498,13 @@ public class PresenceConditionValidator {
         case "MORange" :
             // Element is mandatory if the measured value associated (amplitude respectively angle) exposes the range eventing
             // (with the attribute range respectively rangeAng)
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"MORange\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MORange\" in PresenceCondition" );
 //            if( mandatoryIfMeasuredValueExposesRange == null ) mandatoryIfMeasuredValueExposesRange = new HashSet<>();
 //            mandatoryIfMeasuredValueExposesRange.add( name );
             break;
         case "OMSynPh" :
             // This attribute is optional if value of 'phsRef'' is Synchrophasor otherwise Mandatory]]></Doc>
-            console.warning( "[NSD setup] NOT IMPLEMENTED: " + name + " declared as \"OMSynPh\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"OMSynPh\" in PresenceCondition" );
 //            if( optionalIfPhsRefIsSynchrophasorElseMandatory == null ) optionalIfPhsRefIsSynchrophasorElseMandatory = new HashSet<>();
 //            optionalIfPhsRefIsSynchrophasorElseMandatory.add( name );
             break;
@@ -698,7 +717,7 @@ public class PresenceConditionValidator {
                             "[NSD validation] DO " + name + " should not have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
-                  }
+                }
             }
         }
 
@@ -724,7 +743,7 @@ public class PresenceConditionValidator {
                             "[NSD validation] DO " + name + " should not have an instance number in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
                             new Object[] { lNodeType } ));
                     res = false;
-                  }
+                }
             }
         }
 
@@ -1051,7 +1070,7 @@ public class PresenceConditionValidator {
                         .map( p -> p.getMixed() )
                         .map( p -> p.get( 0 ) )
                         .map( p -> p.getValue() )
-                        .map(  p -> p.toString() )
+                        .map( p -> p.toString() )
                         .orElse( null );
 
                 diagnostics.add( new BasicDiagnostic(
@@ -1081,7 +1100,7 @@ public class PresenceConditionValidator {
                         .map( p -> p.getMixed() )
                         .map( p -> p.get( 0 ) )
                         .map( p -> p.getValue() )
-                        .map(  p -> p.toString() )
+                        .map( p -> p.toString() )
                         .orElse( null );
 
                 diagnostics.add( new BasicDiagnostic(
@@ -1111,7 +1130,7 @@ public class PresenceConditionValidator {
                         .map( p -> p.getMixed() )
                         .map( p -> p.get( 0 ) )
                         .map( p -> p.getValue() )
-                        .map(  p -> p.toString() )
+                        .map( p -> p.toString() )
                         .orElse( null );
 
                 diagnostics.add( new BasicDiagnostic(

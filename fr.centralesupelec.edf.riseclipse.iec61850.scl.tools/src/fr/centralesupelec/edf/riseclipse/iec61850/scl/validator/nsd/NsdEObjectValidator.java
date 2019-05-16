@@ -43,7 +43,7 @@ public class NsdEObjectValidator implements EValidator {
 
     private NsdResourceSetImpl nsdResourceSet;
     private HashMap< String, AnyLNValidator > anyLNValidatorMap = new HashMap<>();
-    private HashMap<String,LNodeTypeValidator> lNodeTypeValidatorMap = new HashMap<>();
+    private HashMap< String, LNodeTypeValidator > lNodeTypeValidatorMap = new HashMap<>();
 
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
         this.nsdResourceSet = nsdResourceSet;
