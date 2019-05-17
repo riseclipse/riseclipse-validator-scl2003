@@ -25,10 +25,14 @@ import java.util.Map.Entry;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
+import org.eclipse.emf.common.util.EList;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
@@ -70,8 +74,8 @@ public class DataAttributePresenceConditionValidator {
 //    private HashMap< String, Pair< Integer, Integer > > mandatoryMultiRange;
 //    private HashMap< String, Pair< Integer, Integer > > optionalMultiRange;
 //    private HashSet< String > mandatoryIfSubstitutionElseForbidden;
-//    private HashSet< String > mandatoryInLLN0ElseOptional;
-//    private HashSet< String > mandatoryInLLN0ElseForbidden;
+    private HashSet< String > mandatoryInLLN0ElseOptional;
+    private HashSet< String > mandatoryInLLN0ElseForbidden;
 //    private HashSet< String > mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional;
 //    private HashSet< String > mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional;
 //    private HashSet< String > mandatoryIfAnalogValueIncludesIElseForbidden;
@@ -102,8 +106,8 @@ public class DataAttributePresenceConditionValidator {
     }
     
     public void reset() {
-        for( String do_ : presentDA.keySet() ) {
-            presentDA.put( do_, null );
+        for( String da : presentDA.keySet() ) {
+            presentDA.put( da, null );
         }
     }
     
@@ -369,15 +373,13 @@ public class DataAttributePresenceConditionValidator {
             break;
         case "MOln0" :
             // Element is mandatory in the context of LLN0; otherwise optional
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MOln0\" in PresenceCondition" );
-//            if( mandatoryInLLN0ElseOptional == null ) mandatoryInLLN0ElseOptional = new HashSet<>();
-//            mandatoryInLLN0ElseOptional.add( name );
+            if( mandatoryInLLN0ElseOptional == null ) mandatoryInLLN0ElseOptional = new HashSet<>();
+            mandatoryInLLN0ElseOptional.add( name );
             break;
         case "MFln0" :
             // Element is mandatory in the context of LLN0; otherwise forbidden
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MFln0\" in PresenceCondition" );
-//            if( mandatoryInLLN0ElseForbidden == null ) mandatoryInLLN0ElseForbidden = new HashSet<>();
-//            mandatoryInLLN0ElseForbidden.add( name );
+            if( mandatoryInLLN0ElseForbidden == null ) mandatoryInLLN0ElseForbidden = new HashSet<>();
+            mandatoryInLLN0ElseForbidden.add( name );
             break;
         case "MOlnNs" :
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
@@ -1000,101 +1002,83 @@ public class DataAttributePresenceConditionValidator {
         // presCond: "MOln0" :
         // Element is mandatory in the context of LLN0; otherwise optional
         // Usage in standard NSD files (version 2007B): DataAttribute
-//        if( mandatoryInLLN0ElseOptional != null ) {
-//
-//        }
+        if( mandatoryInLLN0ElseOptional != null ) {
+            EList< AbstractDataObject > adoList = doType.getReferredByAbstractDataObject();
+            for( AbstractDataObject ado : adoList ) {
+                if( ado instanceof DO ) {
+                    DO do_ = ( DO ) ado;
+                    if( "LLN0".equals( do_.getParentLNodeType().getLnClass() )) {
+                        for( String attribute : mandatoryInLLN0ElseOptional ) {
+                            DA da = presentDA.get( attribute );
+                            if( da == null ) {
+                                diagnostics.add( new BasicDiagnostic(
+                                        Diagnostic.ERROR,
+                                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                        0,
+                                        "[NSD validation] DA " + attribute + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass LLN0",
+                                        new Object[] { doType } ));
+                                res = false;
+                            }
+                        }
+                    }
+                }
+                else {
+                    // ado instanceof SDO
+                }
+            }
+        }
         
         // presCond: "MFln0" :
         // Element is mandatory in the context of LLN0; otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataAttribute
-//        if( mandatoryInLLN0ElseForbidden != null ) {
-//
-//        }
+        if( mandatoryInLLN0ElseForbidden != null ) {
+            EList< AbstractDataObject > adoList = doType.getReferredByAbstractDataObject();
+            for( AbstractDataObject ado : adoList ) {
+                if( ado instanceof DO ) {
+                    DO do_ = ( DO ) ado;
+                    if( "LLN0".equals( do_.getParentLNodeType().getLnClass() )) {
+                        for( String attribute : mandatoryInLLN0ElseForbidden ) {
+                            DA da = presentDA.get( attribute );
+                            if( da == null ) {
+                                diagnostics.add( new BasicDiagnostic(
+                                        Diagnostic.ERROR,
+                                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                        0,
+                                        "[NSD validation] DA " + attribute + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass LLN0",
+                                        new Object[] { doType } ));
+                                res = false;
+                            }
+                        }
+                    }
+                    else {
+                        for( String attribute : mandatoryInLLN0ElseForbidden ) {
+                            DA da = presentDA.get( attribute );
+                            if( da != null ) {
+                                diagnostics.add( new BasicDiagnostic(
+                                        Diagnostic.ERROR,
+                                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                        0,
+                                        "[NSD validation] DA " + attribute + " is forbidden in DOType (line " + doType.getLineNumber() + ") with LNClass " + do_.getParentLNodeType().getLnClass(),
+                                        new Object[] { doType } ));
+                                res = false;
+                            }
+                        }
+                    }
+                }
+                else {
+                    // ado instanceof SDO
+                }
+            }
+        }
 
         // presCond: "MOlnNs" :
         // Element is mandatory if the name space of its logical node deviates from the name space of the containing
         // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
         // Usage in standard NSD files (version 2007B): DataAttribute
         // TODO: The meaning is not clear.
-        /*
-        if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional != null ) {
-            for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional ) {
-                for( AnyLN anyLN : lNodeType.getReferredByAnyLN() ) {
-                    Optional< DOI > namPlt1 =
-                            anyLN
-                            .getDOI()
-                            .stream()
-                            .filter( doi -> "NamPlt".equals( doi.getName() ))
-                            .findFirst();
-                    if( ! namPlt1.isPresent() ) {
-                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
-                                       + ") in AnyLN (line " + anyLN.getLineNumber() + ") : cannot find DOI \"NamPlt\" in AnyLN" );
-                        continue;
-                    }
-                    Optional< DAI > lnNs =
-                            namPlt1
-                            .get()
-                            .getDAI()
-                            .stream()
-                            .filter( dai -> "lnNs".equals( dai.getName() ))
-                            .findFirst();
-                    if( ! lnNs.isPresent() ) {
-                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
-                                       + ") in AnyLN (line " + anyLN.getLineNumber() + ") : cannot find DAI \"lnNs\"" );
-                        continue;
-                    }
-                    if( ! lnNs.get().isSetVal() )  {
-                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
-                                       + ") in AnyLN (line " + anyLN.getLineNumber() + ") : no Val in \"lnNs\"" );
-                        continue;
-                    }
-                    
-                    LN0 ln0 = anyLN.getParentLDevice().getLN0();
-                    Optional< DOI > namPlt2 =
-                            ln0
-                            .getDOI()
-                            .stream()
-                            .filter( doi -> "NamPlt".equals( doi.getName() ))
-                            .findFirst();
-                    if( ! namPlt2.isPresent() ) {
-                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
-                                       + ") in AnyLN (line " + anyLN.getLineNumber() + ") : cannot find DOI \"NamPlt\" in LN0" );
-                        continue;
-                    }
-                    Optional< DAI > ldNs =
-                            namPlt2
-                            .get()
-                            .getDAI()
-                            .stream()
-                            .filter( dai -> "ldNs".equals( dai.getName() ))
-                            .findFirst();
-                    if( ! ldNs.isPresent() ) {
-                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
-                                       + ") in AnyLN (line " + anyLN.getLineNumber() + ") : cannot find DAI \"ldNs\"" );
-                        continue;
-                    }
-                    if( ! ldNs.get().isSetVal() )  {
-                        console.warning( "[NSD validation] while validating presence condition \"MOlnNs\" of LNodeTYPE  (line " + lNodeType.getLineNumber()
-                                       + ") in AnyLN (line " + anyLN.getLineNumber() + ") : no Val in \"ldNs\"" );
-                        continue;
-                    }
-
-                    if( ! ( lnNs.get().getVal().equals( ldNs.get().getVal() ))) {
-                        if( presentDA.get( name ) == null ) {
-                            diagnostics.add( new BasicDiagnostic(
-                                    Diagnostic.ERROR,
-                                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                                    0,
-                                    "[NSD validation] DA " + name + " is mandatory in LN in DOType (line " + lNodeType.getLineNumber() + ") with LNClass "
-                                            + cdc.getName() + " because logical node name space deviates from logical device name space",
-                                    new Object[] { lNodeType } ));
-                            res = false;
-                        }
-                    }
-                }
-            }
-        }
-        */
+//        if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional != null ) {
+//        
+//        }
 
         // presCond: "MOdataNs" :
         // Element is mandatory if the name space of its data object deviates from the name space of its logical node,
