@@ -41,22 +41,13 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class NsdEObjectValidator implements EValidator {
 
-    private NsdResourceSetImpl nsdResourceSet;
     private HashMap< String, AnyLNValidator > anyLNValidatorMap = new HashMap<>();
-    private HashMap< String, LNodeTypeValidator > lNodeTypeValidatorMap = new HashMap<>();
+    private HashMap< String, LNClassValidator > lNodeTypeValidatorMap = new HashMap<>();
 
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
-        this.nsdResourceSet = nsdResourceSet;
-    }
-
-    public void initializeValidationData() {
-        nsdResourceSet
-        .getLNClassStream()
-        .forEach( lnClass -> anyLNValidatorMap.put( lnClass.getName(), new AnyLNValidator( lnClass )));
-
-        nsdResourceSet
-        .getLNClassStream()
-        .forEach( lnClass -> lNodeTypeValidatorMap.put( lnClass.getName(), new LNodeTypeValidator( lnClass )));
+        // Order is important
+        CDCValidator.buildValidators( nsdResourceSet.getCDCStream() );
+        LNClassValidator.buildValidators( nsdResourceSet.getLNClassStream() );
     }
 
     @Override
@@ -67,10 +58,6 @@ public class NsdEObjectValidator implements EValidator {
     @Override
     public boolean validate( EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map< Object, Object > context ) {
 
-        if( this.anyLNValidatorMap == null ) {
-            this.initializeValidationData();
-        }
-        
         SclSwitch< Boolean > sw = new SclSwitch< Boolean >() {
 
             @Override
@@ -80,6 +67,7 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseLNodeType( LNodeType lNodeType ) {
+                AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validate( " + lNodeType.getId() + " ) at line " + lNodeType.getLineNumber() );
                 return validateLNodeType( lNodeType, diagnostics );
             }
 
@@ -126,12 +114,12 @@ public class NsdEObjectValidator implements EValidator {
         AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validateLNodeType( " + lNodeType.getLnClass() + " )" );
 
         // Check that LNodeType has valid LNClass
-        if( this.anyLNValidatorMap.containsKey( lNodeType.getLnClass() )) {
+        if( LNClassValidator.get( lNodeType.getLnClass() ) != null ) {
             AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] LNClass " + lNodeType.getLnClass()
                 + " found for LNodeType at line " + lNodeType.getLineNumber() );
 
-            // LNodeTypeValidator validates LNodeType content
-            return lNodeTypeValidatorMap.get( lNodeType.getLnClass() ).validateLNodeType( lNodeType, diagnostics );
+            // LNClassValidator validates LNodeType content
+            return LNClassValidator.get( lNodeType.getLnClass() ).validateLNodeType( lNodeType, diagnostics );
         }
         
         // A specific LNodeType:
@@ -178,7 +166,7 @@ public class NsdEObjectValidator implements EValidator {
                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                 0,
                 "[NSD validation] LNClass " + lNodeType.getLnClass() + " not found for LNodeType at line " + lNodeType.getLineNumber()
-                + " and DA \"lnNs\" in DO \"NamPlt\" not found",
+                        + " and DA \"lnNs\" in DO \"NamPlt\" not found",
                 new Object[] { lNodeType } ));
         return false;
     }

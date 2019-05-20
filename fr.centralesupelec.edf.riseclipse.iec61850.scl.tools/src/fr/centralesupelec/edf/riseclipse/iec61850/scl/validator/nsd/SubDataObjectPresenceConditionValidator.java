@@ -30,28 +30,28 @@ import org.eclipse.emf.common.util.EList;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataObject;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
-public class DataAttributePresenceConditionValidator {
+public class SubDataObjectPresenceConditionValidator {
     
-    private static HashMap< String, DataAttributePresenceConditionValidator > validators = new HashMap<>();
+    private static HashMap< String, SubDataObjectPresenceConditionValidator > validators = new HashMap<>();
     
-    public static DataAttributePresenceConditionValidator get( CDC cdc ) {
+    public static SubDataObjectPresenceConditionValidator get( CDC cdc ) {
         if( ! validators.containsKey( cdc.getName() )) {
-            validators.put( cdc.getName(), new DataAttributePresenceConditionValidator( cdc ));
+            validators.put( cdc.getName(), new SubDataObjectPresenceConditionValidator( cdc ));
         }
         return validators.get( cdc.getName() );
     }
     
     private CDC cdc;
     
-    // Name of the DataAttribute/DA, DA
-    private HashMap< String, DA > presentDA = new HashMap<>();
+    // Name of the SubDataObject/SDO, SDO
+    private HashMap< String, SDO > presentSDO = new HashMap<>();
     
     private HashSet< String > mandatory;
     private HashSet< String > optional;
@@ -94,29 +94,29 @@ public class DataAttributePresenceConditionValidator {
     
     private final IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
     
-    public DataAttributePresenceConditionValidator( CDC cdc ) {
+    public SubDataObjectPresenceConditionValidator( CDC cdc ) {
         this.cdc = cdc;
         
         cdc
-        .getDataAttribute()
+        .getSubDataObject()
         .stream()
-        .forEach( da -> addSpecification( da.getName(), da.getPresCond(), da.getPresCondArgs() ) );
+        .forEach( sdo -> addSpecification( sdo.getName(), sdo.getPresCond(), sdo.getPresCondArgs() ) );
 
         checkSpecification();
     }
     
     public void reset() {
-        for( String da : presentDA.keySet() ) {
-            presentDA.put( da, null );
+        for( String sdo : presentSDO.keySet() ) {
+            presentSDO.put( sdo, null );
         }
     }
     
     private void addSpecification( String name, String presCond, String presCondArgs ) {
-        if( presentDA.containsKey( name )) {
-            console.warning( "[NSD setup] " + name + " has already been added to DataAttributePresenceConditionValidator" );
+        if( presentSDO.containsKey( name )) {
+            console.warning( "[NSD setup] " + name + " has already been added to SubDataObjectPresenceConditionValidator" );
             return;
         }
-        presentDA.put( name, null );
+        presentSDO.put( name, null );
 
         switch( presCond ) {
         case "M" :
@@ -137,21 +137,21 @@ public class DataAttributePresenceConditionValidator {
         case "na" :
             // Element is not applicable
             // -> TODO: what does it mean ? what do we have to check ?
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"na\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"na\" in PresenceCondition" );
             if( notApplicable == null ) notApplicable = new HashSet<>();
             notApplicable.add( name );
             break;
         case "Mmulti" :
             // At least one element shall be present; all instances have an instance number > 0
             // -> TODO: not sure what is the instance number, it is assumed to be the suffix of DO name
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"Mmulti\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"Mmulti\" in PresenceCondition" );
             if( mandatoryMulti == null ) mandatoryMulti = new HashSet<>();
             mandatoryMulti.add( name );
             break;
         case "Omulti" :
             // Zero or more elements may be present; all instances have an instance number > 0
             // -> TODO: not sure what is the instance number, it is assumed to be the suffix of DO name
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"Omulti\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"Omulti\" in PresenceCondition" );
             if( optionalMulti == null ) optionalMulti = new HashSet<>();
             optionalMulti.add( name );
             break;
@@ -322,7 +322,7 @@ public class DataAttributePresenceConditionValidator {
             // Parameters min, max: limits for instance number (> 0).
             // One or more elements shall be present; all instances have an instance number within range [min, max] (see IEC 61850-7-1)
             // -> TODO: not sure what is the instance number, it is assumed to be the suffix of DO name
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MmultiRange\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MmultiRange\" in PresenceCondition" );
             if( mandatoryMultiRange == null ) mandatoryMultiRange = new HashMap<>();
             String[] limits1 = presCondArgs.split( "[ ,]+" );
             if( limits1.length != 2 ) {
@@ -345,7 +345,7 @@ public class DataAttributePresenceConditionValidator {
             // Parameters min, max: limits for instance number (> 0).
             // Zero or more elements may be present; all instances have an instance number within range [min, max] (see IEC 61850-7-1)
             // -> TODO: not sure what is the instance number, it is assumed to be the suffix of DO name
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"OmultiRange\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"OmultiRange\" in PresenceCondition" );
             if( optionalMultiRange == null ) optionalMultiRange = new HashMap<>();
             String[] limits2 = presCondArgs.split( "[ ,]+" );
             if( limits2.length != 2 ) {
@@ -367,7 +367,7 @@ public class DataAttributePresenceConditionValidator {
         case "MFsubst" :
             // Element is mandatory if substitution is supported (for substitution, see IEC 61850-7-3), otherwise forbidden
             // TODO: how do we know if substitution is supported ?
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MFsubst\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MFsubst\" in PresenceCondition" );
             if( mandatoryIfSubstitutionElseForbidden == null ) mandatoryIfSubstitutionElseForbidden = new HashSet<>();
             mandatoryIfSubstitutionElseForbidden.add( name );
             break;
@@ -384,14 +384,14 @@ public class DataAttributePresenceConditionValidator {
         case "MOlnNs" :
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MOlnNs\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MOlnNs\" in PresenceCondition" );
             if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional = new HashSet<>();
             mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional.add( name );
             break;
         case "MOdataNs" :
             // Element is mandatory if the name space of its data object deviates from the name space of its logical node,
             // otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MOdataNs\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MOdataNs\" in PresenceCondition" );
             if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional = new HashSet<>();
             mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional.add( name );
             break;
@@ -399,61 +399,61 @@ public class DataAttributePresenceConditionValidator {
             // Element is mandatory* if any sibling elements of type AnalogueValue include 'i' as a child, otherwise forbidden.
             // *Even though devices without floating point capability cannot exchange floating point values through ACSI services,
             // the description of scaling remains mandatory for their (SCL) configuration
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MFscaledAV\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MFscaledAV\" in PresenceCondition" );
             if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
             mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
             break;
         case "MFscaledMagV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'mag' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
             if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
             mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
             break;
         case "MFscaledAngV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'ang' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
             if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
             mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
             break;
         case "MOrms" :
             // Element is mandatory if the harmonic values in the context are calculated as a ratio to RMS value
             // (value of data attribute 'hvRef' is 'rms'), optional otherwise
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MOrms\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MOrms\" in PresenceCondition" );
             if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional == null ) mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional = new HashSet<>();
             mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional.add( name );
             break;
         case "MOrootLD" :
             // Element is mandatory in the context of a root logical device; otherwise it is optional
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MOrootLD\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MOrootLD\" in PresenceCondition" );
             if( mandatoryInRootLogicalDeviceElseOptional == null ) mandatoryInRootLogicalDeviceElseOptional = new HashSet<>();
             mandatoryInRootLogicalDeviceElseOptional.add( name );
             break;
         case "MOoperTm" :
             // Element is mandatory if at least one controlled object on the IED supports time activation service; otherwise it is optional
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MOoperTm\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MOoperTm\" in PresenceCondition" );
             if( mandatoryIfControlSupportsTimeElseOptional == null ) mandatoryIfControlSupportsTimeElseOptional = new HashSet<>();
             mandatoryIfControlSupportsTimeElseOptional.add( name );
             break;
         case "MmultiF" :
             // Parameter sibling: sibling element name.
             // One or more elements must be present if sibling element is present, otherwise forbidden
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MmultiF\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MmultiF\" in PresenceCondition" );
             if( oneOrMoreIfSiblingPresentElseForbidden == null ) oneOrMoreIfSiblingPresentElseForbidden = new HashMap<>();
             oneOrMoreIfSiblingPresentElseForbidden.put( name, presCondArgs );
             break;
         case "MOsbo" :
             // Element is mandatory if declared control model supports 'sbo-with-normal-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MOsbo\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MOsbo\" in PresenceCondition" );
             if( mandatoryIfControlSupportsSecurity1ElseOptional == null ) mandatoryIfControlSupportsSecurity1ElseOptional = new HashSet<>();
             mandatoryIfControlSupportsSecurity1ElseOptional.add( name );
             break;
         case "MOenhanced" :
             // Element is mandatory if declared control model supports 'direct-with-enhanced-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MOenhanced\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MOenhanced\" in PresenceCondition" );
             if( mandatoryIfControlSupportsSecurity2ElseOptional == null ) mandatoryIfControlSupportsSecurity2ElseOptional = new HashSet<>();
             mandatoryIfControlSupportsSecurity2ElseOptional.add( name );
             break;
@@ -461,7 +461,7 @@ public class DataAttributePresenceConditionValidator {
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
             // TODO: same as "MOlnNs" ?
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MONamPlt\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MONamPlt\" in PresenceCondition" );
             if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 = new HashSet<>();
             mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2.add( name );
             break;
@@ -474,13 +474,13 @@ public class DataAttributePresenceConditionValidator {
         case "MORange" :
             // Element is mandatory if the measured value associated (amplitude respectively angle) exposes the range eventing
             // (with the attribute range respectively rangeAng)
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"MORange\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"MORange\" in PresenceCondition" );
             if( mandatoryIfMeasuredValueExposesRange == null ) mandatoryIfMeasuredValueExposesRange = new HashSet<>();
             mandatoryIfMeasuredValueExposesRange.add( name );
             break;
         case "OMSynPh" :
             // This attribute is optional if value of 'phsRef'' is Synchrophasor otherwise Mandatory]]></Doc>
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataAttribute " + name + " declared as \"OMSynPh\" in PresenceCondition" );
+            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"OMSynPh\" in PresenceCondition" );
             if( optionalIfPhsRefIsSynchrophasorElseMandatory == null ) optionalIfPhsRefIsSynchrophasorElseMandatory = new HashSet<>();
             optionalIfPhsRefIsSynchrophasorElseMandatory.add( name );
             break;
@@ -495,74 +495,74 @@ public class DataAttributePresenceConditionValidator {
         // TODO: do we have to check the presence of the sibling in inherited AbstractLNClass ?
         if( mandatoryIfSiblingPresentElseForbidden != null ) {
             for( Entry< String, String > e : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
-                if( ! presentDA.containsKey( e.getValue() )) {
+                if( ! presentSDO.containsKey( e.getValue() )) {
                     console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
         if( mandatoryIfSiblingPresentElseOptional != null ) {
             for( Entry< String, String > e : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
-                if( ! presentDA.containsKey( e.getValue() )) {
+                if( ! presentSDO.containsKey( e.getValue() )) {
                     console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
         if( optionalIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > e : optionalIfSiblingPresentElseMandatory.entrySet() ) {
-                if( ! presentDA.containsKey( e.getValue() )) {
+                if( ! presentSDO.containsKey( e.getValue() )) {
                     console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
         if( forbiddenIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > e : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
-                if( ! presentDA.containsKey( e.getValue() )) {
+                if( ! presentSDO.containsKey( e.getValue() )) {
                     console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
         if( oneOrMoreIfSiblingPresentElseForbidden != null ) {
             for( Entry< String, String > e : oneOrMoreIfSiblingPresentElseForbidden.entrySet() ) {
-                if( ! presentDA.containsKey( e.getValue() )) {
+                if( ! presentSDO.containsKey( e.getValue() )) {
                     console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
         if( optionalIfSiblingPresentElseForbidden != null ) {
             for( Entry< String, String > e : optionalIfSiblingPresentElseForbidden.entrySet() ) {
-                if( ! presentDA.containsKey( e.getValue() )) {
+                if( ! presentSDO.containsKey( e.getValue() )) {
                     console.warning( "[NSD setup] the sibling of " + e.getKey() + " in PresenceCondition of DataObject " + e.getKey() + " is unknown" );
                 }
             }
         }
     }
 
-    public boolean addDA( DA da, DiagnosticChain diagnostics ) {
-        if( ! presentDA.containsKey( da.getName() )) {
+    public boolean addSDO( SDO sdo, DiagnosticChain diagnostics ) {
+        if( ! presentSDO.containsKey( sdo.getName() )) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] DA " + da.getName() + " in DOType (line " + da.getParentDOType().getLineNumber() + ") not found in CDC " + cdc.getName(),
-                    new Object[] { da } ));
+                    "[NSD validation] SDO " + sdo.getName() + " in DOType (line " + sdo.getParentDOType().getLineNumber() + ") not found in CDC " + cdc.getName(),
+                    new Object[] { sdo } ));
             return false;
         }
 
-        if( presentDA.get( da.getName() ) != null ) {
+        if( presentSDO.get( sdo.getName() ) != null ) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] DA " + da.getName() + " in DOType (line " + da.getParentDOType().getLineNumber() + ") already present in CDC " + cdc.getName(),
-                    new Object[] { da } ));
+                    "[NSD validation] SDO " + sdo.getName() + " in DOType (line " + sdo.getParentDOType().getLineNumber() + ") already present in CDC " + cdc.getName(),
+                    new Object[] { sdo } ));
             return false;
         }
-        presentDA.put( da.getName(), da );
+        presentSDO.put( sdo.getName(), sdo );
         return true;
     }
     
     public boolean validate( DOType doType, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] DataAttributePresenceConditionValidator.validate( " + doType.getId() + " ) at line " + doType.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] SubDataObjectPresenceConditionValidator.validate( " + doType.getId() + " ) at line " + doType.getLineNumber() );
 
         boolean res = true;
         
@@ -571,12 +571,12 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( mandatory != null ) {
             for( String name : this.mandatory ) {
-                if( presentDA.get( name ) == null ) {
+                if( presentSDO.get( name ) == null ) {
                   diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                           0,
-                          "[NSD validation] DA " + name + " is mandatory in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                          "[NSD validation] SDO " + name + " is mandatory in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                           new Object[] { doType } ));
                   res = false;
                 }
@@ -588,7 +588,7 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( optional != null ) {
             for( String name : this.optional ) {
-                if( presentDA.get( name ) == null ) {
+                if( presentSDO.get( name ) == null ) {
                     // Nothing
                 }
             }
@@ -599,12 +599,12 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( forbidden != null ) {
             for( String name : this.forbidden ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                   diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                           0,
-                          "[NSD validation] DA " + name + " is forbidden in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                          "[NSD validation] SDO " + name + " is forbidden in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                           new Object[] { doType } ));
                   res = false;
                 }
@@ -617,12 +617,12 @@ public class DataAttributePresenceConditionValidator {
         // -> TODO: what does it mean ? what do we have to check ?
         if( notApplicable != null ) {
             for( String name : notApplicable ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"na\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"na\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -633,12 +633,12 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryMulti != null ) {
             for( String name : mandatoryMulti ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"Mmulti\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"Mmulti\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -649,12 +649,12 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalMulti != null ) {
             for( String name : optionalMulti ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"Omulti\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"Omulti\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -668,7 +668,7 @@ public class DataAttributePresenceConditionValidator {
             for( Entry< Integer, HashSet< String > > e1 : atLeastOne.entrySet() ) {
                 boolean groupOK = false;
                 for( String member : e1.getValue() ) {
-                    if( presentDA.get( member ) != null ) {
+                    if( presentSDO.get( member ) != null ) {
                         groupOK = true;
                         break;
                     }
@@ -691,7 +691,7 @@ public class DataAttributePresenceConditionValidator {
         if( atMostOne != null ) {
             int count = 0;
             for( String s : atMostOne ) {
-                if( presentDA.get( s ) != null ) {
+                if( presentSDO.get( s ) != null ) {
                     ++count;
                 }
             }
@@ -714,7 +714,7 @@ public class DataAttributePresenceConditionValidator {
             for( Entry< Integer, HashSet< String > > e1 : allOrNonePerGroup.entrySet() ) {
                 int groupCount = 0;
                 for( String member : e1.getValue() ) {
-                    if( presentDA.get( member ) != null ) {
+                    if( presentSDO.get( member ) != null ) {
                         ++groupCount;
                     }
                 }
@@ -739,7 +739,7 @@ public class DataAttributePresenceConditionValidator {
             for( Entry< Integer, HashSet< String > > e1 : allOnlyOneGroup.entrySet() ) {
                 int groupCount = 0;
                 for( String member : e1.getValue() ) {
-                    if( presentDA.get( member ) != null ) {
+                    if( presentSDO.get( member ) != null ) {
                         ++groupCount;
                     }
                 }
@@ -787,7 +787,7 @@ public class DataAttributePresenceConditionValidator {
             for( Entry< Integer, HashSet< String > > e1 : allAtLeastOneGroup.entrySet() ) {
                 int groupCount = 0;
                 for( String member : e1.getValue() ) {
-                    if( presentDA.get( member ) != null ) {
+                    if( presentSDO.get( member ) != null ) {
                         ++groupCount;
                     }
                 }
@@ -812,25 +812,25 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfSiblingPresentElseForbidden != null ) {
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
-                if( presentDA.get( entry.getValue() ) != null ) {
-                    if( presentDA.get( entry.getKey() ) == null ) {
+                if( presentSDO.get( entry.getValue() ) != null ) {
+                    if( presentSDO.get( entry.getKey() ) == null ) {
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD validation] DA " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] SDO " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass "
                                         + cdc.getName() + " because sibling " + entry.getValue() + " is present",
                                 new Object[] { doType } ));
                         res = false;
                     }
                 }
                 else {
-                    if( presentDA.get( entry.getKey() ) != null ) {
+                    if( presentSDO.get( entry.getKey() ) != null ) {
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD validation] DA " + entry.getKey() + " is forbidden in DOType (line " + doType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] SDO " + entry.getKey() + " is forbidden in DOType (line " + doType.getLineNumber() + ") with LNClass "
                                         + cdc.getName() + " because sibling " + entry.getValue() + " is not present",
                                 new Object[] { doType } ));
                         res = false;
@@ -845,13 +845,13 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryIfSiblingPresentElseOptional != null ) {
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
-                if( presentDA.get( entry.getValue() ) != null ) {
-                    if( presentDA.get( entry.getKey() ) == null ) {
+                if( presentSDO.get( entry.getValue() ) != null ) {
+                    if( presentSDO.get( entry.getKey() ) == null ) {
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD validation] DA " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] SDO " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass "
                                         + cdc.getName() + " because sibling " + entry.getValue() + " is present",
                                 new Object[] { doType } ));
                         res = false;
@@ -866,13 +866,13 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): None
         if( optionalIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > entry : optionalIfSiblingPresentElseMandatory.entrySet() ) {
-                if( presentDA.get( entry.getValue() ) == null ) {
-                    if( presentDA.get( entry.getKey() ) == null ) {
+                if( presentSDO.get( entry.getValue() ) == null ) {
+                    if( presentSDO.get( entry.getKey() ) == null ) {
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD validation] DA " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] SDO " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass "
                                         + cdc.getName() + " because sibling " + entry.getValue() + " is not present",
                                 new Object[] { doType } ));
                         res = false;
@@ -887,25 +887,25 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): None
         if( forbiddenIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > entry : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
-                if( presentDA.get( entry.getValue() ) != null ) {
-                    if( presentDA.get( entry.getKey() ) != null ) {
+                if( presentSDO.get( entry.getValue() ) != null ) {
+                    if( presentSDO.get( entry.getKey() ) != null ) {
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD validation] DA " + entry.getKey() + " is forbidden in DOType (line " + doType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] SDO " + entry.getKey() + " is forbidden in DOType (line " + doType.getLineNumber() + ") with LNClass "
                                         + cdc.getName() + " because sibling " + entry.getValue() + " is present",
                                 new Object[] { doType } ));
                         res = false;
                     }
                 }
                 else {
-                    if( presentDA.get( entry.getKey() ) == null ) {
+                    if( presentSDO.get( entry.getKey() ) == null ) {
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD validation] DA " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] SDO " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass "
                                         + cdc.getName() + " because sibling " + entry.getValue() + " is not present",
                                 new Object[] { doType } ));
                         res = false;
@@ -922,7 +922,7 @@ public class DataAttributePresenceConditionValidator {
         if( mandatoryIfTextConditionElseOptional != null ) {
             for( Entry< String, String > entry : mandatoryIfTextConditionElseOptional.entrySet() ) {
                 String doc = cdc
-                        .getDataAttribute()
+                        .getSubDataObject()
                         .stream()
                         .filter( d -> d.getName().equals( entry.getKey() ))
                         .findFirst()
@@ -937,9 +937,9 @@ public class DataAttributePresenceConditionValidator {
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] DA " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with CDC "
+                        "[NSD validation] SDO " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with CDC "
                                 + cdc.getName() + " if textual condition number " + entry.getValue() + " (not evaluated) is true, else optional. It is "
-                                + ( presentDA.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
+                                + ( presentSDO.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                         new Object[] { doType } ));
             }
         }
@@ -952,7 +952,7 @@ public class DataAttributePresenceConditionValidator {
         if( mandatoryIfTextConditionElseForbidden != null ) {
             for( Entry< String, String > entry : mandatoryIfTextConditionElseForbidden.entrySet() ) {
                 String doc = cdc
-                        .getDataAttribute()
+                        .getSubDataObject()
                         .stream()
                         .filter( d -> d.getName().equals( entry.getKey() ))
                         .findFirst()
@@ -967,9 +967,9 @@ public class DataAttributePresenceConditionValidator {
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] DA " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with CDC "
+                        "[NSD validation] SDO " + entry.getKey() + " is mandatory in DOType (line " + doType.getLineNumber() + ") with CDC "
                                 + cdc.getName() + " if textual condition number " + entry.getValue() + " (not evaluated) is true, else forbidden. It is " 
-                                + ( presentDA.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
+                                + ( presentSDO.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                         new Object[] { doType } ));
             }
         }
@@ -982,7 +982,7 @@ public class DataAttributePresenceConditionValidator {
         if( optionalIfTextConditionElseForbidden != null ) {
             for( Entry< String, String > entry : optionalIfTextConditionElseForbidden.entrySet() ) {
                 String doc = cdc
-                        .getDataAttribute()
+                        .getSubDataObject()
                         .stream()
                         .filter( d -> d.getName().equals( entry.getKey() ))
                         .findFirst()
@@ -997,9 +997,9 @@ public class DataAttributePresenceConditionValidator {
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] DA " + entry.getKey() + " is optional in DOType (line " + doType.getLineNumber() + ") with CDC "
+                        "[NSD validation] SDO " + entry.getKey() + " is optional in DOType (line " + doType.getLineNumber() + ") with CDC "
                                 + cdc.getName() + " if textual condition number " + entry.getValue() + " (not evaluated) is true, else forbidden. It is " 
-                                + ( presentDA.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
+                                + ( presentSDO.get( entry.getKey() ) == null ? "absent." : "present." ) + ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                         new Object[] { doType } ));
             }
         }
@@ -1010,12 +1010,12 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): None
         if( mandatoryMultiRange != null ) {
             for( String name : mandatoryMultiRange.keySet() ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MmultiRange\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MmultiRange\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1027,12 +1027,12 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalMultiRange != null ) {
             for( String name : optionalMultiRange.keySet() ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"OmultiRange\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"OmultiRange\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1044,12 +1044,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( mandatoryIfSubstitutionElseForbidden != null ) {
             for( String name : mandatoryIfSubstitutionElseForbidden ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MFsubst\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MFsubst\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1065,13 +1065,13 @@ public class DataAttributePresenceConditionValidator {
                     DO do_ = ( DO ) ado;
                     if( "LLN0".equals( do_.getParentLNodeType().getLnClass() )) {
                         for( String attribute : mandatoryInLLN0ElseOptional ) {
-                            DA da = presentDA.get( attribute );
-                            if( da == null ) {
+                            SDO sdo = presentSDO.get( attribute );
+                            if( sdo == null ) {
                                 diagnostics.add( new BasicDiagnostic(
                                         Diagnostic.ERROR,
                                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                         0,
-                                        "[NSD validation] DA " + attribute + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass LLN0",
+                                        "[NSD validation] SDO " + attribute + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass LLN0",
                                         new Object[] { doType } ));
                                 res = false;
                             }
@@ -1094,13 +1094,13 @@ public class DataAttributePresenceConditionValidator {
                     DO do_ = ( DO ) ado;
                     if( "LLN0".equals( do_.getParentLNodeType().getLnClass() )) {
                         for( String attribute : mandatoryInLLN0ElseForbidden ) {
-                            DA da = presentDA.get( attribute );
-                            if( da == null ) {
+                            SDO sdo = presentSDO.get( attribute );
+                            if( sdo == null ) {
                                 diagnostics.add( new BasicDiagnostic(
                                         Diagnostic.ERROR,
                                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                         0,
-                                        "[NSD validation] DA " + attribute + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass LLN0",
+                                        "[NSD validation] SDO " + attribute + " is mandatory in DOType (line " + doType.getLineNumber() + ") with LNClass LLN0",
                                         new Object[] { doType } ));
                                 res = false;
                             }
@@ -1108,13 +1108,13 @@ public class DataAttributePresenceConditionValidator {
                     }
                     else {
                         for( String attribute : mandatoryInLLN0ElseForbidden ) {
-                            DA da = presentDA.get( attribute );
-                            if( da != null ) {
+                            SDO sdo = presentSDO.get( attribute );
+                            if( sdo != null ) {
                                 diagnostics.add( new BasicDiagnostic(
                                         Diagnostic.ERROR,
                                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                         0,
-                                        "[NSD validation] DA " + attribute + " is forbidden in DOType (line " + doType.getLineNumber() + ") with LNClass " + do_.getParentLNodeType().getLnClass(),
+                                        "[NSD validation] SDO " + attribute + " is forbidden in DOType (line " + doType.getLineNumber() + ") with LNClass " + do_.getParentLNodeType().getLnClass(),
                                         new Object[] { doType } ));
                                 res = false;
                             }
@@ -1134,12 +1134,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO: The meaning is not clear.
         if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional != null ) {
             for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MOlnNs\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MOlnNs\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1152,12 +1152,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO: The meaning is not clear.
         if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional != null ) {
             for( String name : mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MOdataNs\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MOdataNs\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1171,12 +1171,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( mandatoryIfAnalogValueIncludesIElseForbidden != null ) {
             for( String name : mandatoryIfAnalogValueIncludesIElseForbidden ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MFscaledAV\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MFscaledAV\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1189,12 +1189,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden != null ) {
             for( String name : mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MFscaledMagV\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MFscaledMagV\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1207,12 +1207,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden != null ) {
             for( String name : mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MFscaledAngV\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MFscaledAngV\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1225,12 +1225,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional != null ) {
             for( String name : mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MOrms\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MOrms\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1241,12 +1241,12 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryInRootLogicalDeviceElseOptional != null ) {
             for( String name : mandatoryInRootLogicalDeviceElseOptional ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MOrootLD\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MOrootLD\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1258,12 +1258,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( mandatoryIfControlSupportsTimeElseOptional != null ) {
             for( String name : mandatoryIfControlSupportsTimeElseOptional ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MOoperTm\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MOoperTm\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1276,12 +1276,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO: One or more elements ? Is there an instance number ?
         if( oneOrMoreIfSiblingPresentElseForbidden != null ) {
             for( String name : oneOrMoreIfSiblingPresentElseForbidden.keySet() ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MmultiF\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MmultiF\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1294,12 +1294,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( mandatoryIfControlSupportsSecurity1ElseOptional != null ) {
             for( String name : mandatoryIfControlSupportsSecurity1ElseOptional ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MOsbo\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MOsbo\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1312,12 +1312,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( mandatoryIfControlSupportsSecurity2ElseOptional != null ) {
             for( String name : mandatoryIfControlSupportsSecurity2ElseOptional ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MOenhanced\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MOenhanced\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1330,12 +1330,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO: same as "MOlnNs" ?
         if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 != null ) {
             for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MONamPlt\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MONamPlt\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1347,13 +1347,13 @@ public class DataAttributePresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute
         if( optionalIfSiblingPresentElseForbidden != null ) {
             for( Entry< String, String > entry : optionalIfSiblingPresentElseForbidden.entrySet() ) {
-                if( presentDA.get( entry.getValue() ) == null ) {
-                    if( presentDA.get( entry.getKey() ) != null ) {
+                if( presentSDO.get( entry.getValue() ) == null ) {
+                    if( presentSDO.get( entry.getKey() ) != null ) {
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD validation] DA " + entry.getKey() + " is forbidden in DOType (line " + doType.getLineNumber() + ") with LNClass "
+                                "[NSD validation] SDO " + entry.getKey() + " is forbidden in DOType (line " + doType.getLineNumber() + ") with LNClass "
                                         + cdc.getName() + " because sibling " + entry.getValue() + " is not present",
                                 new Object[] { doType } ));
                         res = false;
@@ -1369,12 +1369,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( mandatoryIfMeasuredValueExposesRange != null ) {
             for( String name : mandatoryIfMeasuredValueExposesRange ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"MORange\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"MORange\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
@@ -1386,12 +1386,12 @@ public class DataAttributePresenceConditionValidator {
         // TODO
         if( optionalIfPhsRefIsSynchrophasorElseMandatory != null ) {
             for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
-                if( presentDA.get( name ) != null ) {
+                if( presentSDO.get( name ) != null ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"OMSynPh\" for DA " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"OMSynPh\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
                             new Object[] { doType } ));
                 }
             }
