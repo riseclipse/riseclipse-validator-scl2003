@@ -45,7 +45,6 @@ public class NsdValidator {
         }
         nsdLoader.getResourceSet().finalizeLoad( console );
         NsdEObjectValidator nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet() );
-        nsdEObjectValidator.initializeValidationData();
         validator.addChild( nsdEObjectValidator );
         if( ! displayNsdMessages ) {
             console.setLevel( level );            
