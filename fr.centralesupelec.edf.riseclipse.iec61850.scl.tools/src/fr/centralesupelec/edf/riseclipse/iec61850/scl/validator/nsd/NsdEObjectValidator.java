@@ -112,24 +112,29 @@ public class NsdEObjectValidator implements EValidator {
                     .filter( d -> "lnNs".equals( d.getName() ))
                     .findAny();
             if( da.isPresent() ) {
-                String value = " without value";
                 if( da.get().getVal().size() > 0 ) {
-                    value = " with value [";
+                    String value = "";
                     for( Val v : da.get().getVal() ) {
                         value += " " + v.getValue();
                     }
-                    value += " ]";
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.INFO,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] LNodeType at line " + lNodeType.getLineNumber() + " with lnClass " + lNodeType.getLnClass()
+                                + " is specific because it has DA \"lnNs\" in DO \"NamPlt\" with value [" + value + " ]",
+                            new Object[] { lNodeType } ));
+                    return true;
                 }
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.INFO,
+                        Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
                         "[NSD validation] LNodeType at line " + lNodeType.getLineNumber() + " with lnClass " + lNodeType.getLnClass()
-                            + " is specific and has DA \"lnNs\" in DO \"NamPlt\"" + value,
+                            + " is specific because it has DA \"lnNs\" in DO \"NamPlt\" but value is missing",
                         new Object[] { lNodeType } ));
-                return true;
-            }
-                
+                return false;
+            }  
         }
 
         diagnostics.add( new BasicDiagnostic(
