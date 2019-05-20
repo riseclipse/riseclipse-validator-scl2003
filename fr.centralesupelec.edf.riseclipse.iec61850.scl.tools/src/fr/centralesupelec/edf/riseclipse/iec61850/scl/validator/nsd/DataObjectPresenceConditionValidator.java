@@ -666,6 +666,7 @@ public class DataObjectPresenceConditionValidator {
     }
     
     public boolean validate( LNodeType lNodeType, DiagnosticChain diagnostics ) {
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] DataObjectPresenceConditionValidator.validate( " + lNodeType.getId() + " ) at line " + lNodeType.getLineNumber() );
         return validate( lNodeType, anyLNClass.getName(), diagnostics );
     }
     
