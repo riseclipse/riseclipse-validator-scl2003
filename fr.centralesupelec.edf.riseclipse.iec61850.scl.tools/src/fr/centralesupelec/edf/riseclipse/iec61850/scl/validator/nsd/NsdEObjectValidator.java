@@ -18,7 +18,6 @@
  */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,7 +29,6 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
@@ -41,11 +39,8 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class NsdEObjectValidator implements EValidator {
 
-    private HashMap< String, AnyLNValidator > anyLNValidatorMap = new HashMap<>();
-    private HashMap< String, LNClassValidator > lNodeTypeValidatorMap = new HashMap<>();
-
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
-        // Order is important
+        // Order is important !
         CDCValidator.buildValidators( nsdResourceSet.getCDCStream() );
         LNClassValidator.buildValidators( nsdResourceSet.getLNClassStream() );
     }
@@ -61,11 +56,6 @@ public class NsdEObjectValidator implements EValidator {
         SclSwitch< Boolean > sw = new SclSwitch< Boolean >() {
 
             @Override
-            public Boolean caseAnyLN( AnyLN anyLN ) {
-                return true;//validateAnyLN( anyLN, diagnostics );
-            }
-
-            @Override
             public Boolean caseLNodeType( LNodeType lNodeType ) {
                 AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validate( " + lNodeType.getId() + " ) at line " + lNodeType.getLineNumber() );
                 return validateLNodeType( lNodeType, diagnostics );
@@ -73,7 +63,7 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean defaultCase( EObject object ) {
-                //AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NsdEObjectValidator.validate( " + object.eClass().getName() + " )" );
+//                AbstractRiseClipseConsole.getConsole().info( "NOT IMPLEMENTED: NsdEObjectValidator.validate( " + object.eClass().getName() + " )" );
                 return true;
             }
             
@@ -84,30 +74,11 @@ public class NsdEObjectValidator implements EValidator {
 
     @Override
     public boolean validate( EDataType eDataType, Object value, DiagnosticChain diagnostics, Map< Object, Object > context ) {
-        AbstractRiseClipseConsole.getConsole().info( "[NSD validation] NOT IMPLEMENTED: NsdEObjectValidator.validate( " + eDataType.getName() + " )" );
+//        AbstractRiseClipseConsole.getConsole().info( "[NSD validation] NOT IMPLEMENTED: NsdEObjectValidator.validate( " + eDataType.getName() + " )" );
 
         // TODO: use nsdResource to validate value
 
         return true;
-    }
-
-    private boolean validateAnyLN( AnyLN ln, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validateAnyLN( " + ln.getLnClass() + " )" );
-
-        // Check that LN has valid LNClass
-        if( ! this.anyLNValidatorMap.containsKey( ln.getLnClass() )) {
-            diagnostics.add( new BasicDiagnostic(
-                    Diagnostic.ERROR,
-                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                    0,
-                    "[NSD validation] LNClass " + ln.getLnClass() + " not found for AnyLN at line " + ln.getLineNumber(),
-                    new Object[] { ln } ));
-            return false;
-        }
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] found LNClass " + ln.getLnClass() + " for AnyLN at line " + ln.getLineNumber() );
-
-        // AnyLNValidator validates LN content
-        return anyLNValidatorMap.get( ln.getLnClass() ).validateAnyLN( ln, diagnostics );
     }
 
     protected Boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
