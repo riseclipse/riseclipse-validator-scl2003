@@ -33,6 +33,8 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOI;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.LDevice;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LN0;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
@@ -57,7 +59,6 @@ public class DataObjectPresenceConditionValidator {
     private static class SingleOrMultiDO {
     }
     private static class SingleDO extends SingleOrMultiDO {
-        @SuppressWarnings( "unused" )
         DO do_;
 
         SingleDO( DO do_ ) {
@@ -1519,16 +1520,91 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         // TODO: same as "MOlnNs" ?
         if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 != null ) {
-            for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 ) {
-                if( presentDO.get( name ) != null ) {
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            "[NSD validation] verification of PresenceCondition \"MONamPlt\" for DO " + name + " is not implemented in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
-                            new Object[] { lNodeType } ));
+
+            // The attribute lnNs shall be a DataAttribute of the name plate NamPlt of a logical node
+            String lnNs = "";
+            Optional< DOType > doType =
+                    lNodeType
+                    .getDO()
+                    .stream()
+                    .filter( d -> "NamPlt".equals( d.getName() ))
+                    .findAny()
+                    .map( d -> d.getRefersToDOType() );
+            if( doType.isPresent() ) {
+                Optional< DA > da1 =
+                        doType
+                        .get()
+                        .getDA()
+                        .stream()
+                        .filter( d -> "lnNs".equals( d.getName() ))
+                        .findAny();
+                if( da1.isPresent() ) {
+                    if( da1.get().getVal().size() == 1 ) {
+                        lnNs = da1.get().getVal().get( 0 ).getValue();
+                    }
+                    else if( da1.get().getVal().size() > 1 ) {
+                        // TODO: error
+                    }
+                }
+                
+                // The attribute ldNs shall be a DataAttribute of the name plate NamPlt of the LOGICAL- NODE-ZERO (LLN0).
+                for( AnyLN anyLN : lNodeType.getReferredByAnyLN() ) {
+                    String ldNs = "";
+                    doType =
+                            anyLN
+                            .getParentLDevice()
+                            .getLN0()
+                            .getRefersToLNodeType()
+                            .getDO()
+                            .stream()
+                            .filter( d -> "NamPlt".equals( d.getName() ))
+                            .findAny()
+                            .map( d -> d.getRefersToDOType() );
+                    if( doType.isPresent() ) {
+                        Optional< DA > da2 =
+                                doType
+                                .get()
+                                .getDA()
+                                .stream()
+                                .filter( d -> "ldNs".equals( d.getName() ))
+                                .findAny();
+                        if( da2.isPresent() ) {
+                            if( da2.get().getVal().size() == 1 ) {
+                                ldNs = da2.get().getVal().get( 0 ).getValue();
+                            }
+                            else if( da2.get().getVal().size() > 1 ) {
+                                // TODO: error
+                            }
+                        }
+                    }
+                    
+                    if( ! lnNs.equals( ldNs )) {
+                        for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 ) {
+                            if( presentDO.get( name ) == null ) {
+                                diagnostics.add( new BasicDiagnostic(
+                                        Diagnostic.ERROR,
+                                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                        0,
+                                        "[NSD validation] DO " + name + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName
+                                            + " because the name space of its logical node deviates from the name space of the containing logical device",
+                                        new Object[] { lNodeType } ));
+                            }
+                        }
+                    }
                 }
             }
+            else {
+                // TODO: error
+            }
+                
+//                if( presentDO.get( name ) != null ) {
+//                    diagnostics.add( new BasicDiagnostic(
+//                            Diagnostic.WARNING,
+//                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+//                            0,
+//                            "[NSD validation] verification of PresenceCondition \"MONamPlt\" for DO " + name + " is not implemented in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
+//                            new Object[] { lNodeType } ));
+//                }
         }
 
         // presCond: "OF" :
