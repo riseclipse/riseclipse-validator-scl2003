@@ -562,7 +562,7 @@ public class SubDataObjectPresenceConditionValidator {
     }
     
     public boolean validate( DOType doType, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] SubDataObjectPresenceConditionValidator.validate( " + doType.getId() + " ) at line " + doType.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] SubDataObjectPresenceConditionValidator.validate( " + doType.getId() + ") at line " + doType.getLineNumber() );
 
         boolean res = true;
         
@@ -570,7 +570,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Element is mandatory
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( mandatory != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"M\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"M\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( String name : this.mandatory ) {
                 if( presentSDO.get( name ) == null ) {
                   diagnostics.add( new BasicDiagnostic(
@@ -588,7 +588,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Element is optional
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( optional != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"O\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"O\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( String name : this.optional ) {
                 if( presentSDO.get( name ) == null ) {
                     // Nothing
@@ -600,7 +600,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Element is forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( forbidden != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"F\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"F\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( String name : this.forbidden ) {
                 if( presentSDO.get( name ) != null ) {
                   diagnostics.add( new BasicDiagnostic(
@@ -668,7 +668,7 @@ public class SubDataObjectPresenceConditionValidator {
         // At least one of marked elements of a group n shall be present
         // Usage in standard NSD files (version 2007B): DataObject and SubDataObject and DataAttribute and SubDataAttribute
         if( atLeastOne != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AtLeastOne\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AtLeastOne\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( Entry< Integer, HashSet< String > > e1 : atLeastOne.entrySet() ) {
                 boolean groupOK = false;
                 for( String member : e1.getValue() ) {
@@ -693,7 +693,7 @@ public class SubDataObjectPresenceConditionValidator {
         // At most one of marked elements shall be present
         // Usage in standard NSD files (version 2007B): DataObject
         if( atMostOne != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AtMostOne\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AtMostOne\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             int count = 0;
             for( String s : atMostOne ) {
                 if( presentSDO.get( s ) != null ) {
@@ -717,7 +717,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( allOrNonePerGroup != null ) {
             for( Entry< Integer, HashSet< String > > e1 : allOrNonePerGroup.entrySet() ) {
-                AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AllOrNonePerGroup\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+                AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AllOrNonePerGroup\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
                 int groupCount = 0;
                 for( String member : e1.getValue() ) {
                     if( presentSDO.get( member ) != null ) {
@@ -741,7 +741,7 @@ public class SubDataObjectPresenceConditionValidator {
         // All elements of only one group n shall be present
         // Usage in standard NSD files (version 2007B): DataObject and SubDataAttribute
         if( allOnlyOneGroup != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AllOnlyOneGroup\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AllOnlyOneGroup\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allOnlyOneGroup.entrySet() ) {
                 int groupCount = 0;
@@ -790,7 +790,7 @@ public class SubDataObjectPresenceConditionValidator {
         // All elements of at least one group n shall be present
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( allAtLeastOneGroup != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AllAtLeastOneGroup\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AllAtLeastOneGroup\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allAtLeastOneGroup.entrySet() ) {
                 int groupCount = 0;
@@ -819,7 +819,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Mandatory if sibling element is present, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfSiblingPresentElseForbidden != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"<<<<<<<<mf\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"<<<<<<<<mf\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
                 if( presentSDO.get( entry.getValue() ) != null ) {
                     if( presentSDO.get( entry.getKey() ) == null ) {
@@ -853,7 +853,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Mandatory if sibling element is present, otherwise optional
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryIfSiblingPresentElseOptional != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MO\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MO\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
                 if( presentSDO.get( entry.getValue() ) != null ) {
                     if( presentSDO.get( entry.getKey() ) == null ) {
@@ -875,7 +875,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Optional if sibling element is present, otherwise mandatory
         // Usage in standard NSD files (version 2007B): None
         if( optionalIfSiblingPresentElseMandatory != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"OM\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"OM\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( Entry< String, String > entry : optionalIfSiblingPresentElseMandatory.entrySet() ) {
                 if( presentSDO.get( entry.getValue() ) == null ) {
                     if( presentSDO.get( entry.getKey() ) == null ) {
@@ -897,7 +897,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Forbidden if sibling element is present, otherwise mandatory
         // Usage in standard NSD files (version 2007B): None
         if( forbiddenIfSiblingPresentElseMandatory != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"FM\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"FM\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( Entry< String, String > entry : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
                 if( presentSDO.get( entry.getValue() ) != null ) {
                     if( presentSDO.get( entry.getKey() ) != null ) {
@@ -932,7 +932,7 @@ public class SubDataObjectPresenceConditionValidator {
         // If satisfied, the element is mandatory, otherwise optional
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseOptional != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MOcond\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MOcond\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( Entry< String, String > entry : mandatoryIfTextConditionElseOptional.entrySet() ) {
                 String doc = cdc
                         .getSubDataObject()
@@ -963,7 +963,7 @@ public class SubDataObjectPresenceConditionValidator {
         // If satisfied, the element is mandatory, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseForbidden != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MFcond\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MFcond\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( Entry< String, String > entry : mandatoryIfTextConditionElseForbidden.entrySet() ) {
                 String doc = cdc
                         .getSubDataObject()
@@ -994,7 +994,7 @@ public class SubDataObjectPresenceConditionValidator {
         // If satisfied, the element is optional, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalIfTextConditionElseForbidden != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"OFcond\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"OFcond\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( Entry< String, String > entry : optionalIfTextConditionElseForbidden.entrySet() ) {
                 String doc = cdc
                         .getSubDataObject()
@@ -1074,7 +1074,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Element is mandatory in the context of LLN0; otherwise optional
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryInLLN0ElseOptional != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MOln0\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MOln0\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             EList< AbstractDataObject > adoList = doType.getReferredByAbstractDataObject();
             for( AbstractDataObject ado : adoList ) {
                 if( ado instanceof DO ) {
@@ -1104,7 +1104,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Element is mandatory in the context of LLN0; otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryInLLN0ElseForbidden != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MFln0\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MFln0\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             EList< AbstractDataObject > adoList = doType.getReferredByAbstractDataObject();
             for( AbstractDataObject ado : adoList ) {
                 if( ado instanceof DO ) {
@@ -1363,7 +1363,7 @@ public class SubDataObjectPresenceConditionValidator {
         // Optional if sibling element is present, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute
         if( optionalIfSiblingPresentElseForbidden != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"OF\" on DOType id=" + doType.getId() + " ) at line " + doType.getLineNumber() );
+            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"OF\" on DOType (id=" + doType.getId() + ") at line " + doType.getLineNumber() );
             for( Entry< String, String > entry : optionalIfSiblingPresentElseForbidden.entrySet() ) {
                 if( presentSDO.get( entry.getValue() ) == null ) {
                     if( presentSDO.get( entry.getKey() ) != null ) {
