@@ -485,7 +485,6 @@ public class DataObjectPresenceConditionValidator {
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
             // TODO: same as "MOlnNs" ?
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MONamPlt\" in PresenceCondition" );
             if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 = new HashSet<>();
             mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2.add( name );
             break;
@@ -1565,7 +1564,12 @@ public class DataObjectPresenceConditionValidator {
                         lnNs = da1.get().getVal().get( 0 ).getValue();
                     }
                     else if( da1.get().getVal().size() > 1 ) {
-                        // TODO: error
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.WARNING,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                "[NSD validation] PresenceCondition \"MONamPlt\" for DO for LNodeType (line " + lNodeType.getLineNumber() + "): multiple values for lnNs",
+                                new Object[] { lNodeType } ));
                     }
                 }
                 
@@ -1595,7 +1599,12 @@ public class DataObjectPresenceConditionValidator {
                                 ldNs = da2.get().getVal().get( 0 ).getValue();
                             }
                             else if( da2.get().getVal().size() > 1 ) {
-                                // TODO: error
+                                diagnostics.add( new BasicDiagnostic(
+                                        Diagnostic.WARNING,
+                                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                        0,
+                                        "[NSD validation] PresenceCondition \"MONamPlt\" for DO for LNodeType (line " + lNodeType.getLineNumber() + "): multiple values for ldNs",
+                                        new Object[] { lNodeType } ));
                             }
                         }
                     }
@@ -1616,17 +1625,13 @@ public class DataObjectPresenceConditionValidator {
                 }
             }
             else {
-                // TODO: error
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "[NSD validation] PresenceCondition \"MONamPlt\" for DO for LNodeType (line " + lNodeType.getLineNumber() + "): DOType not found",
+                        new Object[] { lNodeType } ));
             }
-                
-//                if( presentDO.get( name ) != null ) {
-//                    diagnostics.add( new BasicDiagnostic(
-//                            Diagnostic.WARNING,
-//                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-//                            0,
-//                            "[NSD validation] verification of PresenceCondition \"MONamPlt\" for DO " + name + " is not implemented in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName,
-//                            new Object[] { lNodeType } ));
-//                }
         }
 
         // presCond: "OF" :
