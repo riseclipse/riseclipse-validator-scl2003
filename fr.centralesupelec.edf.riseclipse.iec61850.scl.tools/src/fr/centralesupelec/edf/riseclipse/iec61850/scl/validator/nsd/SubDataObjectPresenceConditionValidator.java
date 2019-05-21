@@ -21,6 +21,7 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.BasicDiagnostic;
@@ -30,9 +31,11 @@ import org.eclipse.emf.common.util.EList;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataObject;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
@@ -479,8 +482,7 @@ public class SubDataObjectPresenceConditionValidator {
             mandatoryIfMeasuredValueExposesRange.add( name );
             break;
         case "OMSynPh" :
-            // This attribute is optional if value of 'phsRef'' is Synchrophasor otherwise Mandatory]]></Doc>
-            console.warning( "[NSD setup] NOT IMPLEMENTED: SubDataObject " + name + " declared as \"OMSynPh\" in PresenceCondition" );
+            // This attribute is optional if value of 'phsRef'' is Synchrophasor otherwise Mandatory
             if( optionalIfPhsRefIsSynchrophasorElseMandatory == null ) optionalIfPhsRefIsSynchrophasorElseMandatory = new HashSet<>();
             optionalIfPhsRefIsSynchrophasorElseMandatory.add( name );
             break;
@@ -1403,14 +1405,53 @@ public class SubDataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): SubDataObject
         // TODO
         if( optionalIfPhsRefIsSynchrophasorElseMandatory != null ) {
-            for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
-                if( presentSDO.get( name ) != null ) {
+            String sdoName = optionalIfPhsRefIsSynchrophasorElseMandatory.stream().findFirst().get();
+            boolean phsRefIsSynchrophasor = false;
+            Optional< DA > phsRef = doType
+                    .getDA()
+                    .stream()
+                    .filter( da -> "phsRef".equals( da.getName() ))
+                    .findAny();
+            if( phsRef.isPresent() ) {
+                EList< Val > vals = phsRef.get().getVal();
+                if( vals.size() == 0 ) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] verification of PresenceCondition \"OMSynPh\" for SDO " + name + " is not implemented in DOType (line " + doType.getLineNumber() + ") with CDC " + cdc.getName(),
+                            "[NSD validation] verification of PresenceCondition \"OMSynPh\" for SDO " + sdoName + " for DOType (line " + doType.getLineNumber() + "): no value for phsRef",
                             new Object[] { doType } ));
+                }
+                else if( vals.size() == 1 ) {
+                    phsRefIsSynchrophasor = "Synchrophasor".equals( vals.get( 0 ).getValue() );
+                }
+                else {
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] verification of PresenceCondition \"OMSynPh\" for SDO " + sdoName + " for DOType (line " + doType.getLineNumber() + "): multiple values for phsRef",
+                            new Object[] { doType } ));
+                }
+            }
+            else {
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "[NSD validation] verification of PresenceCondition \"OMSynPh\" for SDO " + sdoName + " for DOType (line " + doType.getLineNumber() + "): DA phsRef not found",
+                        new Object[] { doType } ));
+            }
+            if( ! phsRefIsSynchrophasor ) {
+                for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
+                    if( presentSDO.get( name ) == null ) {
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.ERROR,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                "[NSD validation] SDO " + name + " is mandatory in DOType (line " + doType.getLineNumber() + ") because phsRef is not Synchrophasor",
+                                new Object[] { doType } ));
+                    }
                 }
             }
         }
