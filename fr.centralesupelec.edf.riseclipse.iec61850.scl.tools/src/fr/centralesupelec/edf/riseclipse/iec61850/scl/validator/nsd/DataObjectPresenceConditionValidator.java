@@ -1543,7 +1543,8 @@ public class DataObjectPresenceConditionValidator {
             AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MONamPlt\" on LNodeType (id=" + lNodeType.getId() + ") at line " + lNodeType.getLineNumber() );
 
             // The attribute lnNs shall be a DataAttribute of the name plate NamPlt of a logical node
-            String lnNs = "";
+            // lnNs shall be available only if the logical node name space deviates from the name space referenced in the attribute ldNs of the LLN0
+            String lnNs = null;
             Optional< DOType > doType =
                     lNodeType
                     .getDO()
@@ -1575,7 +1576,7 @@ public class DataObjectPresenceConditionValidator {
                 
                 // The attribute ldNs shall be a DataAttribute of the name plate NamPlt of the LOGICAL- NODE-ZERO (LLN0).
                 for( AnyLN anyLN : lNodeType.getReferredByAnyLN() ) {
-                    String ldNs = "";
+                    String ldNs = null;
                     doType =
                             anyLN
                             .getParentLDevice()
@@ -1609,7 +1610,7 @@ public class DataObjectPresenceConditionValidator {
                         }
                     }
                     
-                    if( ! lnNs.equals( ldNs )) {
+                    if(( lnNs != null ) && ( ! lnNs.equals( ldNs ))) {
                         for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 ) {
                             if( presentDO.get( name ) == null ) {
                                 diagnostics.add( new BasicDiagnostic(
