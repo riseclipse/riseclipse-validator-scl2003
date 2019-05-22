@@ -26,7 +26,7 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.BasicType;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Enumeration;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 
 public abstract class TypeValidator {
 
@@ -39,9 +39,13 @@ public abstract class TypeValidator {
     public static void buildValidators( Stream< BasicType > basicTypeStream, Stream< Enumeration > enumerationStream, Stream< ConstructedAttribute > constructedAttributeStream ) {
         basicTypeStream
         .forEach( basicType -> validators.put( basicType.getName(), BasicTypeValidator.get( basicType )));
+        
         enumerationStream
         .forEach( enumeration -> validators.put( enumeration.getName(), new EnumerationValidator( enumeration )));
+        
+        constructedAttributeStream
+        .forEach( contructedAttribute -> validators.put( contructedAttribute.getName(), new ConstructedAttributeValidator( contructedAttribute )));
     }
 
-    public abstract boolean validateDA( DA da, DiagnosticChain diagnostics );
+    public abstract boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics );
 }

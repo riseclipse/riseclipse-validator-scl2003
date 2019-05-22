@@ -26,7 +26,7 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Enumeration;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.EnumType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.EnumVal;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
@@ -56,8 +56,8 @@ public class EnumerationValidator extends TypeValidator {
     }
     
     @Override
-    public boolean validateDA( DA da, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] EnumerationValidator.validateDA( " + da.getName() + " ) at line " + da.getLineNumber() );
+    public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] EnumerationValidator.validateAbstractDataAttribute( " + ada.getName() + " ) at line " + ada.getLineNumber() );
         
         if(( inheritedFromName != null ) && ( inheritedFrom == null )) {
             TypeValidator inheritedValidator = TypeValidator.get( inheritedFromName );
@@ -70,59 +70,56 @@ public class EnumerationValidator extends TypeValidator {
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
                         "[NSD validation] validator for inherited enumeration " + inheritedFromName + " not found",
-                        new Object[] { da } ));
+                        new Object[] { ada } ));
                 // Avoid checking again
                 inheritedFromName = null;
             }
         }
 
         boolean res = true;
-        if( ! "Enum".equals(  da.getBType() )) {
+        if( ! "Enum".equals(  ada.getBType() )) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] bType of DA " + da.getName() + " in DOType (id = " + da.getParentDOType().getId()
-                            + ", line = " + da.getParentDOType().getLineNumber() + ") is not Enum",
-                    new Object[] { da } ));
+                    "[NSD validation] bType of DA/BDA " + ada.getName() + " line = " + ada.getLineNumber() + ") is not Enum",
+                    new Object[] { ada } ));
             res = false;
         }
-        if( ! getName().equals( da.getType() )) {
+        if( ! getName().equals( ada.getType() )) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] type of DA " + da.getName() + " in DOType (id = " + da.getParentDOType().getId()
-                            + ", line = " + da.getParentDOType().getLineNumber() + ") is not " + getName(),
-                    new Object[] { da } ));
+                    "[NSD validation] type of DA/BDA " + ada.getName() + " line = " + ada.getLineNumber() + ") is not " + getName(),
+                    new Object[] { ada } ));
             res = false;
         }
-        for( Val val : da.getVal() ) {
-            res = validateValue( da, val.getValue(), diagnostics ) && res;
+        for( Val val : ada.getVal() ) {
+            res = validateValue( ada, val.getValue(), diagnostics ) && res;
         }
         
-        if( da.getRefersToEnumType() != null ) {
-            res = validateEnumType( da.getRefersToEnumType(), diagnostics ) && res;
+        if( ada.getRefersToEnumType() != null ) {
+            res = validateEnumType( ada.getRefersToEnumType(), diagnostics ) && res;
         }
         
         return res;
     }
     
-    protected boolean validateValue( DA da, String value, DiagnosticChain diagnostics ) {
+    protected boolean validateValue( AbstractDataAttribute ada, String value, DiagnosticChain diagnostics ) {
         boolean res = true;
         
         if( ! literals.containsKey( value )) {
             if( inheritedFrom != null ) {
-                res = inheritedFrom.validateValue( da, value, diagnostics ) && res;
+                res = inheritedFrom.validateValue( ada, value, diagnostics ) && res;
             }
             else {
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] value of DA " + da.getName() + " in DOType (id = " + da.getParentDOType().getId()
-                                + ", line = " + da.getParentDOType().getLineNumber() + ") is not valid",
-                        new Object[] { da } ));
+                        "[NSD validation] value of DA/BDA " + ada.getName() + " line = " + ada.getLineNumber() + ") is not valid",
+                        new Object[] { ada } ));
                 res = false;
             }
         }
@@ -150,21 +147,36 @@ public class EnumerationValidator extends TypeValidator {
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
                             "[NSD validation] EnumVal " + enumVal.getValue() + " in EnumType (id = " + enumType.getId()
-                                    + " at line " + enumVal.getLineNumber() + " is unknown",
+                                    + ") at line " + enumVal.getLineNumber() + " is unknown",
                             new Object[] { enumVal } ));
                     res = false;
                 }
             }
-            else if( literals.get( enumVal.getValue() ).equals( enumVal.getOrd() )) {
-                diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.ERROR,
-                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                        0,
-                        "[NSD validation] EnumVal " + enumVal.getValue() + " in EnumType (id = " + enumType.getId()
-                                + " at line " + enumVal.getLineNumber() + " has incorrect ord (" + enumVal.getOrd()
-                                + " instead of " + literals.get( enumVal.getValue() ),
-                        new Object[] { enumVal } ));
-                res = false;
+            else {
+                try {
+                    Integer val = new Integer( literals.get( enumVal.getValue() ));
+                    if( ! val.equals( enumVal.getOrd() )) {
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.ERROR,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                "[NSD validation] EnumVal " + enumVal.getValue() + " in EnumType (id = " + enumType.getId()
+                                        + ") at line " + enumVal.getLineNumber() + " has incorrect ord (" + enumVal.getOrd()
+                                        + " instead of " + literals.get( enumVal.getValue() ) + ")",
+                                new Object[] { enumVal } ));
+                        res = false;
+                    }
+                }
+                catch( NumberFormatException e ) {
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.ERROR,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] EnumVal " + enumVal.getValue() + " in EnumType (id = " + enumType.getId()
+                                    + ") at line " + enumVal.getLineNumber() + " is not an integer",
+                            new Object[] { enumVal } ));
+                    res = false;
+                }
             }
         }
         

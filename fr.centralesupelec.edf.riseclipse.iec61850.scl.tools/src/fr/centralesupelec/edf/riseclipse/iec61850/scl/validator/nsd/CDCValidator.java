@@ -101,10 +101,11 @@ public class CDCValidator {
         for( DA da : doType.getDA() ) {
             TypeValidator validator = dataAttributeValidatorMap.get( da.getName() );
             if( validator != null ) {
-                validator.validateDA( da, diagnostics );
+                validator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): validator for DA " + da.getName() + " not found" );
+                // DA not allowed, error will be reported by PresenceConditionValidator
+                //AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): validator for DA " + da.getName() + " not found" );
             }
         }
       
@@ -112,7 +113,6 @@ public class CDCValidator {
             CDCValidator validator = subDataObjectValidatorMap.get( sdo.getName() );
             if( validator != null ) {
                 if( sdo.getRefersToDOType() != null ) {
-                    AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validateDOType( " + doType.getId() + " ) on sdo " + sdo.getName() );
                     res = validator.validateDOType( sdo.getRefersToDOType(), diagnostics ) && res;
                 }
                 else {
