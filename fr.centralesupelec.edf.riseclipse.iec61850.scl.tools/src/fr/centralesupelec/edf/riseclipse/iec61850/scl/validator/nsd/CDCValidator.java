@@ -25,7 +25,9 @@ import java.util.stream.Stream;
 import org.eclipse.emf.common.util.DiagnosticChain;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.SubDataObject;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
@@ -45,12 +47,23 @@ public class CDCValidator {
 
     private DataAttributePresenceConditionValidator dataAttributePresenceConditionValidator;
     private SubDataObjectPresenceConditionValidator subDataObjectPresenceConditionValidator;
+    private HashMap< String, TypeValidator > dataAttributeValidatorMap = new HashMap<>();
     private HashMap< String, CDCValidator > subDataObjectValidatorMap = new HashMap<>();
     private HashSet< DOType > validatedDOType = new HashSet<>(); 
 
     private CDCValidator( CDC cdc ) {
         dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( cdc );
         subDataObjectPresenceConditionValidator = SubDataObjectPresenceConditionValidator.get( cdc );
+        
+        for( DataAttribute da : cdc.getDataAttribute() ) {
+            TypeValidator validator = TypeValidator.get( da.getType() );
+            if( validator != null ) {
+                dataAttributeValidatorMap.put( da.getName(), validator );
+            }
+            else {
+                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] Type not found for DataAttribute " + da.getName() );
+            }
+        }
         
         for( SubDataObject sdo : cdc.getSubDataObject() ) {
             CDCValidator validator = CDCValidator.get( sdo.getType() );
@@ -84,6 +97,16 @@ public class CDCValidator {
         .forEach( d -> subDataObjectPresenceConditionValidator.addSDO( d, diagnostics ));
         
         res = subDataObjectPresenceConditionValidator.validate( doType, diagnostics ) && res;
+        
+        for( DA da : doType.getDA() ) {
+            TypeValidator validator = dataAttributeValidatorMap.get( da.getName() );
+            if( validator != null ) {
+                validator.validateDA( da, diagnostics );
+            }
+            else {
+                AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): validator for DA " + da.getName() + " not found" );
+            }
+        }
       
         for( SDO sdo : doType.getSDO() ) {
             CDCValidator validator = subDataObjectValidatorMap.get( sdo.getName() );

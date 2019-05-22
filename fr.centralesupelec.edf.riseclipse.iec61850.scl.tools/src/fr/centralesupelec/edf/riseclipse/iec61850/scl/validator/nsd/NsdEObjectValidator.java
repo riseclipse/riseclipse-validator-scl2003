@@ -41,6 +41,7 @@ public class NsdEObjectValidator implements EValidator {
 
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
         // Order is important !
+        TypeValidator.buildValidators( nsdResourceSet.getBasicTypeStream(), nsdResourceSet.getEnumerationStream(), nsdResourceSet.getConstructedAttributeStream() );
         CDCValidator.buildValidators( nsdResourceSet.getCDCStream() );
         LNClassValidator.buildValidators( nsdResourceSet.getLNClassStream() );
     }
