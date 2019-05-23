@@ -1576,6 +1576,10 @@ public class DataObjectPresenceConditionValidator {
                 
                 // The attribute ldNs shall be a DataAttribute of the name plate NamPlt of the LOGICAL- NODE-ZERO (LLN0).
                 for( AnyLN anyLN : lNodeType.getReferredByAnyLN() ) {
+                    if(( anyLN.getParentLDevice() == null ) || ( anyLN.getParentLDevice().getLN0() == null )) {
+                        // TODO: error message ?
+                        continue;
+                    }
                     String ldNs = null;
                     doType =
                             anyLN
