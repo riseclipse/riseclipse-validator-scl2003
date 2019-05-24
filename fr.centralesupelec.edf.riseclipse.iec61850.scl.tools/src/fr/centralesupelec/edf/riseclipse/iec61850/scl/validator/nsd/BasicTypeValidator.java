@@ -18,6 +18,7 @@
  */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +48,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Boolean: {0, 1} or {false, true}
                 switch( value ) {
                 case "0" :
                 case "1" :
@@ -64,6 +66,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Signed integer: [-128, 127]
                 try {
                     new Byte( value );
                 }
@@ -79,6 +82,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Signed integer: [-32 768, 32 767]
                 try {
                     new Short( value );
                 }
@@ -94,6 +98,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Signed integer: [-2 147 483 648, 2 147 483 647]
                 try {
                     new Integer( value );
                 }
@@ -109,6 +114,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Signed integer: [-2**63, (2**63)-1]
                 try {
                     new Long( value );
                 }
@@ -124,6 +130,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Unsigned integer: [0, 255]
                 Long v;
                 try {
                     v = new Long( value );
@@ -140,6 +147,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Unsigned integer: [0, 65 535]
                 Long v;
                 try {
                     v = new Long( value );
@@ -156,6 +164,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Unsigned integer: [0, 4 294 967 295]
                 Long v;
                 try {
                     v = new Long( value );
@@ -172,6 +181,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Single-precision floating point according to IEEE 754)
                 try {
                     new Float( value );
                 }
@@ -187,55 +197,122 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Should be able to hold up to 64 bytes. NULL string has length 0
                 return addDiagnosticErrorIfTrue( value.getBytes().length > 64, value, daOrDai, diagnostics );
             }
             
+            @Override
+            protected boolean acceptEmptyValue() {
+                return true;
+            }
         });
         
         validators.put( "VisString64", new BasicTypeValidator( "VisString64" ) {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
-                // TODO: what is a VisString ?
-                return addDiagnosticErrorIfTrue( value.getBytes().length > 64, value, daOrDai, diagnostics );
+                // Should be able to hold up to 64 characters. NULL string has length 0
+                // IEC 61850-6:
+                //   IEC 61850-7-x basic type:    VISIBLE STRING
+                //   XML Schema (xs) data type:   normalizedString
+                //   Value representation:        A character string without tabs, linefeeds and carriage return, restricted to
+                //                                8-bit characters (ISO/IEC 8859-1 characters limited to UTF-8 single byte coding)
+                boolean ok =
+                        value
+                        .codePoints()
+                        .allMatch( codePoint -> Character.UnicodeBlock.BASIC_LATIN       .equals( Character.UnicodeBlock.of( codePoint ))
+                                             || Character.UnicodeBlock.LATIN_1_SUPPLEMENT.equals( Character.UnicodeBlock.of( codePoint )));
+                if( ok ) ok =
+                           ( ! value.contains( "\t"))
+                        && ( ! value.contains( "\n" ))
+                        && ( ! value.contains( "\r" ));
+                if( ok ) ok = value.length() <= 64;
+                return addDiagnosticErrorIfTrue( ! ok, value, daOrDai, diagnostics );
             }
             
+            @Override
+            protected boolean acceptEmptyValue() {
+                return true;
+            }
         });
         
         validators.put( "VisString129", new BasicTypeValidator( "VisString129" ) {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
-                // TODO: what is a VisString ?
-                return addDiagnosticErrorIfTrue( value.getBytes().length > 129, value, daOrDai, diagnostics );
+                // Should be able to hold up to 129 characters. NULL string has length 0
+                boolean ok =
+                        value
+                        .codePoints()
+                        .allMatch( codePoint -> Character.UnicodeBlock.BASIC_LATIN       .equals( Character.UnicodeBlock.of( codePoint ))
+                                             || Character.UnicodeBlock.LATIN_1_SUPPLEMENT.equals( Character.UnicodeBlock.of( codePoint )));
+                if( ok ) ok =
+                           ( ! value.contains( "\t"))
+                        && ( ! value.contains( "\n" ))
+                        && ( ! value.contains( "\r" ));
+                if( ok ) ok = value.length() <= 129;
+                return addDiagnosticErrorIfTrue( ! ok, value, daOrDai, diagnostics );
             }
             
+            @Override
+            protected boolean acceptEmptyValue() {
+                return true;
+            }
         });
         
         validators.put( "VisString255", new BasicTypeValidator( "VisString255" ) {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
-                // TODO: what is a VisString ?
-                return addDiagnosticErrorIfTrue( value.getBytes().length > 255, value, daOrDai, diagnostics );
+                // Should be able to hold up to 255 characters. NULL string has length 0
+                boolean ok =
+                        value
+                        .codePoints()
+                        .allMatch( codePoint -> Character.UnicodeBlock.BASIC_LATIN       .equals( Character.UnicodeBlock.of( codePoint ))
+                                             || Character.UnicodeBlock.LATIN_1_SUPPLEMENT.equals( Character.UnicodeBlock.of( codePoint )));
+                if( ok ) ok =
+                           ( ! value.contains( "\t"))
+                        && ( ! value.contains( "\n" ))
+                        && ( ! value.contains( "\r" ));
+                if( ok ) ok = value.length() <= 255;
+                return addDiagnosticErrorIfTrue( ! ok, value, daOrDai, diagnostics );
             }
             
+            @Override
+            protected boolean acceptEmptyValue() {
+                return true;
+            }
         });
         
         validators.put( "Unicode255", new BasicTypeValidator( "Unicode255" ) {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
-                // TODO: how do we handle Unicode ?
-                return addDiagnosticErrorIfTrue( value.getBytes().length > 255, value, daOrDai, diagnostics );
+                // Should be able to hold up to 255 Unicode characters. NULL string has length 0.
+                // IEC 61850-6:
+                //   IEC 61850-7-x basic type:    UNICODE STRING
+                //   XML Schema (xs) data type:   normalizedString
+                //   Value representation:        A character string without tabs, linefeeds and carriage return. All characters
+                //                                in an XML file are principally Unicode, for example in UTF-8 coding
+                boolean ok =
+                           ( ! value.contains( "\t"))
+                        && ( ! value.contains( "\n" ))
+                        && ( ! value.contains( "\r" ));
+                if( ok ) ok = value.length() <= 255;
+                return addDiagnosticErrorIfTrue( ! ok, value, daOrDai, diagnostics );
             }
             
+            @Override
+            protected boolean acceptEmptyValue() {
+                return true;
+            }
         });
         
         validators.put( "PhyComAddr", new BasicTypeValidator( "PhyComAddr" ) {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Type used for physical communication address (e.g. media access address, priority, and other information) as defined by a SCSM
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -246,16 +323,37 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
-                // TODO
-                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
+                // Instances of classes in the hierarchical information model (ACSI class hierarchy of logical device, logical node, data, data attributes)
+                // shall be constructed by the concatenation of all instance names comprising the whole path-name of an instance of a class that identifies
+                // the instance uniquely.
+                // This type is a case sensitive VisString129 and follows the character set of the ObjectName extended with the "/", "$", ".", "(", ")", "@".
+                // The syntax of an object reference within the scope of a logical device shall be: LDName/LNName[.Name[. ...]], where the "/" shall separate 
+                // the LDName from the rest of the object reference, and the "." shall separate the further names in the hierarchy.
+                // - The "[. ]" indicates an option.
+                // - The "[. ...]" indicates further names of recursively nested definitions.
+                // - The "(…)" shall indicate an array element.
+                // The NULL ObjectReference is an empty ObjectReference whose length is zero(0).
+                // The syntax within the scope of a TPAA shall be: @ObjectName.
+                // The constraints defined in Clause 23 on the use of this type shall be applied.
+                // NOTE When this type is used in SCL, there is an additional possibility to represent references relative to the IED (instead of the full references).
+                // However the appropriate on-line values shall always be absolute references.
+                return addDiagnosticErrorIfTrue( ! value.matches( "@?[\\w\\$]+(/[\\w\\$]+(\\.[\\w\\$]+)*)?" ), value, daOrDai, diagnostics );
             }
             
+            @Override
+            protected boolean acceptEmptyValue() {
+                return true;
+            }
         });
         
         validators.put( "EntryID", new BasicTypeValidator( "EntryID" ) {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // An arbitrary octet string used to identify an entry in a sequence of events such as a log or a buffered report as specified by an SCSM.
+                // NOTE The EntryID (handle) allows a client to re-synchronize, for example, with the sequence of the events stored in the IED. The syntax
+                // of the value is a local issue outside the scope of this standard. However the NULL EntryID used in the standard must be the octet string
+                // whose octets have all the value 0 (zero) and is reserved to indicate an unassigned ID.
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -283,7 +381,10 @@ public abstract class BasicTypeValidator extends TypeValidator {
             ));
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // A currency identification code based on ISO 4217 3-character currency code. The NULL currency is represented by the 3-characters "XXX".
+                // The concrete coding shall be defined by the SCSMs.
                 // TODO: what means "The concrete coding shall be defined by the SCSMs." ?
+                // TODO: are lower case letters accepted ?
                 return addDiagnosticErrorIfTrue( ! ISO_4217_3_characterCurrencyCode.contains( value ), value, daOrDai, diagnostics );
             }
             
@@ -293,6 +394,10 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // UTC time with the epoch of midnight (00:00:00) of 1970-01-01. The presentation is defined in the SCSMs.
+                // The NULL time stamp has all fields set to 0 (zero).
+                // The relation between a timestamp value, the synchronization of an internal time with an external time source
+                // (for example, UTC time), and other information related to time model are available as requirements in Clause 21
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -303,6 +408,10 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Quality contains data that describe the quality of the data from the server. Quality of the data is also related to
+                // the mode of a logical node. Further details can be found in IEC 61850-7-4. The different quality attributes are not independent.
+                // The default value shall be applied if the functionality of the related attribute is not supported. The mapping may specify to
+                // exclude the attribute from the message if it is not supported or if the default value applies.
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -313,6 +422,11 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // GMT time and date used internally by an IED, mainly in the context of reporting and logging. A pair of values {EntryID, EntryTime}
+                // should guarantee an entry/item/row (in a report or log) to be unique. The concrete type is defined by an SCSM.
+                // The NULL EntryTime has all fields set to 0 (zero).
+                // NOTE In an SCSM, this EntryTime type may or may not be the same as Timestamp type used for common data classes in IEC 61850-7-3
+                // and definition of compatible data object classes in IEC 61850-7-4
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -323,6 +437,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Configuration options for control blocks, used to specify one or more conditions under which reports or logs shall be generated
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -333,6 +448,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Options for formatting of reports or to indicate how report has been formatted (depending the context)
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -343,6 +459,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Options for formatting of SVCB message. Applies to SVMessage issued by both MSVCB and USVCB
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -353,6 +470,8 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Indicates what kind of checks a control object of type DPC (double point control, see IEC 61850-7-3)
+                // shall perform before issuing the control operation
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -363,6 +482,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Step control kind
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -373,6 +493,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
             @Override
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                // Double point status kind
                 // TODO
                 return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
@@ -400,17 +521,43 @@ public abstract class BasicTypeValidator extends TypeValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] type of DA/BDA " + ada.getName() + " line = " + ada.getLineNumber() + ") is not " + getName(),
+                    "[NSD validation] type of DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is not " + getName(),
                     new Object[] { ada } ));
             res = false;
         }
         for( Val val : ada.getVal() ) {
-            res = validateValue( ada, val.getValue(), diagnostics ) && res;
+            if( val.getValue().isEmpty() ) {
+                if( ! acceptEmptyValue() ) {
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.ERROR,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] empty value of Val in DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is not valid for " + getName() + " type",
+                            new Object[] { ada } ));
+                    res = false;
+                }
+            }
+            else {
+                res = validateValue( ada, val.getValue(), diagnostics ) && res;
+            }
         }
         for( DAI dai : ada.getReferredByDAI() ) {
             // name is OK because it has been used to create link DAI -> DA
             for( Val val : dai.getVal() ) {
-                res = validateValue( dai, val.getValue(), diagnostics ) && res;
+                if( val.getValue().isEmpty() ) {
+                    if( ! acceptEmptyValue() ) {
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.ERROR,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                "[NSD validation] empty value of Val in DAI \"" + dai.getName() + "\" (line = " + ada.getLineNumber() + ") is not valid for " + getName() + " type",
+                                new Object[] { ada } ));
+                        res = false;
+                    }
+                }
+                else {
+                    res = validateValue( dai, val.getValue(), diagnostics ) && res;
+                }
             }
         }
         
@@ -419,11 +566,15 @@ public abstract class BasicTypeValidator extends TypeValidator {
     
     protected boolean addDiagnosticErrorIfTrue( boolean condition, String value, UnNaming daOrDai, DiagnosticChain diagnostics ) {
         if( condition ) {
+            String name = "";
+            if( daOrDai instanceof AbstractDataAttribute ) name = (( AbstractDataAttribute ) daOrDai ).getName();
+            if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
+            String msgValue = value.isEmpty() ? "empty value" : "value \"" + value + "\"";
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] value " + value + " of Val in DA/BDA/DAI " + daOrDai + " line = " + daOrDai.getLineNumber() + ") is not a valid " + getName() + " value",
+                    "[NSD validation] " + msgValue + " of Val in DA/BDA/DAI \"" + name + "\" (line = " + daOrDai.getLineNumber() + ") is not a valid " + getName() + " value",
                     new Object[] { daOrDai } ));
             return false;
             
@@ -439,11 +590,15 @@ public abstract class BasicTypeValidator extends TypeValidator {
                 Diagnostic.WARNING,
                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                 0,
-                "[NSD validation] verification of value " + value + " of Val in DA/BDA/DAI " + name + " line = " + daOrDai.getLineNumber() + ") is not implemented for BasicType " + getName(),
+                "[NSD validation] verification of value \"" + value + "\" of Val in DA/BDA/DAI \"" + name + "\" (line = " + daOrDai.getLineNumber() + ") is not implemented for BasicType " + getName(),
                 new Object[] { daOrDai } ));
         return true;
     }
 
     protected abstract boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics );
+    
+    protected boolean acceptEmptyValue() {
+        return false;
+    }
 
 }
