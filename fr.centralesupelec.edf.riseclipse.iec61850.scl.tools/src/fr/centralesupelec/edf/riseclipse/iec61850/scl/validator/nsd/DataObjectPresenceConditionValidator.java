@@ -591,21 +591,28 @@ public class DataObjectPresenceConditionValidator {
                         .filter( d -> "dataNs".equals( d.getName() ))
                         .findAny();
                 if( da.isPresent() ) {
-                    String value = " without value";
                     if( da.get().getVal().size() > 0 ) {
-                        value = " with value [";
+                        String value = "";
                         for( Val v : da.get().getVal() ) {
                             value += " " + v.getValue();
                         }
-                        value += " ]";
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.INFO,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber()
+                                        + " is specific because it has DA \"dataNs\" with value [" + value + " ]",
+                                new Object[] { do_ } ));
+                        return true;
                     }
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.INFO,
+                            Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() + " is specific and has DA \"dataNs\"" + value,
+                            "[NSD validation] DO " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber()
+                                    + " is specific because it has DA \"dataNs\" but value is missing",
                             new Object[] { do_ } ));
-                    return true;
+                    return false;
                 }
             }
             diagnostics.add( new BasicDiagnostic(
