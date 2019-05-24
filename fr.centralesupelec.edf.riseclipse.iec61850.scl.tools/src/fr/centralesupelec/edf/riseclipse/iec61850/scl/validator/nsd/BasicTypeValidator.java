@@ -28,6 +28,8 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.BasicType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAI;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.UnNaming;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
@@ -44,7 +46,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "BOOLEAN", new BasicTypeValidator( "BOOLEAN" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 switch( value ) {
                 case "0" :
                 case "1" :
@@ -52,7 +54,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
                 case "true" :
                     return true;
                 default :
-                    return addDiagnosticErrorIfTrue( true, value, da, diagnostics );
+                    return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
                 }
             }
             
@@ -61,12 +63,12 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "INT8", new BasicTypeValidator( "INT8" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 try {
                     new Byte( value );
                 }
                 catch( NumberFormatException e ) {
-                    return addDiagnosticErrorIfTrue( true, value, da, diagnostics );
+                    return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
                 }
                 return true;
             }
@@ -76,12 +78,12 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "INT16", new BasicTypeValidator( "INT16" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 try {
                     new Short( value );
                 }
                 catch( NumberFormatException e ) {
-                    return addDiagnosticErrorIfTrue( true, value, da, diagnostics );
+                    return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
                 }
                 return true;
             }
@@ -91,12 +93,12 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "INT32", new BasicTypeValidator( "INT32" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 try {
                     new Integer( value );
                 }
                 catch( NumberFormatException e ) {
-                    return addDiagnosticErrorIfTrue( true, value, da, diagnostics );
+                    return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
                 }
                 return true;
             }
@@ -106,12 +108,12 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "INT64", new BasicTypeValidator( "INT64" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 try {
                     new Long( value );
                 }
                 catch( NumberFormatException e ) {
-                    return addDiagnosticErrorIfTrue( true, value, da, diagnostics );
+                    return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
                 }
                 return true;
             }
@@ -121,15 +123,15 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "INT8U", new BasicTypeValidator( "INT8U" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 Long v;
                 try {
                     v = new Long( value );
                 }
                 catch( NumberFormatException e ) {
-                    return addDiagnosticErrorIfTrue( true, value, da, diagnostics );
+                    return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
                 }
-                return addDiagnosticErrorIfTrue(( v < 0 ) || ( v > 255 ), value, da, diagnostics );
+                return addDiagnosticErrorIfTrue(( v < 0 ) || ( v > 255 ), value, daOrDai, diagnostics );
             }
             
         });
@@ -137,15 +139,15 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "INT16U", new BasicTypeValidator( "INT16U" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 Long v;
                 try {
                     v = new Long( value );
                 }
                 catch( NumberFormatException e ) {
-                    return addDiagnosticErrorIfTrue( true, value, da, diagnostics );
+                    return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
                 }
-                return addDiagnosticErrorIfTrue(( v < 0 ) || ( v > 65535 ), value, da, diagnostics );
+                return addDiagnosticErrorIfTrue(( v < 0 ) || ( v > 65535 ), value, daOrDai, diagnostics );
             }
             
         });
@@ -153,15 +155,15 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "INT32U", new BasicTypeValidator( "INT32U" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 Long v;
                 try {
                     v = new Long( value );
                 }
                 catch( NumberFormatException e ) {
-                    return addDiagnosticErrorIfTrue( true, value, da, diagnostics );
+                    return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
                 }
-                return addDiagnosticErrorIfTrue(( v < 0 ) || ( v > 4294967295L ), value, da, diagnostics );
+                return addDiagnosticErrorIfTrue(( v < 0 ) || ( v > 4294967295L ), value, daOrDai, diagnostics );
             }
             
         });
@@ -169,12 +171,12 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "FLOAT32", new BasicTypeValidator( "FLOAT32" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 try {
                     new Float( value );
                 }
                 catch( NumberFormatException e ) {
-                    return addDiagnosticErrorIfTrue( true, value, da, diagnostics );
+                    return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
                 }
                 return true;
             }
@@ -184,8 +186,8 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "Octet64", new BasicTypeValidator( "Octet64" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
-                return addDiagnosticErrorIfTrue( value.getBytes().length > 64, value, da, diagnostics );
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
+                return addDiagnosticErrorIfTrue( value.getBytes().length > 64, value, daOrDai, diagnostics );
             }
             
         });
@@ -193,9 +195,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "VisString64", new BasicTypeValidator( "VisString64" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO: what is a VisString ?
-                return addDiagnosticErrorIfTrue( value.getBytes().length > 64, value, da, diagnostics );
+                return addDiagnosticErrorIfTrue( value.getBytes().length > 64, value, daOrDai, diagnostics );
             }
             
         });
@@ -203,9 +205,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "VisString129", new BasicTypeValidator( "VisString129" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO: what is a VisString ?
-                return addDiagnosticErrorIfTrue( value.getBytes().length > 129, value, da, diagnostics );
+                return addDiagnosticErrorIfTrue( value.getBytes().length > 129, value, daOrDai, diagnostics );
             }
             
         });
@@ -213,9 +215,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "VisString255", new BasicTypeValidator( "VisString255" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO: what is a VisString ?
-                return addDiagnosticErrorIfTrue( value.getBytes().length > 255, value, da, diagnostics );
+                return addDiagnosticErrorIfTrue( value.getBytes().length > 255, value, daOrDai, diagnostics );
             }
             
         });
@@ -223,9 +225,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "Unicode255", new BasicTypeValidator( "Unicode255" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO: how do we handle Unicode ?
-                return addDiagnosticErrorIfTrue( value.getBytes().length > 255, value, da, diagnostics );
+                return addDiagnosticErrorIfTrue( value.getBytes().length > 255, value, daOrDai, diagnostics );
             }
             
         });
@@ -233,9 +235,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "PhyComAddr", new BasicTypeValidator( "PhyComAddr" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -243,9 +245,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "ObjRef", new BasicTypeValidator( "ObjRef" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -253,9 +255,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "EntryID", new BasicTypeValidator( "EntryID" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -280,9 +282,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
                     "XPD", "XPF", "XPT", "XSU", "XTS", "XUA", "XXX", "YER", "ZAR", "ZMW", "ZWL", "XXX"
             ));
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO: what means "The concrete coding shall be defined by the SCSMs." ?
-                return addDiagnosticErrorIfTrue( ! ISO_4217_3_characterCurrencyCode.contains( value ), value, da, diagnostics );
+                return addDiagnosticErrorIfTrue( ! ISO_4217_3_characterCurrencyCode.contains( value ), value, daOrDai, diagnostics );
             }
             
         });
@@ -290,9 +292,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "Timestamp", new BasicTypeValidator( "Timestamp" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -300,9 +302,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "Quality", new BasicTypeValidator( "Quality" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -310,9 +312,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "EntryTime", new BasicTypeValidator( "EntryTime" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -320,9 +322,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "TrgOps", new BasicTypeValidator( "TrgOps" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -330,9 +332,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "OptFlds", new BasicTypeValidator( "OptFlds" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -340,9 +342,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "SvOptFlds", new BasicTypeValidator( "SvOptFlds" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -350,9 +352,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "Check", new BasicTypeValidator( "Check" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -360,9 +362,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "Tcmd", new BasicTypeValidator( "Tcmd" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -370,9 +372,9 @@ public abstract class BasicTypeValidator extends TypeValidator {
         validators.put( "Dbpos", new BasicTypeValidator( "Dbpos" ) {
 
             @Override
-            protected boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics ) {
+            protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // TODO
-                return addDiagnosticWarningNotImplemented( value, da, diagnostics );
+                return addDiagnosticWarningNotImplemented( value, daOrDai, diagnostics );
             }
             
         });
@@ -405,34 +407,43 @@ public abstract class BasicTypeValidator extends TypeValidator {
         for( Val val : ada.getVal() ) {
             res = validateValue( ada, val.getValue(), diagnostics ) && res;
         }
+        for( DAI dai : ada.getReferredByDAI() ) {
+            // name is OK because it has been used to create link DAI -> DA
+            for( Val val : dai.getVal() ) {
+                res = validateValue( dai, val.getValue(), diagnostics ) && res;
+            }
+        }
         
         return res;
     }
     
-    protected boolean addDiagnosticErrorIfTrue( boolean condition, String value, AbstractDataAttribute da, DiagnosticChain diagnostics ) {
+    protected boolean addDiagnosticErrorIfTrue( boolean condition, String value, UnNaming daOrDai, DiagnosticChain diagnostics ) {
         if( condition ) {
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] value " + value + " of Val in DA/BDA " + da + " line = " + da.getLineNumber() + ") is not a valid " + getName() + " value",
-                    new Object[] { da } ));
+                    "[NSD validation] value " + value + " of Val in DA/BDA/DAI " + daOrDai + " line = " + daOrDai.getLineNumber() + ") is not a valid " + getName() + " value",
+                    new Object[] { daOrDai } ));
             return false;
             
         }
         return true;
     }
     
-    protected boolean addDiagnosticWarningNotImplemented( String value, AbstractDataAttribute da, DiagnosticChain diagnostics ) {
+    protected boolean addDiagnosticWarningNotImplemented( String value, UnNaming daOrDai, DiagnosticChain diagnostics ) {
+        String name = "";
+        if( daOrDai instanceof AbstractDataAttribute ) name = (( AbstractDataAttribute ) daOrDai ).getName();
+        if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
         diagnostics.add( new BasicDiagnostic(
                 Diagnostic.WARNING,
                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                 0,
-                "[NSD validation] verification of value " + value + " of Val in DA/BDA " + da + " line = " + da.getLineNumber() + ") is not implemented for BasicType " + getName(),
-                new Object[] { da } ));
+                "[NSD validation] verification of value " + value + " of Val in DA/BDA/DAI " + name + " line = " + daOrDai.getLineNumber() + ") is not implemented for BasicType " + getName(),
+                new Object[] { daOrDai } ));
         return true;
     }
 
-    protected abstract boolean validateValue( AbstractDataAttribute da, String value, DiagnosticChain diagnostics );
+    protected abstract boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics );
 
 }
