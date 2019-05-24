@@ -209,7 +209,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a4 (16 may 2019)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a5 (23 may 2019)" );
         console.info( "" );
     }
 
