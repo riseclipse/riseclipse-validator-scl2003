@@ -45,9 +45,10 @@ public class LNClassValidator {
         .forEach( lnClass -> validators.put( lnClass.getName(), new LNClassValidator( lnClass )));
     }
 
+    private static HashSet< String > validatedLNodeType = new HashSet<>();
+
     private DataObjectPresenceConditionValidator dataObjectPresenceConditionValidator;
     private HashMap< String, CDCValidator > dataObjectValidatorMap = new HashMap<>();
-    private HashSet< LNodeType > validatedLNodeType = new HashSet<>();
 
     private LNClassValidator( AnyLNClass anyLNClass ) {
         dataObjectPresenceConditionValidator = DataObjectPresenceConditionValidator.get( anyLNClass );
@@ -69,9 +70,9 @@ public class LNClassValidator {
     }
     
     public boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
-        if( validatedLNodeType.contains( lNodeType )) return true;
+        if( validatedLNodeType.contains( lNodeType.getId() )) return true;
         AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] LNClassValidator.validateLNodeType( " + lNodeType.getId() + " ) at line " + lNodeType.getLineNumber() );
-        validatedLNodeType.add( lNodeType );
+        validatedLNodeType.add( lNodeType.getId() );
 
         boolean res = true;
 

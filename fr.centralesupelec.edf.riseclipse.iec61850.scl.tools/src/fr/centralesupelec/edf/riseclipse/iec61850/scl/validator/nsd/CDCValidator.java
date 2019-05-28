@@ -45,11 +45,12 @@ public class CDCValidator {
         .forEach( cdc -> validators.put( cdc.getName(), new CDCValidator( cdc )));
     }
 
+    private static HashSet< String > validatedDOType = new HashSet<>(); 
+
     private DataAttributePresenceConditionValidator dataAttributePresenceConditionValidator;
     private SubDataObjectPresenceConditionValidator subDataObjectPresenceConditionValidator;
     private HashMap< String, TypeValidator > dataAttributeValidatorMap = new HashMap<>();
     private HashMap< String, CDCValidator > subDataObjectValidatorMap = new HashMap<>();
-    private HashSet< DOType > validatedDOType = new HashSet<>(); 
 
     private CDCValidator( CDC cdc ) {
         dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( cdc );
@@ -78,15 +79,15 @@ public class CDCValidator {
     }
 
     public boolean validateDOType( DOType doType, DiagnosticChain diagnostics ) {
-        if( validatedDOType.contains( doType )) return true;
+        if( validatedDOType.contains( doType.getId() )) return true;
         AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] CDCValidator.validateDOType( " + doType.getId() + " ) at line " + doType.getLineNumber() );
-        validatedDOType.add( doType );
+        validatedDOType.add( doType.getId() );
         
         dataAttributePresenceConditionValidator.reset();
         doType
         .getDA()
         .stream()
-        .forEach( d -> dataAttributePresenceConditionValidator.addDA( d, diagnostics ));
+        .forEach( d -> dataAttributePresenceConditionValidator.addModelData( d, d.getName(), diagnostics ));
       
         boolean res = dataAttributePresenceConditionValidator.validate( doType, diagnostics );
         
@@ -94,7 +95,7 @@ public class CDCValidator {
         doType
         .getSDO()
         .stream()
-        .forEach( d -> subDataObjectPresenceConditionValidator.addSDO( d, diagnostics ));
+        .forEach( d -> subDataObjectPresenceConditionValidator.addModelData( d, d.getName(), diagnostics ));
         
         res = subDataObjectPresenceConditionValidator.validate( doType, diagnostics ) && res;
         

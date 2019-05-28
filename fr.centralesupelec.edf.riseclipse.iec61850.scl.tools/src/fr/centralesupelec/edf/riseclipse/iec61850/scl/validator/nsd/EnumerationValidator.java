@@ -37,11 +37,12 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class EnumerationValidator extends TypeValidator {
     
+    private static HashSet< String > validatedEnumType = new HashSet<>();
+
     private HashMap< String, Integer > literals = new HashMap<>();
     private String name;
     private String inheritedFromName;
     private EnumerationValidator inheritedFrom;
-    private HashSet< EnumType > validatedEnumType = new HashSet<>();
 
     public EnumerationValidator( Enumeration enumeration ) {
         this.name = enumeration.getName();
@@ -139,9 +140,9 @@ public class EnumerationValidator extends TypeValidator {
     }
 
     public boolean validateEnumType( EnumType enumType, DiagnosticChain diagnostics ) {
-        if( validatedEnumType.contains( enumType )) return true;
+        if( validatedEnumType.contains( enumType.getId() )) return true;
         AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] EnumerationValidator.validateEnumType( " + enumType.getId() + " ) at line " + enumType.getLineNumber() );
-        validatedEnumType.add( enumType );
+        validatedEnumType.add( enumType.getId() );
         
         boolean res = true;
         

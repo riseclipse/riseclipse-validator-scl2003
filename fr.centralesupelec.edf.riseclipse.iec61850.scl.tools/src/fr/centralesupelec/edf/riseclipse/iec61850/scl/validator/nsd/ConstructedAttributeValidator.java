@@ -32,9 +32,10 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class ConstructedAttributeValidator extends TypeValidator {
 
+    private static HashSet< String > validatedDAType = new HashSet<>(); 
+
     private SubDataAttributePresenceConditionValidator subDataAttributePresenceConditionValidator;
     private HashMap< String, TypeValidator > subDataAttributeValidatorMap = new HashMap<>();
-    private HashSet< DAType > validatedDAType = new HashSet<>(); 
 
     public ConstructedAttributeValidator( ConstructedAttribute contructedAttribute ) {
         subDataAttributePresenceConditionValidator = SubDataAttributePresenceConditionValidator.get( contructedAttribute );
@@ -62,15 +63,15 @@ public class ConstructedAttributeValidator extends TypeValidator {
     }
 
     private boolean validateDAType( DAType daType, DiagnosticChain diagnostics ) {
-        if( validatedDAType.contains( daType )) return true;
+        if( validatedDAType.contains( daType.getId() )) return true;
         AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateDAType( " + daType.getId() + " ) at line " + daType.getLineNumber() );
-        validatedDAType.add( daType );
+        validatedDAType.add( daType.getId() );
         
         subDataAttributePresenceConditionValidator.reset();
         daType
         .getBDA()
         .stream()
-        .forEach( bda -> subDataAttributePresenceConditionValidator.addBDA( bda, diagnostics ));
+        .forEach( bda -> subDataAttributePresenceConditionValidator.addModelData( bda, bda.getName(), diagnostics ));
       
         boolean res = subDataAttributePresenceConditionValidator.validate( daType, diagnostics );
         
