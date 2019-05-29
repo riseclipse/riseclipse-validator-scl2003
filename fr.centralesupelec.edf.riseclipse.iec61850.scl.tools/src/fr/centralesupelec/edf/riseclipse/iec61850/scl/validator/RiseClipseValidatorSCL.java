@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.provider.SclItemProviderAdapterFactory;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities.SclModelLoader;
@@ -50,6 +51,18 @@ import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 public class RiseClipseValidatorSCL {
 
     public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
+    
+    private static final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
+    private static final Integer DEFAULT_NAMESPACE_VERSION = new Integer( 2007 );
+    private static final String DEFAULT_NAMESPACE_REVISION = "B";
+    private static final Integer DEFAULT_NAMESPACE_RELEASE = null;
+    
+    public static final NsIdentification DEFAULT_NS_IDENTIFICATION = new NsIdentification(
+            DEFAULT_NAMESPACE_ID,
+            DEFAULT_NAMESPACE_VERSION,
+            DEFAULT_NAMESPACE_REVISION,
+            DEFAULT_NAMESPACE_RELEASE
+    );
     
     private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
