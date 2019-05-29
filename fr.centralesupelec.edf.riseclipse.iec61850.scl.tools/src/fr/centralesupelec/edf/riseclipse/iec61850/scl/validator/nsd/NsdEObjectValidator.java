@@ -41,9 +41,14 @@ public class NsdEObjectValidator implements EValidator {
 
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
         // Order is important !
-        TypeValidator.buildValidators( nsdResourceSet.getBasicTypeStream(), nsdResourceSet.getEnumerationStream(), nsdResourceSet.getConstructedAttributeStream() );
-        CDCValidator.buildValidators( nsdResourceSet.getCDCStream() );
-        LNClassValidator.buildValidators( nsdResourceSet.getLNClassStream() );
+        TypeValidator.buildValidators(
+                nsdResourceSet.getBasicTypeStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ),
+                nsdResourceSet.getEnumerationStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ),
+                nsdResourceSet.getConstructedAttributeStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
+        CDCValidator.buildValidators(
+                nsdResourceSet.getCDCStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
+        LNClassValidator.buildValidators(
+                nsdResourceSet.getLNClassStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
     }
 
     @Override
