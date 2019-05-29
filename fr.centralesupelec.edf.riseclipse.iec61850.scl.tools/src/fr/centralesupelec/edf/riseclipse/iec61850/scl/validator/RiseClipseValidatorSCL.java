@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.PresenceCondition;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.provider.SclItemProviderAdapterFactory;
@@ -73,12 +75,16 @@ public class RiseClipseValidatorSCL {
 
     private static IRiseClipseConsole console;
 
+    private static boolean hiddenDoor = false;
+
     private static void usage() {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         console.info( "java -jar RiseClipseValidatorSCL.jar --help" );
         console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose | --info | --warning | --error] [--make-explicit-links] (<oclFile> | <nsdFile> | <sclFile>)+" );
         console.info( "Files ending with \".ocl\" are considered OCL files, "
-                + "files ending with \".nsd\" are considered NSD files, "
+                + "files ending with \".nsd\" are considered NS files, "
+                + "files ending with \".snsd\" are considered ServiceNS files, "
+                + "files ending with \".AppNS\" are considered ApplicableServiceNS files, "
                 + "files ending with \".nsdoc\" are considered NSDoc files, "
                 + "all others are considered SCL files" );
         System.exit( -1 );
@@ -89,7 +95,9 @@ public class RiseClipseValidatorSCL {
         displayLegal();
         console.info( "java -jar RiseClipseValidatorSCL.jar option* file*" );
         console.info( "\tFiles ending with \".ocl\" are considered OCL files," );
-        console.info( "\tfiles ending with \".nsd\" are considered NSD files," );
+        console.info( "\tfiles ending with \".nsd\" are considered NS files," );
+        console.info( "\tfiles ending with \".snsd\" are considered ServiceNS files," );
+        console.info( "\tfiles ending with \".AppNS\" are considered ApplicableServiceNS files (at most one should be given)," );
         console.info( "\tfiles ending with \".nsdoc\" are considered NSDoc files," );
         console.info( "\tall others are considered SCL files." );
         console.info( "" );
@@ -159,6 +167,9 @@ public class RiseClipseValidatorSCL {
                 else if( "--display-nsd-messages".equals( args[i] ) ) {
                     displayNsdMessages = true;
                 }
+                else if( "--hidden-door".equals( args[i] ) ) {
+                    hiddenDoor  = true;
+                }
                 else {
                     console = new TextRiseClipseConsole( useColor );
                     console.error( "Unrecognized option " + args[i] );
@@ -190,6 +201,14 @@ public class RiseClipseValidatorSCL {
                 nsdFiles.add( args[i] );
                 nsdValidation = true;
             }
+            else if( args[i].endsWith( ".snsd" )) {
+                nsdFiles.add( args[i] );
+                nsdValidation = true;
+            }
+            else if( args[i].endsWith( ".AppNS" )) {
+                nsdFiles.add( args[i] );
+                nsdValidation = true;
+            }
             else if( args[i].endsWith( ".nsdoc" )) {
                 nsdFiles.add( args[i] );
                 nsdValidation = true;
@@ -198,11 +217,25 @@ public class RiseClipseValidatorSCL {
                 sclFiles.add( args[i] );
             }
         }
+        
+        if( hiddenDoor ) {
+            doHiddenDoor( oclFiles, nsdFiles, sclFiles );
+        }
 
         prepare( oclFiles, nsdFiles, displayNsdMessages );
         for( int i = 0; i < sclFiles.size(); ++i ) {
             run( makeExplicitLinks, sclFiles.get( i ));
         }
+    }
+
+    private static void doHiddenDoor( ArrayList< @NonNull String > oclFiles, ArrayList< @NonNull String > nsdFiles, ArrayList<String> sclFiles ) {
+        prepare( oclFiles, nsdFiles, false );
+        
+        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION );
+        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+        pc.forEach( c -> console.info(  "PresenceCondition " + c.getName() ));
+        
+        System.exit( 0 );
     }
 
     private static void displayLegal() {
