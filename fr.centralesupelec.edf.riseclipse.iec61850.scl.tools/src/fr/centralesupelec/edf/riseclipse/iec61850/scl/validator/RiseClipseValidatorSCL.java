@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.PresenceCondition;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.SCL;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.provider.SclItemProviderAdapterFactory;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities.SclModelLoader;
@@ -188,7 +189,7 @@ public class RiseClipseValidatorSCL {
             console.setLevel( level );
         }
         
-        console.doNotDisplayIdenticalMessages();
+        //console.doNotDisplayIdenticalMessages();
 
         ArrayList< @NonNull String > oclFiles = new ArrayList<>();
         ArrayList< @NonNull String > nsdFiles = new ArrayList<>();
@@ -232,13 +233,55 @@ public class RiseClipseValidatorSCL {
     private static void doHiddenDoor( ArrayList< @NonNull String > oclFiles, ArrayList< @NonNull String > nsdFiles, ArrayList<String> sclFiles ) {
         prepare( oclFiles, nsdFiles, false );
         
-        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION );
-        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-        pc.forEach( c -> console.info(  "PresenceCondition " + c.getName() ));
+//        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION );
+//        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+//        pc.forEach( c -> console.info(  "PresenceCondition " + c.getName() ));
         
-        Stream< ConstructedAttribute > ca = nsdValidator.getNsdLoader().getResourceSet().getConstructedAttributeStream( DEFAULT_NS_IDENTIFICATION );
+//        Stream< ConstructedAttribute > ca = nsdValidator.getNsdLoader().getResourceSet().getConstructedAttributeStream( DEFAULT_NS_IDENTIFICATION );
+//        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+//        ca.forEach( c -> console.info(  "ConstructedAttribute " + c.getName() ));
+        
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-        ca.forEach( c -> console.info(  "ConstructedAttribute " + c.getName() ));
+        for( int i = 0; i < sclFiles.size(); ++i ) {
+            sclLoader.reset();
+            Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
+            sclLoader.finalizeLoad();
+            SCL scl = ( SCL ) resource.getContents().get( 0 );
+            scl
+            .getIED()
+            .stream()
+            .forEach( ied -> {
+                console.info(  "IED: " + ied.getName() );
+                ied
+                .getAccessPoint()
+                .stream()
+                .forEach( ap -> {
+                    console.info(  "  AccessPoint: " + ap.getName() );
+                    if( ap.getServer() != null ) {
+                        ap
+                        .getServer()
+                        .getLDevice()
+                        .stream()
+                        .forEach( ld -> {
+                            console.info(  "  LDevice: " + ld.getInst() + "\t\t" + ld.getNamespace() );
+                            console.info(  "    LN: " + ld.getLN0().getLnClass() + "\t\t\t" + ld.getLN0().getNamespace() );
+                            ld
+                            .getLN()
+                            .stream()
+                            .forEach( ln -> {
+                                console.info(  "    LN: " + ln.getLnClass() + "\t\t\t" + ln.getNamespace() );
+                                ln
+                                .getDOI()
+                                .stream()
+                                .forEach( doi -> {
+                                    console.info(  "      DOI: " + doi.getName() + "\t\t\t" + doi.getNamespace() );
+                                });
+                            });
+                        });
+                    }
+                });
+            });
+        }
         
         System.exit( 0 );
     }
