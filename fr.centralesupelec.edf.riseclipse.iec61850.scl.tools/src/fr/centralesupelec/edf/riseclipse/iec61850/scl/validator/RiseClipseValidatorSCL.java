@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.PresenceCondition;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
@@ -57,7 +58,7 @@ public class RiseClipseValidatorSCL {
     private static final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
     private static final Integer DEFAULT_NAMESPACE_VERSION = new Integer( 2007 );
     private static final String DEFAULT_NAMESPACE_REVISION = "B";
-    private static final Integer DEFAULT_NAMESPACE_RELEASE = null;
+    private static final Integer DEFAULT_NAMESPACE_RELEASE = new Integer( 1 );
     
     public static final NsIdentification DEFAULT_NS_IDENTIFICATION = new NsIdentification(
             DEFAULT_NAMESPACE_ID,
@@ -234,6 +235,10 @@ public class RiseClipseValidatorSCL {
         Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION );
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         pc.forEach( c -> console.info(  "PresenceCondition " + c.getName() ));
+        
+        Stream< ConstructedAttribute > ca = nsdValidator.getNsdLoader().getResourceSet().getConstructedAttributeStream( DEFAULT_NS_IDENTIFICATION );
+        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+        ca.forEach( c -> console.info(  "ConstructedAttribute " + c.getName() ));
         
         System.exit( 0 );
     }
