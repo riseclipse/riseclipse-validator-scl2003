@@ -51,4 +51,8 @@ public class NsdValidator {
         }
     }
 
+    public NsdModelLoader getNsdLoader() {
+        return nsdLoader;
+    }
+
 }
