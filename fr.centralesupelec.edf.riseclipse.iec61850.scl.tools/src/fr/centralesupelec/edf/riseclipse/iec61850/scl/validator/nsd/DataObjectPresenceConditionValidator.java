@@ -1548,102 +1548,35 @@ public class DataObjectPresenceConditionValidator {
         // TODO: same as "MOlnNs" ?
         if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 != null ) {
             AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"MONamPlt\" on LNodeType (id=" + lNodeType.getId() + ") at line " + lNodeType.getLineNumber() );
+            
+            for( AnyLN ln : lNodeType.getReferredByAnyLN() ) {
+                String lnNs = ln.getNamespace();
+                if(( lnNs == null ) || lnNs.isEmpty() ) {
+                    continue;
+                }
+                if( ln.getParentLDevice() == null ) {
+                    continue;
+                }
+                String ldNs = ln.getParentLDevice().getNamespace();
+                if(( ldNs == null ) || ldNs.isEmpty() ) {
+                    continue;
+                }
+                if( ! lnNs.equals( ldNs )) {
+                    for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 ) {
+                        if( presentDO.get( name ) == null ) {
+                            diagnostics.add( new BasicDiagnostic(
+                                    Diagnostic.ERROR,
+                                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                    0,
+                                    "[NSD validation] DO " + name + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName
+                                    + " because the name space of its logical node (\"" + lnNs + "\") deviates from the name space of the containing logical device (\""
+                                    + ldNs + "\")",
+                                    new Object[] { lNodeType } ));
+                        }
+                    }
+                }
+            }
 
-            // The attribute lnNs shall be a DataAttribute of the name plate NamPlt of a logical node
-            // lnNs shall be available only if the logical node name space deviates from the name space referenced in the attribute ldNs of the LLN0
-            String lnNs = null;
-            Optional< DOType > doType =
-                    lNodeType
-                    .getDO()
-                    .stream()
-                    .filter( d -> "NamPlt".equals( d.getName() ))
-                    .findAny()
-                    .map( d -> d.getRefersToDOType() );
-            if( doType.isPresent() ) {
-                Optional< DA > da1 =
-                        doType
-                        .get()
-                        .getDA()
-                        .stream()
-                        .filter( d -> "lnNs".equals( d.getName() ))
-                        .findAny();
-                if( da1.isPresent() ) {
-                    if( da1.get().getVal().size() == 1 ) {
-                        lnNs = da1.get().getVal().get( 0 ).getValue();
-                    }
-                    else if( da1.get().getVal().size() > 1 ) {
-                        diagnostics.add( new BasicDiagnostic(
-                                Diagnostic.WARNING,
-                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                                0,
-                                "[NSD validation] PresenceCondition \"MONamPlt\" for DO for LNodeType (line " + lNodeType.getLineNumber() + "): multiple values for lnNs",
-                                new Object[] { lNodeType } ));
-                    }
-                }
-                
-                // The attribute ldNs shall be a DataAttribute of the name plate NamPlt of the LOGICAL- NODE-ZERO (LLN0).
-                for( AnyLN anyLN : lNodeType.getReferredByAnyLN() ) {
-                    if(( anyLN.getParentLDevice() == null ) || ( anyLN.getParentLDevice().getLN0() == null )) {
-                        // TODO: error message ?
-                        continue;
-                    }
-                    String ldNs = null;
-                    doType =
-                            anyLN
-                            .getParentLDevice()
-                            .getLN0()
-                            .getRefersToLNodeType()
-                            .getDO()
-                            .stream()
-                            .filter( d -> "NamPlt".equals( d.getName() ))
-                            .findAny()
-                            .map( d -> d.getRefersToDOType() );
-                    if( doType.isPresent() ) {
-                        Optional< DA > da2 =
-                                doType
-                                .get()
-                                .getDA()
-                                .stream()
-                                .filter( d -> "ldNs".equals( d.getName() ))
-                                .findAny();
-                        if( da2.isPresent() ) {
-                            if( da2.get().getVal().size() == 1 ) {
-                                ldNs = da2.get().getVal().get( 0 ).getValue();
-                            }
-                            else if( da2.get().getVal().size() > 1 ) {
-                                diagnostics.add( new BasicDiagnostic(
-                                        Diagnostic.WARNING,
-                                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                                        0,
-                                        "[NSD validation] PresenceCondition \"MONamPlt\" for DO for LNodeType (line " + lNodeType.getLineNumber() + "): multiple values for ldNs",
-                                        new Object[] { lNodeType } ));
-                            }
-                        }
-                    }
-                    
-                    if(( lnNs != null ) && ( ! lnNs.equals( ldNs ))) {
-                        for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 ) {
-                            if( presentDO.get( name ) == null ) {
-                                diagnostics.add( new BasicDiagnostic(
-                                        Diagnostic.ERROR,
-                                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                                        0,
-                                        "[NSD validation] DO " + name + " is mandatory in LNodeType (line " + lNodeType.getLineNumber() + ") with LNClass " + anyLNClassName
-                                            + " because the name space of its logical node deviates from the name space of the containing logical device",
-                                        new Object[] { lNodeType } ));
-                            }
-                        }
-                    }
-                }
-            }
-            else {
-                diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
-                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                        0,
-                        "[NSD validation] PresenceCondition \"MONamPlt\" for DO for LNodeType (line " + lNodeType.getLineNumber() + "): DOType not found",
-                        new Object[] { lNodeType } ));
-            }
         }
 
         // presCond: "OF" :
