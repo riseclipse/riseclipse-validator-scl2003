@@ -89,15 +89,16 @@ public class EnumerationValidator extends TypeValidator {
                     new Object[] { ada } ));
             res = false;
         }
-        if( ! getName().equals( ada.getType() )) {
-            diagnostics.add( new BasicDiagnostic(
-                    Diagnostic.ERROR,
-                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                    0,
-                    "[NSD validation] type of DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is not " + getName(),
-                    new Object[] { ada } ));
-            res = false;
-        }
+        // Name may differ
+//        if( ! getName().equals( ada.getType() )) {
+//            diagnostics.add( new BasicDiagnostic(
+//                    Diagnostic.ERROR,
+//                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+//                    0,
+//                    "[NSD validation] type of DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is not " + getName(),
+//                    new Object[] { ada } ));
+//            res = false;
+//        }
         for( Val val : ada.getVal() ) {
             res = validateValue( ada, val.getValue(), diagnostics ) && res;
         }
@@ -192,7 +193,8 @@ public class EnumerationValidator extends TypeValidator {
             }
         }
         
-        // TODO: do we have to check that all literals in Enumeration are present as EnumVal ?
+        // we do not have to check that all literals in Enumeration are present as EnumVal
+        // See comment in issue #13
         
         return res;
     }
