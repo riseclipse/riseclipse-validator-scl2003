@@ -20,6 +20,7 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
@@ -39,7 +40,8 @@ public class EnumerationValidator extends TypeValidator {
     
     private static HashSet< String > validatedEnumType = new HashSet<>();
 
-    private HashMap< String, Integer > literals = new HashMap<>();
+    // Name of EnumVal may be empty, so we use LiteralVal as key
+    private HashMap< Integer, String > literals = new HashMap<>();
     private String name;
     private String inheritedFromName;
     private EnumerationValidator inheritedFrom;
@@ -51,7 +53,7 @@ public class EnumerationValidator extends TypeValidator {
         enumeration
         .getLiteral()
         .stream()
-        .forEach( e -> literals.put( e.getName(), e.getLiteralVal() ));
+        .forEach( e -> literals.put( e.getLiteralVal(), e.getName() ));
     }
     
     public String getName() {
@@ -119,7 +121,7 @@ public class EnumerationValidator extends TypeValidator {
     protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
         boolean res = true;
         
-        if( ! literals.containsKey( value )) {
+        if( ! literals.containsValue( value )) {
             if( inheritedFrom != null ) {
                 res = inheritedFrom.validateValue( daOrDai, value, diagnostics ) && res;
             }
@@ -147,54 +149,80 @@ public class EnumerationValidator extends TypeValidator {
         
         boolean res = true;
         
-        // enumType.getId().equals( getName() ) already tested because enumType.getId().equals( da.getType() )
+        // EnumType may extend or restrict the set of EnumVal, but another name must be used 
+        boolean sameName = enumType.getId().equals( getName() );
         
         for( EnumVal enumVal : enumType.getEnumVal() ) {
-            if( ! literals.containsKey( enumVal.getValue() )) {
+            if( ! literals.containsKey( enumVal.getOrd() )) {
                 if( inheritedFrom != null ) {
                     res = inheritedFrom.validateEnumType( enumType, diagnostics ) && res;
                 }
                 else {
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.ERROR,
+                            sameName ? Diagnostic.ERROR : Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] EnumVal \"" + enumVal.getValue() + "\" in EnumType (id = " + enumType.getId()
-                                    + ") at line " + enumVal.getLineNumber() + " is unknown",
+                            "[NSD validation] EnumVal with ord \"" + enumVal.getOrd() + "\" in EnumType (id = " + enumType.getId()
+                                    + ") at line " + enumVal.getLineNumber() + " is no defined as LiteralVal in Enumeration " + getName(),
                             new Object[] { enumVal } ));
                     res = false;
                 }
             }
             else {
-                try {
-                    Integer val = new Integer( literals.get( enumVal.getValue() ));
-                    if( ! val.equals( enumVal.getOrd() )) {
-                        diagnostics.add( new BasicDiagnostic(
-                                Diagnostic.ERROR,
-                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                                0,
-                                "[NSD validation] EnumVal \"" + enumVal.getValue() + "\" in EnumType (id = " + enumType.getId()
-                                        + ") at line " + enumVal.getLineNumber() + " has incorrect ord (" + enumVal.getOrd()
-                                        + " instead of " + literals.get( enumVal.getValue() ) + ")",
-                                new Object[] { enumVal } ));
-                        res = false;
-                    }
-                }
-                catch( NumberFormatException e ) {
+                if( ! literals.get( enumVal.getOrd() ).equals( enumVal.getValue() )) {
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] EnumVal \"" + enumVal.getValue() + "\" in EnumType (id = " + enumType.getId()
-                                    + ") at line " + enumVal.getLineNumber() + " is not an integer",
+                            "[NSD validation] EnumVal with ord \"" + enumVal.getOrd() + "\" in EnumType (id = " + enumType.getId()
+                                    + ") at line " + enumVal.getLineNumber() + " has incorrect name (\"" + enumVal.getValue()
+                                    + "\" instead of \"" + literals.get( enumVal.getOrd() ) + "\")",
                             new Object[] { enumVal } ));
                     res = false;
                 }
             }
         }
         
-        // we do not have to check that all literals in Enumeration are present as EnumVal
-        // See comment in issue #13
+        // Literals in Enumeration missing in EnumType as EnumVal allowed if name differ
+        EnumerationValidator current = this;
+        while( true ) {
+            for( Integer literalVal : current.literals.keySet() ) {
+                Optional< EnumVal > found =
+                        enumType
+                        .getEnumVal()
+                        .stream()
+                        .filter( v -> v.getOrd().equals( literalVal ))
+                        .findFirst();
+                if( ! found.isPresent() ) {
+                    diagnostics.add( new BasicDiagnostic(
+                            sameName ? Diagnostic.ERROR : Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] LiteralVal \"" + literalVal + "\" in Enumeration " + getName()
+                                    + " is not present as EnumVal in EnumType (id = " + enumType.getId()
+                                    + ") at line " + enumType.getLineNumber(),
+                            new Object[] { enumType } ));
+                    res = false;
+                }
+            }
+            TypeValidator inheritedValidator = TypeValidator.get( inheritedFromName );
+            if(( inheritedValidator != null ) && ( inheritedValidator instanceof EnumerationValidator )) {
+                current = ( EnumerationValidator ) inheritedValidator;
+            }
+            else {
+                break;
+            }
+        }
+        
+        if( sameName && ! res ) {
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    "[NSD validation] EnumType (id = " + enumType.getId() + ") at line " + enumType.getLineNumber()
+                        + " must use a different id because it extends or restricts the standard Enumeration",
+                    new Object[] { enumType } ));
+        }
         
         return res;
     }
