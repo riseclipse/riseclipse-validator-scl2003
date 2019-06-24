@@ -549,7 +549,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD validation] empty value of Val in DAI \"" + dai.getName() + "\" (line = " + ada.getLineNumber() + ") is not valid for " + getName() + " type",
+                                "[NSD validation] empty value of Val in DAI \"" + dai.getName() + "\" (line = " + dai.getLineNumber() + ") is not valid for " + getName() + " type",
                                 new Object[] { ada } ));
                         res = false;
                     }
