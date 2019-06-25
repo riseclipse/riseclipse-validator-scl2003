@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+ 
+  <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+  <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools.ui</artifactId>
+  <version>1.1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <parent>
+    <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+    <artifactId>RiseClipseValidator_SCL2003</artifactId>
+    <version>1.1.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <toolName>RiseClipseSCLValidatorApplication</toolName>
+  </properties>
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <!-- Create a jar file with dependencies included -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <!-- set the name of the resulting runnable jar -->
+          <finalName>${toolName}-${project.version}</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools.ui.application.RiseClipseSCLValidatorApplication</mainClass>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>plugin.properties</resource>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+    <dependency>
+      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools</artifactId>
+      <version>1.1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+</project>

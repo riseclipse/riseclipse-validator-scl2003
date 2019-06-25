@@ -147,6 +147,7 @@
 
   <modules>
     <module>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools</module>
+    <module>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools.ui</module>
   </modules>
 
 </project>
