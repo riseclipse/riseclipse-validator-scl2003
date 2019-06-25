@@ -23,16 +23,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
-
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.PresenceCondition;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SCL;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.provider.SclItemProviderAdapterFactory;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities.SclModelLoader;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd.NsdValidator;
+import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseFatalException;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;
@@ -72,14 +69,12 @@ public class RiseClipseValidatorSCL {
     private static SclItemProviderAdapterFactory sclAdapter;
     private static SclModelLoader sclLoader;
     private static NsdValidator nsdValidator;
-    private static boolean oclValidation = false;
-    private static boolean nsdValidation = false;
-
-    private static IRiseClipseConsole console;
 
     private static boolean hiddenDoor = false;
 
     private static void usage() {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         console.info( "java -jar RiseClipseValidatorSCL.jar --help" );
         console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose | --info | --warning | --error] [--make-explicit-links] (<oclFile> | <nsdFile> | <sclFile>)+" );
@@ -93,6 +88,8 @@ public class RiseClipseValidatorSCL {
     }
 
     private static void help() {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         displayLegal();
         console.info( "java -jar RiseClipseValidatorSCL.jar option* file*" );
@@ -122,11 +119,10 @@ public class RiseClipseValidatorSCL {
         console.info( "\t\tThe tool information is not displayed at the beginning." );
         System.exit( 0 );
     }
-
+    
     public static void main( @NonNull String[] args ) {
 
         if( args.length == 0 ) {
-            console = new TextRiseClipseConsole( false );
             usage();
         }
 
@@ -142,7 +138,6 @@ public class RiseClipseValidatorSCL {
             if( args[i].startsWith( "--" ) ) {
                 posFiles = i + 1;
                 if( "--help".equals( args[i] ) ) {
-                    console = new TextRiseClipseConsole( useColor );
                     help();
                 }
                 else if( "--verbose".equals( args[i] ) ) {
@@ -173,14 +168,14 @@ public class RiseClipseValidatorSCL {
                     hiddenDoor  = true;
                 }
                 else {
-                    console = new TextRiseClipseConsole( useColor );
-                    console.error( "Unrecognized option " + args[i] );
+                    AbstractRiseClipseConsole.getConsole().error( "Unrecognized option " + args[i] );
                     usage();
                 }
             }
         }
         
-        console = new TextRiseClipseConsole( useColor );
+        IRiseClipseConsole console = new TextRiseClipseConsole( useColor );
+        AbstractRiseClipseConsole.changeConsole( console );
         console.setLevel( consoleLevel );
 
         if( displayCopyright ) {
@@ -197,23 +192,18 @@ public class RiseClipseValidatorSCL {
         for( int i = posFiles; i < args.length; ++i ) {
             if( args[i].endsWith( ".ocl" )) {
                 oclFiles.add( args[i] );
-                oclValidation = true;
             }
             else if( args[i].endsWith( ".nsd" )) {
                 nsdFiles.add( args[i] );
-                nsdValidation = true;
             }
             else if( args[i].endsWith( ".snsd" )) {
                 nsdFiles.add( args[i] );
-                nsdValidation = true;
             }
             else if( args[i].endsWith( ".AppNS" )) {
                 nsdFiles.add( args[i] );
-                nsdValidation = true;
             }
             else if( args[i].endsWith( ".nsdoc" )) {
                 nsdFiles.add( args[i] );
-                nsdValidation = true;
             }
             else {
                 sclFiles.add( args[i] );
@@ -230,7 +220,9 @@ public class RiseClipseValidatorSCL {
         }
     }
 
-    private static void doHiddenDoor( ArrayList< @NonNull String > oclFiles, ArrayList< @NonNull String > nsdFiles, ArrayList<String> sclFiles ) {
+    private static void doHiddenDoor( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, List<String> sclFiles ) {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        
         prepare( oclFiles, nsdFiles, false );
         
 //        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION );
@@ -245,7 +237,7 @@ public class RiseClipseValidatorSCL {
         for( int i = 0; i < sclFiles.size(); ++i ) {
             sclLoader.reset();
             Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
-            sclLoader.finalizeLoad();
+            sclLoader.finalizeLoad( console );
             SCL scl = ( SCL ) resource.getContents().get( 0 );
             scl
             .getIED()
@@ -286,7 +278,10 @@ public class RiseClipseValidatorSCL {
         System.exit( 0 );
     }
 
-    private static void displayLegal() {
+    // public because used by ui
+    public static void displayLegal() {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        
         console.info( "Copyright (c) 2019 CentraleSupélec & EDF." );
         console.info(
                 "All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0" );
@@ -307,7 +302,10 @@ public class RiseClipseValidatorSCL {
         console.info( "" );
     }
 
-    private static void prepare( ArrayList< @NonNull String > oclFiles, ArrayList< @NonNull String > nsdFiles, boolean displayNsdMessages ) {
+    // public because used by ui
+    public static void prepare( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, boolean displayNsdMessages ) {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        
         SclPackage sclPg = SclPackage.eINSTANCE;
         if( sclPg == null ) {
             throw new RiseClipseFatalException( "SCL package not found", null );
@@ -315,7 +313,7 @@ public class RiseClipseValidatorSCL {
 
         ComposedEValidator validator = ComposedEValidator.install( sclPg );
 
-        if( oclValidation ) {
+        if(( oclFiles != null ) && ( ! oclFiles.isEmpty() )) {
             oclValidator = new OCLValidator( sclPg, console );
 
             for( int i = 0; i < oclFiles.size(); ++i ) {
@@ -324,25 +322,28 @@ public class RiseClipseValidatorSCL {
             oclValidator.prepare( validator, console );
         }
 
-        if( nsdValidation ) {
-            nsdValidator = new NsdValidator( sclPg, console );
+        if(( nsdFiles != null ) && ( ! nsdFiles.isEmpty() )) {
+            nsdValidator = new NsdValidator( sclPg );
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
             }
             nsdValidator.prepare( validator, console, displayNsdMessages );
         }
 
-        sclLoader = new SclModelLoader( console );
+        sclLoader = new SclModelLoader();
         sclAdapter = new SclItemProviderAdapterFactory();
 
     }
 
-    private static void run( boolean make_explicit_links, @NonNull String sclFile ) {
+    // public because used by ui
+    public static void run( boolean make_explicit_links, @NonNull String sclFile ) {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        
         sclLoader.reset();
         Resource resource = sclLoader.loadWithoutValidation( sclFile );
         if( make_explicit_links ) {
             console.info( "Making explicit links for file: " + sclFile );
-            sclLoader.finalizeLoad();
+            sclLoader.finalizeLoad( console );
         }
         if( resource != null ) {
             console.info( "Validating file: " + sclFile );
@@ -351,6 +352,8 @@ public class RiseClipseValidatorSCL {
     }
 
     private static void validate( @NonNull Resource resource, final AdapterFactory adapter ) {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        
         Map< Object, Object > context = new HashMap< Object, Object >();
         SubstitutionLabelProvider substitutionLabelProvider = new EValidator.SubstitutionLabelProvider() {
 
