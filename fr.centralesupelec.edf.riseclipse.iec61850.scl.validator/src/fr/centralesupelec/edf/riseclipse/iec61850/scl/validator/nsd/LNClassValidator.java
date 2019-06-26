@@ -58,10 +58,10 @@ public class LNClassValidator {
             for( DataObject do_ : lnClass.getDataObject() ) {
                 if( CDCValidator.get( do_.getType() ) != null ) {
                     dataObjectValidatorMap.put( do_.getName(), CDCValidator.get( do_.getType() ));
-                    AbstractRiseClipseConsole.getConsole().verbose( "[NSD setup] CDC for DataObject " + do_.getName() + " found with type " + do_.getType() );
+                    AbstractRiseClipseConsole.getConsole().verbose( "[NSD setup] (" + do_.getFilename() + ":" + do_.getLineNumber() + ") CDC for DataObject " + do_.getName() + " found with type " + do_.getType() );
                 }
                 else {
-                    AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] CDC for DataObject " + do_.getName() + " not found" );
+                    AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + do_.getFilename() + ":" + do_.getLineNumber() + ") CDC not found for DataObject " + do_.getName() );
                 }
             }
 
