@@ -22,12 +22,12 @@ import java.io.File;
 
 import javax.swing.JCheckBox;
 
-public class SclFileCheckBox {
+public class FileCheckBox {
 
     private File file;
     private JCheckBox checkBox;
 
-    public SclFileCheckBox( File file ) {
+    public FileCheckBox( File file ) {
         this.file = file;
         this.checkBox = new JCheckBox( file.getName() );
         this.checkBox.setSelected( true );

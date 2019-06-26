@@ -37,7 +37,7 @@ public class TreeFilePane extends JTree {
     private DefaultMutableTreeNode root;
 
     public TreeFilePane( File fileRoot ) {
-        root = new DefaultMutableTreeNode( new SclFileCheckBox( fileRoot ) );
+        root = new DefaultMutableTreeNode( new FileCheckBox( fileRoot ) );
         setModel( new DefaultTreeModel( root ) );
         setShowsRootHandles( true );
 
@@ -52,14 +52,14 @@ public class TreeFilePane extends JTree {
                 if( selRow != -1 ) {
                     TreePath selPath = getPathForLocation( e.getX(), e.getY() );
                     DefaultMutableTreeNode node = (( DefaultMutableTreeNode ) selPath.getLastPathComponent() );
-                    SclFileCheckBox checkbox = ( SclFileCheckBox ) node.getUserObject();
+                    FileCheckBox checkbox = ( FileCheckBox ) node.getUserObject();
                     propagateInTree( node, ! checkbox.getCheckBox().isSelected() );
                     repaint();
                 }
             }
             
             private void propagateInTree( DefaultMutableTreeNode node, boolean selected ) {
-                SclFileCheckBox checkbox = ( SclFileCheckBox ) node.getUserObject();
+                FileCheckBox checkbox = ( FileCheckBox ) node.getUserObject();
                 checkbox.getCheckBox().setSelected( selected );
                 for( int i = 0; i < node.getChildCount(); ++i ) {
                     propagateInTree( ( DefaultMutableTreeNode ) node.getChildAt( i ), selected );
@@ -74,7 +74,7 @@ public class TreeFilePane extends JTree {
         if( files == null ) return;
 
         for( File file : files ) {
-            DefaultMutableTreeNode childNode = new DefaultMutableTreeNode( new SclFileCheckBox( file ) );
+            DefaultMutableTreeNode childNode = new DefaultMutableTreeNode( new FileCheckBox( file ) );
             node.add( childNode );
             if( file.isDirectory() ) {
                 createChildren( file, childNode );
@@ -88,7 +88,7 @@ public class TreeFilePane extends JTree {
         public Component getTreeCellRendererComponent( JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus ) {
             DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) value;
-            SclFileCheckBox file = ( SclFileCheckBox ) node.getUserObject();
+            FileCheckBox file = ( FileCheckBox ) node.getUserObject();
             JCheckBox checkbox = file.getCheckBox();
             checkbox.setEnabled( isEnabled() );
             checkbox.setFont( getFont() );
@@ -103,7 +103,7 @@ public class TreeFilePane extends JTree {
     }
 
     private void getSelectedFiles( DefaultMutableTreeNode node, ArrayList< File > oclFiles ) {
-        SclFileCheckBox checkbox = ( SclFileCheckBox ) node.getUserObject();
+        FileCheckBox checkbox = ( FileCheckBox ) node.getUserObject();
         if( checkbox.getFile().isFile() ) {
             if( checkbox.getCheckBox().isSelected() ) {
                 oclFiles.add( checkbox.getFile() );

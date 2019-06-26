@@ -37,14 +37,14 @@ import javax.swing.border.EmptyBorder;
  * Adapted from http://www.devx.com/tips/Tip/5342
  */
 @SuppressWarnings( "serial" )
-public class SclFileList extends JList< SclFileCheckBox > {
+public class SclFileList extends JList< FileCheckBox > {
     
     protected static Border noFocusBorder = new EmptyBorder( 1, 1, 1, 1 );
     
-    private DefaultListModel< SclFileCheckBox > model;
+    private DefaultListModel< FileCheckBox > model;
 
     public SclFileList() {
-        model = new DefaultListModel< SclFileCheckBox >();
+        model = new DefaultListModel< FileCheckBox >();
         setModel( model );
         
         setCellRenderer( new SclFileCellRenderer() );
@@ -71,14 +71,14 @@ public class SclFileList extends JList< SclFileCheckBox > {
             }
         }
         
-        SclFileCheckBox check = new SclFileCheckBox( file );
+        FileCheckBox check = new FileCheckBox( file );
         model.addElement( check );
     }
 
-    protected class SclFileCellRenderer implements ListCellRenderer< SclFileCheckBox > {
+    protected class SclFileCellRenderer implements ListCellRenderer< FileCheckBox > {
 
         @Override
-        public Component getListCellRendererComponent( JList< ? extends SclFileCheckBox > list, SclFileCheckBox file, int index,
+        public Component getListCellRendererComponent( JList< ? extends FileCheckBox > list, FileCheckBox file, int index,
                 boolean isSelected, boolean cellHasFocus ) {
             JCheckBox checkbox = file.getCheckBox();
             checkbox.setBackground( isSelected ? getSelectionBackground() : getBackground() );
