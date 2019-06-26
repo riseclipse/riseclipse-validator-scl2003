@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
  
   <groupId>fr.centralesupelec.edf.riseclipse</groupId>
-  <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools.ui</artifactId>
+  <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui</artifactId>
   <version>1.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-    <toolName>RiseClipseSCLValidatorApplication</toolName>
+    <toolName>RiseClipseValidatorSCLApplication</toolName>
   </properties>
 
   <build>
@@ -39,7 +39,7 @@
             <configuration>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools.ui.application.RiseClipseSCLValidatorApplication</mainClass>
+                  <mainClass>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application.RiseClipseValidatorSCLApplication</mainClass>
                 </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                   <resource>plugin.properties</resource>
@@ -65,7 +65,7 @@
   <dependencies>
     <dependency>
       <groupId>fr.centralesupelec.edf.riseclipse</groupId>
-      <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools</artifactId>
+      <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator</artifactId>
       <version>1.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
