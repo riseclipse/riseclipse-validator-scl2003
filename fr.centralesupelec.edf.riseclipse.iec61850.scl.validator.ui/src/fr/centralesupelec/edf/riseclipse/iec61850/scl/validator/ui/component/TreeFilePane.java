@@ -32,11 +32,11 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 @SuppressWarnings( "serial" )
-public class OCLFilePane extends JTree {
+public class TreeFilePane extends JTree {
 
     private DefaultMutableTreeNode root;
 
-    public OCLFilePane( File fileRoot ) {
+    public TreeFilePane( File fileRoot ) {
         root = new DefaultMutableTreeNode( new SclFileCheckBox( fileRoot ) );
         setModel( new DefaultTreeModel( root ) );
         setShowsRootHandles( true );
@@ -98,11 +98,11 @@ public class OCLFilePane extends JTree {
         }
     }
 
-    public void getOclFiles( ArrayList< File > oclFiles ) {
-        getOclFiles( root, oclFiles );
+    public void getSelectedFiles( ArrayList< File > oclFiles ) {
+        getSelectedFiles( root, oclFiles );
     }
 
-    private void getOclFiles( DefaultMutableTreeNode node, ArrayList< File > oclFiles ) {
+    private void getSelectedFiles( DefaultMutableTreeNode node, ArrayList< File > oclFiles ) {
         SclFileCheckBox checkbox = ( SclFileCheckBox ) node.getUserObject();
         if( checkbox.getFile().isFile() ) {
             if( checkbox.getCheckBox().isSelected() ) {
@@ -111,7 +111,7 @@ public class OCLFilePane extends JTree {
         }
         else {
             for( int i = 0; i < node.getChildCount(); ++i ) {
-                getOclFiles( ( DefaultMutableTreeNode ) node.getChildAt( i ), oclFiles );
+                getSelectedFiles( ( DefaultMutableTreeNode ) node.getChildAt( i ), oclFiles );
             }
         }
     }

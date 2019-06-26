@@ -87,6 +87,13 @@ public class SCLFilePane extends JPanel implements ActionListener {
                     .map( f -> f.getAbsolutePath() )
                     .collect( Collectors.toList() );
             
+            ArrayList< File > nsdFiles = application.getNsdFiles();
+            List< String > nsdFileNames =
+                    nsdFiles
+                    .stream()
+                    .map( f -> f.getAbsolutePath() )
+                    .collect( Collectors.toList() );
+            
             ArrayList< String > sclFiles = sclFilesList.getSclFiles();
 
             ResultFrame result = new ResultFrame();
@@ -94,7 +101,7 @@ public class SCLFilePane extends JPanel implements ActionListener {
             IRiseClipseConsole console = result.getMainConsole();
             AbstractRiseClipseConsole.changeConsole( console );
             RiseClipseValidatorSCL.displayLegal( );
-            RiseClipseValidatorSCL.prepare( oclFileNames, null, false );
+            RiseClipseValidatorSCL.prepare( oclFileNames, nsdFileNames, false );
             result.repaint();
             for( int i = 0; i < sclFiles.size(); ++i ) {
                 console = result.getConsoleFor( sclFiles.get( i ));

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.component.OCLFilePane;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.component.TreeFilePane;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.component.SCLFilePane;
 
 import javax.swing.JScrollPane;
@@ -34,7 +34,8 @@ import javax.swing.JPanel;
 public class RiseClipseValidatorSCLApplication {
 
     private JFrame frame;
-    private OCLFilePane oclTree;
+    private TreeFilePane oclTree;
+    private TreeFilePane nsdTree;
 
     /**
      * Launch the application.
@@ -78,16 +79,29 @@ public class RiseClipseValidatorSCLApplication {
         JScrollPane oclPane = new JScrollPane();
         tabbedPane.addTab( "OCL Files", null, oclPane, null );
 
-        File fileRoot = new File( System.getProperty( "user.dir" ) + "/OCL" );
-        oclTree = new OCLFilePane( fileRoot );
+        File oclRoot = new File( System.getProperty( "user.dir" ) + "/OCL" );
+        oclTree = new TreeFilePane( oclRoot );
         oclPane.setViewportView( oclTree );
+
+        JScrollPane nsdPane = new JScrollPane();
+        tabbedPane.addTab( "NSD Files", null, nsdPane, null );
+
+        File nsdRoot = new File( System.getProperty( "user.dir" ) + "/NSD" );
+        nsdTree = new TreeFilePane( nsdRoot );
+        nsdPane.setViewportView( nsdTree );
 
     }
 
     public ArrayList< File > getOclFiles() {
         ArrayList< File > oclFiles = new ArrayList<>();
-        oclTree.getOclFiles( oclFiles );
+        oclTree.getSelectedFiles( oclFiles );
         return oclFiles;
+    }
+
+    public ArrayList< File > getNsdFiles() {
+        ArrayList< File > nsdFiles = new ArrayList<>();
+        nsdTree.getSelectedFiles( nsdFiles );
+        return nsdFiles;
     }
 
 }
