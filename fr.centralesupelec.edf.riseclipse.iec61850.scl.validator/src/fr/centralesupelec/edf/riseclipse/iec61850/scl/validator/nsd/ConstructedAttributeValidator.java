@@ -46,7 +46,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
                 subDataAttributeValidatorMap.put( sda.getName(), validator );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] Type not found for DataAttribute " + sda.getName() );
+                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + sda.getFilename() + ":" + sda.getLineNumber() + ") Type not found for DataAttribute " + sda.getName() );
             }
         }
     }

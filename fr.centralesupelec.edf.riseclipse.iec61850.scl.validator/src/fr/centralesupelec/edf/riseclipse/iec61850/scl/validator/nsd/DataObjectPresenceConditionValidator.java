@@ -33,7 +33,6 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOI;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LN0;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
@@ -58,6 +57,7 @@ public class DataObjectPresenceConditionValidator {
     private static class SingleOrMultiDO {
     }
     private static class SingleDO extends SingleOrMultiDO {
+        @SuppressWarnings( "unused" )
         DO do_;
 
         SingleDO( DO do_ ) {
@@ -122,7 +122,7 @@ public class DataObjectPresenceConditionValidator {
         anyLNClass
         .getDataObject()
         .stream()
-        .forEach( d -> addSpecification( d.getName(), d.getPresCond(), d.getPresCondArgs() ) );
+        .forEach( d -> addSpecification( d.getName(), d.getPresCond(), d.getPresCondArgs(), d.getLineNumber(), d.getFilename() ));
         
         checkSpecification();
         
@@ -140,9 +140,9 @@ public class DataObjectPresenceConditionValidator {
         if( base != null ) base.reset();
     }
     
-    private void addSpecification( String name, String presCond, String presCondArgs ) {
+    private void addSpecification( String name, String presCond, String presCondArgs, int lineNumber, String filename ) {
         if( presentDO.containsKey( name )) {
-            console.warning( "[NSD setup] " + name + " has already been added to DataObjectPresenceConditionValidator" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") " + name + " has already been added to DataObjectPresenceConditionValidator" );
             return;
         }
         presentDO.put( name, null );
@@ -166,7 +166,7 @@ public class DataObjectPresenceConditionValidator {
         case "na" :
             // Element is not applicable
             // -> TODO: what does it mean ? what do we have to check ?
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"na\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"na\" in PresenceCondition" );
             if( notApplicable == null ) notApplicable = new HashSet<>();
             notApplicable.add( name );
             break;
@@ -189,7 +189,7 @@ public class DataObjectPresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "[NSD setup] argument of PresenceCondition \"AtLeastOne\" is not a positive integer" );
+                    console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"AtLeastOne\" is not a positive integer" );
                     break;
                 }
                 if( ! atLeastOne.containsKey( arg )) {
@@ -199,7 +199,7 @@ public class DataObjectPresenceConditionValidator {
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "[NSD setup] argument of PresenceCondition \"AtLeastOne\" is not an integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"AtLeastOne\" is not an integer" );
                 break;
             }
         case "AtMostOne" :
@@ -214,7 +214,7 @@ public class DataObjectPresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "[NSD setup] argument of PresenceCondition \"AllOrNonePerGroup\" is not a positive integer" );
+                    console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"AllOrNonePerGroup\" is not a positive integer" );
                     break;
                 }
                 if( ! allOrNonePerGroup.containsKey( arg )) {
@@ -224,7 +224,7 @@ public class DataObjectPresenceConditionValidator {
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "[NSD setup] argument of PresenceCondition \"AllOrNonePerGroup\" is not an integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"AllOrNonePerGroup\" is not an integer" );
                 break;
             }
         case "AllOnlyOneGroup" :
@@ -234,7 +234,7 @@ public class DataObjectPresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "[NSD setup] argument of PresenceCondition \"AllOnlyOneGroup\" is not a positive integer" );
+                    console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"AllOnlyOneGroup\" is not a positive integer" );
                     break;
                 }
                 if( ! allOnlyOneGroup.containsKey( arg )) {
@@ -244,7 +244,7 @@ public class DataObjectPresenceConditionValidator {
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "[NSD setup] argument of PresenceCondition \"AllOnlyOneGroup\" is not an integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"AllOnlyOneGroup\" is not an integer" );
                 break;
             }
         case "AllAtLeastOneGroup" :
@@ -254,7 +254,7 @@ public class DataObjectPresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "[NSD setup] argument of PresenceCondition \"AllAtLeastOneGroup\" is not a positive integer" );
+                    console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"AllAtLeastOneGroup\" is not a positive integer" );
                     break;
                 }
                 if( ! allAtLeastOneGroup.containsKey( arg )) {
@@ -264,7 +264,7 @@ public class DataObjectPresenceConditionValidator {
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "[NSD setup] argument of PresenceCondition \"AllAtLeastOneGroup\" is not an integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"AllAtLeastOneGroup\" is not an integer" );
                 break;
             }
         case "MF" :
@@ -299,14 +299,14 @@ public class DataObjectPresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "[NSD setup] argument of PresenceCondition \"MOcond\" is not a positive integer" );
+                    console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"MOcond\" is not a positive integer" );
                     break;
                 }
                 mandatoryIfTextConditionElseOptional.put( name, presCondArgs );
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "[NSD setup] argument of PresenceCondition \"MOcond\" is not an integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"MOcond\" is not an integer" );
                 break;
             }
         case "MFcond" :
@@ -317,14 +317,14 @@ public class DataObjectPresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "[NSD setup] argument of PresenceCondition \"MFcond\" is not a positive integer" );
+                    console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"MFcond\" is not a positive integer" );
                     break;
                 }
                 mandatoryIfTextConditionElseForbidden.put( name, presCondArgs );
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "[NSD setup] argument of PresenceCondition \"MFcond\" is not an integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"MFcond\" is not an integer" );
                 break;
             }
         case "OFcond" :
@@ -335,14 +335,14 @@ public class DataObjectPresenceConditionValidator {
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
-                    console.warning( "[NSD setup] argument of PresenceCondition \"MFcond\" is not a positive integer" );
+                    console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"MFcond\" is not a positive integer" );
                     break;
                 }
                 optionalIfTextConditionElseForbidden.put( name, presCondArgs );
                 break;
             }
             catch( NumberFormatException e ) {
-                console.warning( "[NSD setup] argument of PresenceCondition \"MFcond\" is not an integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"MFcond\" is not an integer" );
                 break;
             }
         case "MmultiRange" :
@@ -352,17 +352,17 @@ public class DataObjectPresenceConditionValidator {
             if( mandatoryMultiRange == null ) mandatoryMultiRange = new HashMap<>();
             String[] limits1 = presCondArgs.split( "[ ,]+" );
             if( limits1.length != 2 ) {
-                console.warning( "[NSD setup] argument of PresenceCondition \"MmultiRange\" is not two integers" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"MmultiRange\" is not two integers" );
                 break;
             }
             Integer min1 = Integer.valueOf( limits1[0] );
             if( min1 <= 0 ) {
-                console.warning( "[NSD setup] first argument of PresenceCondition \"MmultiRange\" is not a positive integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") first argument of PresenceCondition \"MmultiRange\" is not a positive integer" );
                 break;
             }
             Integer max1 = Integer.valueOf( limits1[1] );
             if( max1 <= 0 ) {
-                console.warning( "[NSD setup] second argument of PresenceCondition \"MmultiRange\" is not a positive integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") second argument of PresenceCondition \"MmultiRange\" is not a positive integer" );
                 break;
             }
             mandatoryMultiRange.put( name, Pair.of( min1, max1 ));
@@ -374,17 +374,17 @@ public class DataObjectPresenceConditionValidator {
             if( optionalMultiRange == null ) optionalMultiRange = new HashMap<>();
             String[] limits2 = presCondArgs.split( "[ ,]+" );
             if( limits2.length != 2 ) {
-                console.warning( "[NSD setup] argument of PresenceCondition \"OmultiRange\" is not two integers" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") argument of PresenceCondition \"OmultiRange\" is not two integers" );
                 break;
             }
             Integer min2 = Integer.valueOf( limits2[0] );
             if( min2 <= 0 ) {
-                console.warning( "[NSD setup] first argument of PresenceCondition \"OmultiRange\" is not a positive integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") first argument of PresenceCondition \"OmultiRange\" is not a positive integer" );
                 break;
             }
             Integer max2 = Integer.valueOf( limits2[1] );
             if( max2 <= 0 ) {
-                console.warning( "[NSD setup] second argument of PresenceCondition \"OmultiRange\" is not a positive integer" );
+                console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") second argument of PresenceCondition \"OmultiRange\" is not a positive integer" );
                 break;
             }
             optionalMultiRange.put( name, Pair.of( min2, max2 ));
@@ -392,7 +392,7 @@ public class DataObjectPresenceConditionValidator {
         case "MFsubst" :
             // Element is mandatory if substitution is supported (for substitution, see IEC 61850-7-3), otherwise forbidden
             // TODO: how do we know if substitution is supported ?
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MFsubst\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MFsubst\" in PresenceCondition" );
             if( mandatoryIfSubstitutionElseForbidden == null ) mandatoryIfSubstitutionElseForbidden = new HashSet<>();
             mandatoryIfSubstitutionElseForbidden.add( name );
             break;
@@ -409,14 +409,14 @@ public class DataObjectPresenceConditionValidator {
         case "MOlnNs" :
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOlnNs\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MOlnNs\" in PresenceCondition" );
             if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional = new HashSet<>();
             mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional.add( name );
             break;
         case "MOdataNs" :
             // Element is mandatory if the name space of its data object deviates from the name space of its logical node,
             // otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOdataNs\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MOdataNs\" in PresenceCondition" );
             if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional = new HashSet<>();
             mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional.add( name );
             break;
@@ -424,28 +424,28 @@ public class DataObjectPresenceConditionValidator {
             // Element is mandatory* if any sibling elements of type AnalogueValue include 'i' as a child, otherwise forbidden.
             // *Even though devices without floating point capability cannot exchange floating point values through ACSI services,
             // the description of scaling remains mandatory for their (SCL) configuration
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MFscaledAV\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MFscaledAV\" in PresenceCondition" );
             if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
             mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
             break;
         case "MFscaledMagV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'mag' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MFscaledMagV\" in PresenceCondition" );
             if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
             mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
             break;
         case "MFscaledAngV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'ang' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MFscaledAngV\" in PresenceCondition" );
             if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
             mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
             break;
         case "MOrms" :
             // Element is mandatory if the harmonic values in the context are calculated as a ratio to RMS value
             // (value of data attribute 'hvRef' is 'rms'), optional otherwise
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOrms\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MOrms\" in PresenceCondition" );
             if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional == null ) mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional = new HashSet<>();
             mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional.add( name );
             break;
@@ -456,28 +456,28 @@ public class DataObjectPresenceConditionValidator {
             break;
         case "MOoperTm" :
             // Element is mandatory if at least one controlled object on the IED supports time activation service; otherwise it is optional
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOoperTm\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MOoperTm\" in PresenceCondition" );
             if( mandatoryIfControlSupportsTimeElseOptional == null ) mandatoryIfControlSupportsTimeElseOptional = new HashSet<>();
             mandatoryIfControlSupportsTimeElseOptional.add( name );
             break;
         case "MmultiF" :
             // Parameter sibling: sibling element name.
             // One or more elements must be present if sibling element is present, otherwise forbidden
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MmultiF\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MmultiF\" in PresenceCondition" );
             if( oneOrMoreIfSiblingPresentElseForbidden == null ) oneOrMoreIfSiblingPresentElseForbidden = new HashMap<>();
             oneOrMoreIfSiblingPresentElseForbidden.put( name, presCondArgs );
             break;
         case "MOsbo" :
             // Element is mandatory if declared control model supports 'sbo-with-normal-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOsbo\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MOsbo\" in PresenceCondition" );
             if( mandatoryIfControlSupportsSecurity1ElseOptional == null ) mandatoryIfControlSupportsSecurity1ElseOptional = new HashSet<>();
             mandatoryIfControlSupportsSecurity1ElseOptional.add( name );
             break;
         case "MOenhanced" :
             // Element is mandatory if declared control model supports 'direct-with-enhanced-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MOenhanced\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MOenhanced\" in PresenceCondition" );
             if( mandatoryIfControlSupportsSecurity2ElseOptional == null ) mandatoryIfControlSupportsSecurity2ElseOptional = new HashSet<>();
             mandatoryIfControlSupportsSecurity2ElseOptional.add( name );
             break;
@@ -497,18 +497,18 @@ public class DataObjectPresenceConditionValidator {
         case "MORange" :
             // Element is mandatory if the measured value associated (amplitude respectively angle) exposes the range eventing
             // (with the attribute range respectively rangeAng)
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"MORange\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"MORange\" in PresenceCondition" );
             if( mandatoryIfMeasuredValueExposesRange == null ) mandatoryIfMeasuredValueExposesRange = new HashSet<>();
             mandatoryIfMeasuredValueExposesRange.add( name );
             break;
         case "OMSynPh" :
             // This attribute is optional if value of 'phsRef'' is Synchrophasor otherwise Mandatory]]></Doc>
-            console.warning( "[NSD setup] NOT IMPLEMENTED: DataObject " + name + " declared as \"OMSynPh\" in PresenceCondition" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") NOT IMPLEMENTED: DataObject " + name + " declared as \"OMSynPh\" in PresenceCondition" );
             if( optionalIfPhsRefIsSynchrophasorElseMandatory == null ) optionalIfPhsRefIsSynchrophasorElseMandatory = new HashSet<>();
             optionalIfPhsRefIsSynchrophasorElseMandatory.add( name );
             break;
         default:
-            console.warning( "[NSD setup] the PresenceCondition " + presCond + " of AnyLNClass " + name + " is unknown" );
+            console.warning( "[NSD setup] (" + filename + ":" + lineNumber + ") the PresenceCondition " + presCond + " of AnyLNClass " + name + " is unknown" );
             break;
         }
         

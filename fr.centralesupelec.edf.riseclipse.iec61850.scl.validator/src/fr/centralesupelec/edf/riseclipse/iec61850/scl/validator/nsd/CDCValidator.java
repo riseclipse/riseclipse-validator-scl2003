@@ -62,7 +62,7 @@ public class CDCValidator {
                 dataAttributeValidatorMap.put( da.getName(), validator );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] Type not found for DataAttribute " + da.getName() );
+                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + da.getFilename() + ":" + da.getLineNumber() + ") Type not found for DataAttribute " + da.getName() );
             }
         }
         
@@ -72,7 +72,7 @@ public class CDCValidator {
                 subDataObjectValidatorMap.put( sdo.getName(), validator );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] CDC not found for SubDataObject " + sdo.getName() );
+                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + sdo.getFilename() + ":" + sdo.getLineNumber() + ") CDC not found for SubDataObject " + sdo.getName() );
             }
         }
         

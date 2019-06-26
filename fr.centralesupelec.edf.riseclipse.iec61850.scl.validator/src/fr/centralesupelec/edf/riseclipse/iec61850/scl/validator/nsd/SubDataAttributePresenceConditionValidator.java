@@ -53,7 +53,7 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
         constructedAttribute
         .getSubDataAttribute()
         .stream()
-        .forEach( sda -> addSpecification( sda.getName(), sda.getPresCond(), sda.getPresCondArgs(), sda.getRefersToPresCondArgsDoc() ) );
+        .forEach( sda -> addSpecification( sda.getName(), sda.getPresCond(), sda.getPresCondArgs(), sda.getRefersToPresCondArgsDoc(), sda.getLineNumber(), sda.getFilename() )); 
     }
     
     @Override
@@ -64,6 +64,11 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     @Override
     protected String getNsdModelName() {
         return constructedAttribute.getName();
+    }
+
+    @Override
+    protected int getNsdModelLineNumber() {
+        return constructedAttribute.getLineNumber();
     }
 
     @Override

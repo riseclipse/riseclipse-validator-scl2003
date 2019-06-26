@@ -57,7 +57,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
         cdc
         .getDataAttribute()
         .stream()
-        .forEach( da -> addSpecification( da.getName(), da.getPresCond(), da.getPresCondArgs(), da.getRefersToPresCondArgsDoc() ));
+        .forEach( da -> addSpecification( da.getName(), da.getPresCond(), da.getPresCondArgs(), da.getRefersToPresCondArgsDoc(), da.getLineNumber(), da.getFilename() ));
     }
 
     @Override
@@ -68,6 +68,11 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     @Override
     protected String getNsdModelName() {
         return cdc.getName();
+    }
+
+    @Override
+    protected int getNsdModelLineNumber() {
+        return cdc.getLineNumber();
     }
 
     @Override
