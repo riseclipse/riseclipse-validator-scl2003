@@ -146,7 +146,8 @@
 
 
   <modules>
-    <module>fr.centralesupelec.edf.riseclipse.iec61850.scl.tools</module>
+    <module>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator</module>
+    <module>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui</module>
   </modules>
 
 </project>

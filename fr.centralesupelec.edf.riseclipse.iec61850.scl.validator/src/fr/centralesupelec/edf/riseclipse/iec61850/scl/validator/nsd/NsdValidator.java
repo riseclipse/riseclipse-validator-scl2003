@@ -29,13 +29,13 @@ public class NsdValidator {
 
     private NsdModelLoader nsdLoader;
 
-    public NsdValidator( @NonNull EPackage modelPackage, IRiseClipseConsole console ) {
-        nsdLoader = new NsdModelLoader( console );
+    public NsdValidator( @NonNull EPackage modelPackage ) {
+        nsdLoader = new NsdModelLoader();
     }
 
     public void addNsdDocument( String nsdFile, IRiseClipseConsole console ) {
         console.info( "Loading nsd: " + nsdFile );
-        nsdLoader.load( nsdFile );
+        nsdLoader.load( nsdFile, console );
     }
     
     public void prepare( @NonNull ComposedEValidator validator, IRiseClipseConsole console, boolean displayNsdMessages ) {
