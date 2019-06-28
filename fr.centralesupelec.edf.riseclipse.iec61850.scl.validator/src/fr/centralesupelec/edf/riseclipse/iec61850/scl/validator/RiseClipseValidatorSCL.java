@@ -30,6 +30,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.provider.SclItemProviderAd
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities.SclModelLoader;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd.NsdValidator;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.FileRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseFatalException;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;
@@ -77,7 +78,7 @@ public class RiseClipseValidatorSCL {
         
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         console.info( "java -jar RiseClipseValidatorSCL.jar --help" );
-        console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose | --info | --warning | --error] [--make-explicit-links] (<oclFile> | <nsdFile> | <sclFile>)+" );
+        console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose | --info | --warning | --error] [--output <file>] [--make-explicit-links] (<oclFile> | <nsdFile> | <sclFile>)+" );
         console.info( "Files ending with \".ocl\" are considered OCL files, "
                 + "files ending with \".nsd\" are considered NS files, "
                 + "files ending with \".snsd\" are considered ServiceNS files, "
@@ -106,6 +107,8 @@ public class RiseClipseValidatorSCL {
         console.info( "\t--warning" );
         console.info( "\t--error" );
         console.info( "\t\tThe amount of messages displayed is chosen according to this option, default is --warning." );
+        console.info( "\t--output <file>" );
+        console.info( "\t\tmessages are outputed in the given file" );
         console.info( "\t--use-color" );
         console.info( "\t\tcolors (using ANSI escape sequences) are used on message prefixes." );
         console.info( "\t--make-explicit-links" );
@@ -126,6 +129,7 @@ public class RiseClipseValidatorSCL {
             usage();
         }
 
+        String outputFile = null;
         boolean makeExplicitLinks = false;
         boolean useColor = false;
         boolean displayCopyright = true;
@@ -152,6 +156,10 @@ public class RiseClipseValidatorSCL {
                 else if( "--error".equals( args[i] ) ) {
                     consoleLevel = IRiseClipseConsole.ERROR_LEVEL;
                 }
+                else if( "--output".equals( args[i] ) ) {
+                    if( ++i < args.length ) outputFile = args[i];
+                    else usage();
+                }
                 else if( "--make-explicit-links".equals( args[i] ) ) {
                     makeExplicitLinks = true;
                 }
@@ -174,7 +182,7 @@ public class RiseClipseValidatorSCL {
             }
         }
         
-        IRiseClipseConsole console = new TextRiseClipseConsole( useColor );
+        IRiseClipseConsole console = ( outputFile == null ) ? new TextRiseClipseConsole( useColor ) : new FileRiseClipseConsole( outputFile );
         AbstractRiseClipseConsole.changeConsole( console );
         console.setLevel( consoleLevel );
 
@@ -298,7 +306,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a7 (5 June 2019)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a9 (28 June 2019)" );
         console.info( "" );
     }
 
