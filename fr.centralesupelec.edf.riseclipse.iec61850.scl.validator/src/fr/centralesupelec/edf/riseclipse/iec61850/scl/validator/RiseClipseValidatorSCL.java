@@ -157,7 +157,10 @@ public class RiseClipseValidatorSCL {
                     consoleLevel = IRiseClipseConsole.ERROR_LEVEL;
                 }
                 else if( "--output".equals( args[i] ) ) {
-                    if( ++i < args.length ) outputFile = args[i];
+                    if( ++i < args.length ) {
+                        outputFile = args[i];
+                        ++posFiles;
+                    }
                     else usage();
                 }
                 else if( "--make-explicit-links".equals( args[i] ) ) {
@@ -306,7 +309,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a9 (28 June 2019)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a10 (1 July 2019)" );
         console.info( "" );
     }
 
