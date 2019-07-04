@@ -34,10 +34,19 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class CDCValidator {
 
-    private static HashMap< String, CDCValidator > validators = new HashMap<>();
+    private static HashMap< String, CDCValidator > validators;
     
+    public static void initialize() {
+        // Allow reentrancy
+        validators = new HashMap<>();
+        
+        DataAttributePresenceConditionValidator.initialize();
+        SubDataObjectPresenceConditionValidator.initialize();
+    }
+
     public static CDCValidator get( String name ) {
-        return validators.get( name );
+        if( validators == null ) return null;
+       return validators.get( name );
     }
     
     public static void buildValidators( Stream< CDC > stream ) {
@@ -45,7 +54,21 @@ public class CDCValidator {
         .forEach( cdc -> validators.put( cdc.getName(), new CDCValidator( cdc )));
     }
 
-    private static HashSet< String > validatedDOType = new HashSet<>(); 
+    /*
+     * Called before another file is validated
+     */
+    public static void resetValidators() {
+        validators.values().stream().forEach( v -> v.reset() );
+    }
+
+    public void reset() {
+        validatedDOType = new HashSet<>();
+        
+        dataAttributeValidatorMap.values().stream().forEach( v -> v.reset() );
+        subDataObjectValidatorMap.values().stream().forEach( v -> v.reset() );
+    }
+
+    private HashSet< String > validatedDOType; 
 
     private DataAttributePresenceConditionValidator dataAttributePresenceConditionValidator;
     private SubDataObjectPresenceConditionValidator subDataObjectPresenceConditionValidator;
@@ -76,6 +99,7 @@ public class CDCValidator {
             }
         }
         
+        reset();
     }
 
     public boolean validateDOType( DOType doType, DiagnosticChain diagnostics ) {
@@ -83,7 +107,8 @@ public class CDCValidator {
         AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] CDCValidator.validateDOType( " + doType.getId() + " ) at line " + doType.getLineNumber() );
         validatedDOType.add( doType.getId() );
         
-        dataAttributePresenceConditionValidator.reset();
+        dataAttributePresenceConditionValidator.resetModelData();
+        
         doType
         .getDA()
         .stream()
@@ -91,7 +116,8 @@ public class CDCValidator {
       
         boolean res = dataAttributePresenceConditionValidator.validate( doType, diagnostics );
         
-        subDataObjectPresenceConditionValidator.reset();
+        subDataObjectPresenceConditionValidator.resetModelData();
+        
         doType
         .getSDO()
         .stream()

@@ -27,7 +27,12 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class NsdValidator {
 
+    public static void initialize() {
+        NsdEObjectValidator.initialize();
+    }
+
     private NsdModelLoader nsdLoader;
+    private NsdEObjectValidator nsdEObjectValidator;
 
     public NsdValidator( @NonNull EPackage modelPackage ) {
         nsdLoader = new NsdModelLoader();
@@ -44,7 +49,7 @@ public class NsdValidator {
             level = console.setLevel( IRiseClipseConsole.ERROR_LEVEL );            
         }
         nsdLoader.getResourceSet().finalizeLoad( console );
-        NsdEObjectValidator nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet() );
+        nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet() );
         validator.addChild( nsdEObjectValidator );
         if( ! displayNsdMessages ) {
             console.setLevel( level );            
@@ -53,6 +58,10 @@ public class NsdValidator {
 
     public NsdModelLoader getNsdLoader() {
         return nsdLoader;
+    }
+
+    public void reset() {
+        nsdEObjectValidator.reset();
     }
 
 }

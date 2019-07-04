@@ -39,6 +39,12 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class NsdEObjectValidator implements EValidator {
 
+    public static void initialize() {
+        TypeValidator.initialize();
+        CDCValidator.initialize();
+        LNClassValidator.initialize();
+    }
+
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
         // Order is important !
         TypeValidator.buildValidators(
@@ -49,6 +55,15 @@ public class NsdEObjectValidator implements EValidator {
                 nsdResourceSet.getCDCStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
         LNClassValidator.buildValidators(
                 nsdResourceSet.getLNClassStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
+    }
+
+    /*
+     * Called before another file is validated
+     */
+    public void reset() {
+        TypeValidator.resetValidators();
+        CDCValidator.resetValidators();
+        LNClassValidator.resetValidators();
     }
 
     @Override

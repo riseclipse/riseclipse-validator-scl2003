@@ -102,12 +102,6 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     protected abstract String getSclModelClassName();
     protected abstract String getSclComponentClassName();
 
-    public void reset() {
-        for( String sclComponent : presentSclComponent.keySet() ) {
-            presentSclComponent.put( sclComponent, null );
-        }
-    }
-    
     protected void addSpecification( String name, String presCond, String presCondArgs, Doc doc, int lineNumber, String fileName ) {
         if( presentSclComponent.containsKey( name )) {
             console.warning( "[NSD setup] (" + fileName + ":" + lineNumber + ") has already been added to " + getPresenceConditionValidatorName() );
@@ -541,6 +535,12 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         }
     }
 
+    public void resetModelData() {
+        for( String sclComponent : presentSclComponent.keySet() ) {
+            presentSclComponent.put( sclComponent, null );
+        }
+    }
+    
     public boolean addModelData( @NonNull SclComponent sclComponent, String sclComponentName, DiagnosticChain diagnostics ) {
         if( ! presentSclComponent.containsKey( sclComponentName )) {
             diagnostics.add( new BasicDiagnostic(

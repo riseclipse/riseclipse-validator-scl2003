@@ -34,9 +34,17 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class LNClassValidator {
     
-    private static HashMap< String, LNClassValidator > validators = new HashMap<>();
+    private static HashMap< String, LNClassValidator > validators;
     
+    public static void initialize() {
+        // Allow reentrancy
+        validators = new HashMap<>();
+        
+        DataObjectPresenceConditionValidator.initialize();
+    }
+
     public static LNClassValidator get( String name ) {
+        if( validators == null ) return null;
         return validators.get( name );
     }
     
@@ -45,7 +53,20 @@ public class LNClassValidator {
         .forEach( lnClass -> validators.put( lnClass.getName(), new LNClassValidator( lnClass )));
     }
 
-    private static HashSet< String > validatedLNodeType = new HashSet<>();
+    /*
+     * Called before another file is validated
+     */
+    public static void resetValidators() {
+        validators.values().stream().forEach( v -> v.reset() );
+    }
+
+    private void reset() {
+        validatedLNodeType = new HashSet<>();
+        
+        dataObjectValidatorMap.values().stream().forEach( v -> v.reset() );
+    }
+
+    private HashSet< String > validatedLNodeType;
 
     private DataObjectPresenceConditionValidator dataObjectPresenceConditionValidator;
     private HashMap< String, CDCValidator > dataObjectValidatorMap = new HashMap<>();
@@ -67,6 +88,8 @@ public class LNClassValidator {
 
             lnClass = lnClass.getRefersToAbstractLNClass();
         }
+        
+        reset();
     }
     
     public boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {

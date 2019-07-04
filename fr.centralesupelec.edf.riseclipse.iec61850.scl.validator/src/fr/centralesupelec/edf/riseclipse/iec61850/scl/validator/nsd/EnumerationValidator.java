@@ -38,7 +38,11 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class EnumerationValidator extends TypeValidator {
     
-    private static HashSet< String > validatedEnumType = new HashSet<>();
+    public static void initialize() {
+        // Nothing here
+    }
+    
+    private HashSet< String > validatedEnumType;
 
     // Name of EnumVal may be empty, so we use LiteralVal as key
     private HashMap< Integer, String > literals = new HashMap<>();
@@ -54,12 +58,24 @@ public class EnumerationValidator extends TypeValidator {
         .getLiteral()
         .stream()
         .forEach( e -> literals.put( e.getLiteralVal(), e.getName() ));
+        
+        reset();
     }
     
     public String getName() {
         return name;
     }
     
+    /*
+     * Called before another file is validated
+     */
+    @Override
+    public void reset() {
+        validatedEnumType = new HashSet<>();
+        
+        if( inheritedFrom != null ) inheritedFrom.reset();
+    }
+
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
         AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] EnumerationValidator.validateAbstractDataAttribute( " + ada.getName() + " ) at line " + ada.getLineNumber() );
