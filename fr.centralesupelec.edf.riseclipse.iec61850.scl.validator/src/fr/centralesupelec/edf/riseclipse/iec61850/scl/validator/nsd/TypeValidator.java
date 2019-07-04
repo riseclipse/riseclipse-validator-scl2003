@@ -30,9 +30,18 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 
 public abstract class TypeValidator {
 
-    private static HashMap< String, TypeValidator > validators = new HashMap<>();
+    private static HashMap< String, TypeValidator > validators;
+    
+    public static void initialize() {
+        validators = new HashMap<>();
+        
+        BasicTypeValidator.initialize();
+        EnumerationValidator.initialize();
+        ConstructedAttributeValidator.initialize();
+    }
     
     public static TypeValidator get( String name ) {
+        if( validators == null ) return null;
         return validators.get( name );
     }
     
@@ -48,4 +57,13 @@ public abstract class TypeValidator {
     }
 
     public abstract boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics );
+
+    /*
+     * Called before another file is validated
+     */
+    public static void resetValidators() {
+        validators.values().stream().forEach( v -> v.reset() );
+    }
+
+    public abstract void reset();
 }

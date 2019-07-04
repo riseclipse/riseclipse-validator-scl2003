@@ -309,7 +309,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a10 (1 July 2019)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a11 (4 July 2019)" );
         console.info( "" );
     }
 
@@ -334,6 +334,9 @@ public class RiseClipseValidatorSCL {
         }
 
         if(( nsdFiles != null ) && ( ! nsdFiles.isEmpty() )) {
+            // There are some static attributes
+            NsdValidator.initialize();
+            
             nsdValidator = new NsdValidator( sclPg );
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
@@ -358,6 +361,10 @@ public class RiseClipseValidatorSCL {
         }
         if( resource != null ) {
             console.info( "Validating file: " + sclFile );
+            // Some attributes must be re-initalialized
+            if( nsdValidator != null ) nsdValidator.reset();
+            // Not needed for the OCL validator
+            // if( oclValidator != null ) oclValidator.reset();
             validate( resource, sclAdapter );
         }
     }

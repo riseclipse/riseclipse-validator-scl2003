@@ -35,7 +35,11 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValida
 
 public class DataAttributePresenceConditionValidator extends GenericPresenceConditionValidator< CDC, DOType, @Nullable DA >{
 
-    private static HashMap< String, DataAttributePresenceConditionValidator > validators = new HashMap<>();
+    private static HashMap< String, DataAttributePresenceConditionValidator > validators;
+    
+    public static void initialize() {
+        validators = new HashMap<>();
+    }
     
     public static DataAttributePresenceConditionValidator get( CDC cdc ) {
         if( ! validators.containsKey( cdc.getName() )) {

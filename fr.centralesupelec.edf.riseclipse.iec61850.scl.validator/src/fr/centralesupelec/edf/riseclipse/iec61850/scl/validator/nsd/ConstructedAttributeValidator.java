@@ -32,7 +32,11 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class ConstructedAttributeValidator extends TypeValidator {
 
-    private static HashSet< String > validatedDAType = new HashSet<>(); 
+    public static void initialize() {
+        SubDataAttributePresenceConditionValidator.initialize();
+    }
+    
+    private HashSet< String > validatedDAType; 
 
     private SubDataAttributePresenceConditionValidator subDataAttributePresenceConditionValidator;
     private HashMap< String, TypeValidator > subDataAttributeValidatorMap = new HashMap<>();
@@ -49,6 +53,18 @@ public class ConstructedAttributeValidator extends TypeValidator {
                 AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + sda.getFilename() + ":" + sda.getLineNumber() + ") Type not found for DataAttribute " + sda.getName() );
             }
         }
+        
+        reset();
+    }
+
+    /*
+     * Called before another file is validated
+     */
+    @Override
+    public void reset() {
+        validatedDAType = new HashSet<>();
+        
+        subDataAttributeValidatorMap.values().stream().forEach( v -> v.reset() );
     }
 
     @Override
@@ -67,7 +83,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
         AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateDAType( " + daType.getId() + " ) at line " + daType.getLineNumber() );
         validatedDAType.add( daType.getId() );
         
-        subDataAttributePresenceConditionValidator.reset();
+        subDataAttributePresenceConditionValidator.resetModelData();
+        
         daType
         .getBDA()
         .stream()
