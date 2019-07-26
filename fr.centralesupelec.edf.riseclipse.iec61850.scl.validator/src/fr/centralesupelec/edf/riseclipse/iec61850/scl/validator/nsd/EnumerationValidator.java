@@ -238,7 +238,16 @@ public class EnumerationValidator extends TypeValidator {
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
                     "[NSD validation] EnumType (id = " + enumType.getId() + ") at line " + enumType.getLineNumber()
-                        + " must use a different id because it extends or restricts the standard Enumeration",
+                        + " must use a different id because it extends or restricts the standard Enumeration " + getName(),
+                    new Object[] { enumType } ));
+        }
+        else if( ! sameName && res ) {
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    "[NSD validation] EnumType (id = " + enumType.getId() + ") at line " + enumType.getLineNumber()
+                        + " must use " + getName() + " as id because it is identical to the standard Enumeration",
                     new Object[] { enumType } ));
         }
         
