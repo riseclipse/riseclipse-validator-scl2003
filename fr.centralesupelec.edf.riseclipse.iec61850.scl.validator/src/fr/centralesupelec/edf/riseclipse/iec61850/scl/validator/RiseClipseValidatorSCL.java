@@ -55,6 +55,12 @@ import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
 public class RiseClipseValidatorSCL {
 
+    private static final String ERROR_PREFIX = "ERROR:";
+
+    private static final String WARNING_PREFIX = "WARNING:";
+
+    private static final String INFO_PREFIX = "INFO:";
+
     public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
     
     private static final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
@@ -312,7 +318,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a13 (26 July 2019)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a14 (24 October 2019)" );
         console.info( "" );
     }
 
@@ -414,7 +420,21 @@ public class RiseClipseValidatorSCL {
                                 + childDiagnostic.getChildren().get( 0 ).getMessage();
                 }
 
-                switch( childDiagnostic.getSeverity() ) {
+                // use severity given by OCL message if available
+                int severity = childDiagnostic.getSeverity();
+                if( message.startsWith( INFO_PREFIX )) {
+                    severity = Diagnostic.INFO;
+                    message = message.substring( INFO_PREFIX.length() );
+                }
+                else if( message.startsWith( WARNING_PREFIX )) {
+                    severity = Diagnostic.WARNING;
+                    message = message.substring( WARNING_PREFIX.length() );
+                }
+                else if( message.startsWith( ERROR_PREFIX )) {
+                    severity = Diagnostic.ERROR;
+                    message = message.substring( ERROR_PREFIX.length() );
+                }
+                switch( severity ) {
                 case Diagnostic.INFO:
                     console.info( message );
                     break;
