@@ -568,7 +568,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     }
     
     public boolean validate( @NonNull SclModel sclModel, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] OldDataAttributePresenceConditionValidator.validate() at line " + sclModel.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] PresenceConditionValidator.validate() at line " + sclModel.getLineNumber() );
 
         boolean res = true;
         
