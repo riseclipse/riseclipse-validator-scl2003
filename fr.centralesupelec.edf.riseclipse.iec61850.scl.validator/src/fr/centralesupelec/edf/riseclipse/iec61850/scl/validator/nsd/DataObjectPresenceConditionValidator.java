@@ -122,20 +122,37 @@ public class DataObjectPresenceConditionValidator {
     
     private final IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
     
+    @SuppressWarnings( "unchecked" )        // cast of HashMap.clone() result
     private DataObjectPresenceConditionValidator( AnyLNClass anyLNClass ) {
         this.anyLNClass = anyLNClass;
         
+        // Build validator for parent first, because it is needed (atLeastOne for example)
+        AnyLNClass parent = anyLNClass.getRefersToAbstractLNClass();
+        if( parent != null ) {
+            base = get( parent );
+        }
+        
+        // Some presence condition must be checked at the lowest LNClass (in the inheritance
+        // hierarchy) having this specification (AtLeastOne for example, see other changes 
+        // in the same commit).
+        // To make it simple, we will check such presence condition only in the leaves of
+        // the inheritance hierarchy, even if there is no such element with this presence
+        // condition.
+        // To do this, we put a non null dictionary for the corresponding condition in the root,
+        // and duplicate it in each sub-LNClass for adding specific elements
+        if( parent == null ) {
+            atLeastOne = new HashMap<>();
+        }
+        else {
+            atLeastOne = ( HashMap< Integer, HashSet< String > > ) base.atLeastOne.clone();
+        }
+
         anyLNClass
         .getDataObject()
         .stream()
         .forEach( d -> addSpecification( d.getName(), d.getPresCond(), d.getPresCondArgs(), d.getLineNumber(), d.getFilename() ));
         
         checkSpecification();
-        
-        AnyLNClass parent = anyLNClass.getRefersToAbstractLNClass();
-        if( parent != null ) {
-            base = get( parent );
-        }
     }
     
     public void reset() {
@@ -191,7 +208,8 @@ public class DataObjectPresenceConditionValidator {
         case "AtLeastOne" :
             // Parameter n: group number (> 0).
             // At least one of marked elements of a group n shall be present
-            if( atLeastOne == null ) atLeastOne = new HashMap<>();
+            // Not needed (see constructor)
+            //if( atLeastOne == null ) atLeastOne = new HashMap<>();
             try {
                 Integer arg = Integer.valueOf( presCondArgs );
                 if( arg <= 0 ) {
@@ -679,14 +697,18 @@ public class DataObjectPresenceConditionValidator {
     
     public boolean validate( LNodeType lNodeType, DiagnosticChain diagnostics ) {
         AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] DataObjectPresenceConditionValidator.validate( " + lNodeType.getId() + ") at line " + lNodeType.getLineNumber() );
-        return validate( lNodeType, anyLNClass.getName(), diagnostics );
+        return validate( lNodeType, anyLNClass.getName(), false, diagnostics );
     }
     
-    private boolean validate( LNodeType lNodeType, String anyLNClassName, DiagnosticChain diagnostics ) {
+    private boolean validate( LNodeType lNodeType, String anyLNClassName, boolean asSuperclass, DiagnosticChain diagnostics ) {
         boolean res = true;
         
+        // Some presence conditions must only be checked by the final LNClass, not by any superLNClass.
+        // For example, for atLeastOne, the group contains all the DataObject of the full hierarchy,
+        // so only the final LNClass can do the check.
+        // The argument asSuperclass is used for that.
         if( base != null ) {
-            res = base.validate( lNodeType, anyLNClassName, diagnostics );
+            res = base.validate( lNodeType, anyLNClassName, true, diagnostics );
         }
         
         // presCond: "M"
@@ -831,7 +853,7 @@ public class DataObjectPresenceConditionValidator {
         // Parameter n: group number (> 0).
         // At least one of marked elements of a group n shall be present
         // Usage in standard NSD files (version 2007B): DataObject and SubDataObject and DataAttribute and SubDataAttribute
-        if( atLeastOne != null ) {
+        if( ! asSuperclass ) {
             AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] validation of presence condition \"AtLeastOne\" on LNodeType (id=" + lNodeType.getId() + ") at line " + lNodeType.getLineNumber() );
             for( Entry< Integer, HashSet< String > > e1 : atLeastOne.entrySet() ) {
                 boolean groupOK = false;
