@@ -140,11 +140,18 @@ public class DataObjectPresenceConditionValidator {
         // condition.
         // To do this, we put a non null dictionary for the corresponding condition in the root,
         // and duplicate it in each sub-LNClass for adding specific elements
-        if( parent == null ) {
+        if( base == null ) {
             atLeastOne = new HashMap<>();
         }
         else {
             atLeastOne = ( HashMap< Integer, HashSet< String > > ) base.atLeastOne.clone();
+            // We also need to add corresponding keys in presentDO
+            for( Integer group : atLeastOne.keySet() ) {
+                for( String name : atLeastOne.get( group )) {
+                    presentDO.put( name, null );
+                }
+            }
+            
         }
 
         anyLNClass
