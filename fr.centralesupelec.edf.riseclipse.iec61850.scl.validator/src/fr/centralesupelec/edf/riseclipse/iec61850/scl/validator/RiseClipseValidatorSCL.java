@@ -54,12 +54,46 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
 public class RiseClipseValidatorSCL {
+    
+    private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
+    private static final String APP_NS_FILE_EXTENSION = ".AppNS";
+    private static final String SNSD_FILE_EXTENSION = ".snsd";
+    private static final String NSD_FILE_EXTENSION = ".nsd";
+    private static final String OCL_FILE_EXTENSION = ".ocl";
+    private static final String HELP_OPTION                     = "--help";
+    private static final String HELP_ENVIRONMENT_OPTION         = "--help-environment";
+    
+    private static final String VERBOSE_OPTION                  = "--verbose";
+    private static final String INFO_OPTION                     = "--info";
+    private static final String WARNING_OPTION                  = "--warning";
+    private static final String ERROR_OPTION                    = "--error";
+    private static final String LEVEL_OPTION                    = VERBOSE_OPTION + " | " + INFO_OPTION + " | " + WARNING_OPTION + " | " + ERROR_OPTION;
+    private static final String OUTPUT_OPTION                   = "--output";
+    
+    private static final String MAKE_EXPLICIT_LINKS_OPTION      = "--make-explicit-links";
+    private static final String USE_COLOR_OPTION                = "--use-color";
+    private static final String DISPLAY_NSD_MESSAGES_OPTION     = "--display-nsd-messages";
+    private static final String DO_NOT_DISPLAY_COPYRIGHT_OPTION = "--do-not-display-copyright";
+    
+    private static final String RISECLIPSE_VARIABLE_PREFIX             = "RISECLIPSE_";
+    private static final String CONSOLE_LEVEL_VARIABLE_NAME            = RISECLIPSE_VARIABLE_PREFIX + "CONSOLE_LEVEL";
+    private static final String OUTPUT_FILE_VARIABLE_NAME              = RISECLIPSE_VARIABLE_PREFIX + "OUTPUT_FILE";
+    private static final String USE_COLOR_VARIABLE_NAME                = RISECLIPSE_VARIABLE_PREFIX + "USE_COLOR";
+    private static final String MAKE_EXPLICIT_LINKS_VARIABLE_NAME      = RISECLIPSE_VARIABLE_PREFIX + "MAKE_EXPLICIT_LINKS";
+    private static final String DISPLAY_NSD_MESSAGES_VARIABLE_NAME     = RISECLIPSE_VARIABLE_PREFIX + "DISPLAY_NSD_MESSAGES";
+    private static final String DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME = RISECLIPSE_VARIABLE_PREFIX + "DO_NOT_DISPLAY_COPYRIGHT";
 
-    private static final String ERROR_PREFIX = "ERROR:";
+    private static final String FALSE_VARIABLE_VALUE = "FALSE";
 
-    private static final String WARNING_PREFIX = "WARNING:";
+    private static final String VERBOSE_KEYWORD = "VERBOSE";
+    private static final String INFO_KEYWORD    = "INFO";
+    private static final String WARNING_KEYWORD = "WARNING";
+    private static final String ERROR_KEYWORD   = "ERROR";
 
-    private static final String INFO_PREFIX = "INFO:";
+    //private static final String VERBOSE_PREFIX = VERBOSE_KEYWORD + ":";
+    private static final String WARNING_PREFIX = WARNING_KEYWORD + ":";
+    private static final String INFO_PREFIX = INFO_KEYWORD + ":";
+    private static final String ERROR_PREFIX = ERROR_KEYWORD + ":";
 
     public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
     
@@ -81,18 +115,31 @@ public class RiseClipseValidatorSCL {
     private static NsdValidator nsdValidator;
 
     private static boolean hiddenDoor = false;
+    private static boolean makeExplicitLinks = false;
+    private static boolean useColor = false;
+    private static boolean displayCopyright = true;
+    private static boolean displayNsdMessages = false;
+    private static int consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
+    private static String outputFile = null;
 
     private static void usage() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-        console.info( "java -jar RiseClipseValidatorSCL.jar --help" );
-        console.info( "java -jar RiseClipseValidatorSCL.jar [--verbose | --info | --warning | --error] [--output <file>] [--make-explicit-links] (<oclFile> | <nsdFile> | <sclFile>)+" );
+        console.info( "java -jar RiseClipseValidatorSCL.jar " + HELP_OPTION );
+        console.info( "java -jar RiseClipseValidatorSCL.jar " + HELP_ENVIRONMENT_OPTION );
+        console.info( "java -jar RiseClipseValidatorSCL.jar"
+                        + " [" + LEVEL_OPTION + "]"
+                        + " [" + OUTPUT_OPTION + " <file>]"
+                        + " [" + MAKE_EXPLICIT_LINKS_OPTION + "]"
+                        + " (<oclFile> | <nsdFile> | <sclFile>)+" 
+        );
         console.info( "Files ending with \".ocl\" are considered OCL files, "
                 + "files ending with \".nsd\" are considered NS files, "
                 + "files ending with \".snsd\" are considered ServiceNS files, "
                 + "files ending with \".AppNS\" are considered ApplicableServiceNS files, "
-                + "files ending with \".nsdoc\" are considered NSDoc files, "
+                + "files ending with \".nsdoc\" are considered NSDoc files "
+                + " (case is ignored for all these extensions), "
                 + "all others are considered SCL files" );
         System.exit( -1 );
     }
@@ -108,28 +155,105 @@ public class RiseClipseValidatorSCL {
         console.info( "\tfiles ending with \".snsd\" are considered ServiceNS files," );
         console.info( "\tfiles ending with \".AppNS\" are considered ApplicableServiceNS files (at most one should be given)," );
         console.info( "\tfiles ending with \".nsdoc\" are considered NSDoc files," );
+        console.info( "\tcase is ignored for all these extensions," );
         console.info( "\tall others are considered SCL files." );
         console.info( "" );
         console.info( "The following options are recognized:" );
-        console.info( "\t--verbose" );
-        console.info( "\t--info" );
-        console.info( "\t--warning" );
-        console.info( "\t--error" );
-        console.info( "\t\tThe amount of messages displayed is chosen according to this option, default is --warning." );
-        console.info( "\t--output <file>" );
+        console.info( "\t" + VERBOSE_OPTION );
+        console.info( "\t" + INFO_OPTION );
+        console.info( "\t" + WARNING_OPTION );
+        console.info( "\t" + ERROR_OPTION );
+        console.info( "\t\tThe amount of messages displayed is chosen according to this option, default is " + WARNING_OPTION + "." );
+        console.info( "\t" + OUTPUT_OPTION + " <file>" );
         console.info( "\t\tmessages are outputed in the given file" );
-        console.info( "\t--use-color" );
+        console.info( "\t" + USE_COLOR_OPTION );
         console.info( "\t\tcolors (using ANSI escape sequences) are used on message prefixes." );
-        console.info( "\t--make-explicit-links" );
+        console.info( "\t" + MAKE_EXPLICIT_LINKS_OPTION );
         console.info( "\t\tImplicit links in SCL files are made explicit, this is usually needed for complete validation. "
                 + "Warnings are displayed when problems are detected. Infos are displayed about explicit links being made. "
                 + "Verbosity is about how explicit links are made." );
-        console.info( "\t--display-nsd-messages" );
+        console.info( "\t" + DISPLAY_NSD_MESSAGES_OPTION );
         console.info( "\t\tOnly errors detected in NSD files are displayed by default. "
                 + "This option allows for other messages to be displayed (according to the chosen level).");
-        console.info( "\t--do-not-display-copyright" );
+        console.info( "\t" + DO_NOT_DISPLAY_COPYRIGHT_OPTION );
         console.info( "\t\tThe tool information is not displayed at the beginning." );
+        console.info( "\t" + HELP_ENVIRONMENT_OPTION );
+        console.info( "\t\tEnvironment variables used are displayed." );
         System.exit( 0 );
+    }
+    
+    private static void helpEnvironment() {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        
+        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+        displayLegal();
+        
+        console.info( "The folowing environment variables may be used in addition to command line options, "
+                    + "however, the latter have precedence." );
+        console.info( "\t" + CONSOLE_LEVEL_VARIABLE_NAME + ": if its value is one of (ignoring case) "
+                    + VERBOSE_KEYWORD + ", " + INFO_KEYWORD + ", " + WARNING_KEYWORD + " or " + ERROR_KEYWORD
+                    + ", then the corresponding level is set, otherwise the variable is ignored." );
+        console.info( "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
+        console.info( "\t" + USE_COLOR_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                + "(ignoring case), it is equivalent to the use of " + USE_COLOR_OPTION + " option." );
+        console.info( "\t" + MAKE_EXPLICIT_LINKS_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                + "(ignoring case), it is equivalent to the use of " + MAKE_EXPLICIT_LINKS_OPTION + " option." );
+        console.info( "\t" + DISPLAY_NSD_MESSAGES_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                + "(ignoring case), it is equibvalent to the use of " + DISPLAY_NSD_MESSAGES_OPTION + " option." );
+        console.info( "\t" + DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                + "(ignoring case), it is equivalent to the use of " + DO_NOT_DISPLAY_COPYRIGHT_OPTION + " option." );
+        System.exit( 0 );
+    }
+    
+    private static void setOptionsFromEnvironmentVariables() {
+        String s = System.getenv( CONSOLE_LEVEL_VARIABLE_NAME );
+        if( s != null ) {
+            if( s.equalsIgnoreCase( VERBOSE_KEYWORD )) {
+                consoleLevel = IRiseClipseConsole.VERBOSE_LEVEL;
+            }
+            else if( s.equalsIgnoreCase( INFO_KEYWORD )) {
+                consoleLevel = IRiseClipseConsole.INFO_LEVEL;
+            }
+            else if( s.equalsIgnoreCase( WARNING_KEYWORD )) {
+                consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
+            }
+            else if( s.equalsIgnoreCase( ERROR_KEYWORD )) {
+                consoleLevel = IRiseClipseConsole.ERROR_LEVEL;
+            }
+            else {
+                AbstractRiseClipseConsole.getConsole().warning( "Value of environment variable " + CONSOLE_LEVEL_VARIABLE_NAME + " is not recognized and ignored" );
+            }
+        }
+        
+        outputFile = System.getenv( OUTPUT_FILE_VARIABLE_NAME );
+        
+        s = System.getenv( USE_COLOR_VARIABLE_NAME );
+        if( s != null ) {
+            if( ! s.equalsIgnoreCase( FALSE_VARIABLE_VALUE )) {
+                useColor = true;
+            }
+        }
+        
+        s = System.getenv( MAKE_EXPLICIT_LINKS_VARIABLE_NAME );
+        if( s != null ) {
+            if( ! s.equalsIgnoreCase( FALSE_VARIABLE_VALUE )) {
+                makeExplicitLinks = true;
+            }
+        }
+        
+        s = System.getenv( DISPLAY_NSD_MESSAGES_VARIABLE_NAME );
+        if( s != null ) {
+            if( ! s.equalsIgnoreCase( FALSE_VARIABLE_VALUE )) {
+                displayNsdMessages = true;
+            }
+        }
+        
+        s = System.getenv( DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME );
+        if( s != null ) {
+            if( ! s.equalsIgnoreCase( FALSE_VARIABLE_VALUE )) {
+                displayCopyright = false;
+            }
+        }
     }
     
     public static void main( @NonNull String[] args ) {
@@ -138,50 +262,47 @@ public class RiseClipseValidatorSCL {
             usage();
         }
 
-        String outputFile = null;
-        boolean makeExplicitLinks = false;
-        boolean useColor = false;
-        boolean displayCopyright = true;
-        boolean displayNsdMessages = false;
-        
-        int consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
+        setOptionsFromEnvironmentVariables();
 
         int posFiles = 0;
         for( int i = 0; i < args.length; ++i ) {
             if( args[i].startsWith( "--" ) ) {
                 posFiles = i + 1;
-                if( "--help".equals( args[i] ) ) {
+                if( HELP_OPTION.equals( args[i] ) ) {
                     help();
                 }
-                else if( "--verbose".equals( args[i] ) ) {
+                else if( HELP_ENVIRONMENT_OPTION.equals( args[i] ) ) {
+                    helpEnvironment();
+                }
+                else if( VERBOSE_OPTION.equals( args[i] ) ) {
                     consoleLevel = IRiseClipseConsole.VERBOSE_LEVEL;
                 }
-                else if( "--info".equals( args[i] ) ) {
+                else if( INFO_OPTION.equals( args[i] ) ) {
                     consoleLevel = IRiseClipseConsole.INFO_LEVEL;
                 }
-                else if( "--warning".equals( args[i] ) ) {
+                else if( WARNING_OPTION.equals( args[i] ) ) {
                     consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
                 }
-                else if( "--error".equals( args[i] ) ) {
+                else if( ERROR_OPTION.equals( args[i] ) ) {
                     consoleLevel = IRiseClipseConsole.ERROR_LEVEL;
                 }
-                else if( "--output".equals( args[i] ) ) {
+                else if( OUTPUT_OPTION.equals( args[i] ) ) {
                     if( ++i < args.length ) {
                         outputFile = args[i];
                         ++posFiles;
                     }
                     else usage();
                 }
-                else if( "--make-explicit-links".equals( args[i] ) ) {
+                else if( MAKE_EXPLICIT_LINKS_OPTION.equals( args[i] ) ) {
                     makeExplicitLinks = true;
                 }
-                else if( "--use-color".equals( args[i] ) ) {
+                else if( USE_COLOR_OPTION.equals( args[i] ) ) {
                     useColor = true;
                 }
-                else if( "--do-not-display-copyright".equals( args[i] ) ) {
+                else if( DO_NOT_DISPLAY_COPYRIGHT_OPTION.equals( args[i] ) ) {
                     displayCopyright = false;
                 }
-                else if( "--display-nsd-messages".equals( args[i] ) ) {
+                else if( DISPLAY_NSD_MESSAGES_OPTION.equals( args[i] ) ) {
                     displayNsdMessages = true;
                 }
                 else if( "--hidden-door".equals( args[i] ) ) {
@@ -210,20 +331,26 @@ public class RiseClipseValidatorSCL {
         ArrayList< @NonNull String > nsdFiles = new ArrayList<>();
         ArrayList< @NonNull String > sclFiles = new ArrayList<>();
         for( int i = posFiles; i < args.length; ++i ) {
-            if( args[i].endsWith( ".ocl" )) {
-                oclFiles.add( args[i] );
-            }
-            else if( args[i].endsWith( ".nsd" )) {
-                nsdFiles.add( args[i] );
-            }
-            else if( args[i].endsWith( ".snsd" )) {
-                nsdFiles.add( args[i] );
-            }
-            else if( args[i].endsWith( ".AppNS" )) {
-                nsdFiles.add( args[i] );
-            }
-            else if( args[i].endsWith( ".nsdoc" )) {
-                nsdFiles.add( args[i] );
+            int dotPos = args[i].indexOf( "." );
+            if( dotPos != -1 ) {
+                if( args[i].substring( dotPos ).equalsIgnoreCase( OCL_FILE_EXTENSION )) {
+                    oclFiles.add( args[i] );
+                }
+                else if( args[i].substring( dotPos ).equalsIgnoreCase( NSD_FILE_EXTENSION )) {
+                    nsdFiles.add( args[i] );
+                }
+                else if( args[i].substring( dotPos ).equalsIgnoreCase( SNSD_FILE_EXTENSION )) {
+                    nsdFiles.add( args[i] );
+                }
+                else if( args[i].substring( dotPos ).equalsIgnoreCase( APP_NS_FILE_EXTENSION )) {
+                    nsdFiles.add( args[i] );
+                }
+                else if( args[i].substring( dotPos ).equalsIgnoreCase( NSDOC_FILE_EXTENSION )) {
+                    nsdFiles.add( args[i] );
+                }
+                else {
+                    sclFiles.add( args[i] );
+                }
             }
             else {
                 sclFiles.add( args[i] );
@@ -318,7 +445,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a15 (4 February 2020)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a16 (9 February 2020)" );
         console.info( "" );
     }
 
