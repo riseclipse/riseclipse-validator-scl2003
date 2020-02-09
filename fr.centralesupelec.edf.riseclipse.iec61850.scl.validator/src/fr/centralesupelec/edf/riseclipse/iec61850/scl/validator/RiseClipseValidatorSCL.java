@@ -190,34 +190,34 @@ public class RiseClipseValidatorSCL {
         
         console.info( "The folowing environment variables may be used in addition to command line options, "
                     + "however, the latter have precedence." );
-        console.info( "\t" + CONSOLE_LEVEL_VARIABLE_NAME + ": if its value starts with one of "
+        console.info( "\t" + CONSOLE_LEVEL_VARIABLE_NAME + ": if its value is one of (ignoring case) "
                     + VERBOSE_KEYWORD + ", " + INFO_KEYWORD + ", " + WARNING_KEYWORD + " or " + ERROR_KEYWORD
                     + ", then the corresponding level is set, otherwise the variable is ignored." );
         console.info( "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
         console.info( "\t" + USE_COLOR_VARIABLE_NAME + ": if its value is not equal to FALSE "
-                + "(ignoring case), it is equibvalent to the use of " + USE_COLOR_OPTION + " option." );
+                + "(ignoring case), it is equivalent to the use of " + USE_COLOR_OPTION + " option." );
         console.info( "\t" + MAKE_EXPLICIT_LINKS_VARIABLE_NAME + ": if its value is not equal to FALSE "
-                + "(ignoring case), it is equibvalent to the use of " + MAKE_EXPLICIT_LINKS_OPTION + " option." );
+                + "(ignoring case), it is equivalent to the use of " + MAKE_EXPLICIT_LINKS_OPTION + " option." );
         console.info( "\t" + DISPLAY_NSD_MESSAGES_VARIABLE_NAME + ": if its value is not equal to FALSE "
                 + "(ignoring case), it is equibvalent to the use of " + DISPLAY_NSD_MESSAGES_OPTION + " option." );
         console.info( "\t" + DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME + ": if its value is not equal to FALSE "
-                + "(ignoring case), it is equibvalent to the use of " + DO_NOT_DISPLAY_COPYRIGHT_OPTION + " option." );
+                + "(ignoring case), it is equivalent to the use of " + DO_NOT_DISPLAY_COPYRIGHT_OPTION + " option." );
         System.exit( 0 );
     }
     
     private static void setOptionsFromEnvironmentVariables() {
         String s = System.getenv( CONSOLE_LEVEL_VARIABLE_NAME );
         if( s != null ) {
-            if( s.startsWith( VERBOSE_KEYWORD )) {
+            if( s.equalsIgnoreCase( VERBOSE_KEYWORD )) {
                 consoleLevel = IRiseClipseConsole.VERBOSE_LEVEL;
             }
-            else if( s.startsWith( INFO_KEYWORD )) {
+            else if( s.equalsIgnoreCase( INFO_KEYWORD )) {
                 consoleLevel = IRiseClipseConsole.INFO_LEVEL;
             }
-            else if( s.startsWith( WARNING_KEYWORD )) {
+            else if( s.equalsIgnoreCase( WARNING_KEYWORD )) {
                 consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
             }
-            else if( s.startsWith( ERROR_KEYWORD )) {
+            else if( s.equalsIgnoreCase( ERROR_KEYWORD )) {
                 consoleLevel = IRiseClipseConsole.ERROR_LEVEL;
             }
             else {
