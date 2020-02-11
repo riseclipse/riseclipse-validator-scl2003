@@ -528,7 +528,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
     
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] BasicTypeValidator.validateDA( " + ada.getName() + " ) at line " + ada.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] BasicTypeValidator.validateAbstractDataAttribute( " + ada.getName() + " ) at line " + ada.getLineNumber() );
         boolean res = true;
         if( ! getName().equals( ada.getBType() )) {
             diagnostics.add( new BasicDiagnostic(
