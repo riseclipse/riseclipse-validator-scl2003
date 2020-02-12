@@ -71,7 +71,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
 
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute da, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateBDA( " + da.getName() + " ) at line " + da.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateAbstractDataAttribute( " + da.getName() + " ) at line " + da.getLineNumber() );
         boolean res = true;
         
         if( da.getRefersToDAType() != null ) {
