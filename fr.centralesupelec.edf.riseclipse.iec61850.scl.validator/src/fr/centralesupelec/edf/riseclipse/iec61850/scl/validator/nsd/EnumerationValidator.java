@@ -154,7 +154,9 @@ public class EnumerationValidator extends TypeValidator {
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] value \"" + value + "\" of DA/BDA \"" + name + "\" (line = " + daOrDai.getLineNumber() + ") is not valid for enumeration \"" + this.name + "\"",
+                    "[NSD validation] value \"" + value + "\" of DA/BDA/DAI \"" + name + "\" (line = "
+                            + daOrDai.getLineNumber() + ") is not valid for EnumType \""
+                            + enumType.getId() + "\" (line = " + enumType.getLineNumber() + ")",
                     new Object[] { daOrDai } ));
             res = false;
         }
@@ -183,7 +185,7 @@ public class EnumerationValidator extends TypeValidator {
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
                         "[NSD validation] EnumVal with ord \"" + enumVal.getOrd() + "\" in EnumType (id = " + enumType.getId()
-                                + ") at line " + enumVal.getLineNumber() + " is no defined as LiteralVal in Enumeration " + getName(),
+                                + ") at line " + enumVal.getLineNumber() + " is no defined as LiteralVal in standard Enumeration " + getName(),
                         new Object[] { enumVal } ));
                 res = false;
             }
