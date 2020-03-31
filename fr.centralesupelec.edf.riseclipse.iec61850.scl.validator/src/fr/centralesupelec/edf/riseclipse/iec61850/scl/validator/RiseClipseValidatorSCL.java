@@ -452,9 +452,9 @@ public class RiseClipseValidatorSCL {
         console.info( "    dominique.marcadet@centralesupelec.fr" );
         console.info( "    aurelie.dehouck-neveu@edf.fr" );
         console.info( "Web site:" );
-        console.info( "    http://wdi.supelec.fr/software/RiseClipse/" );
+        console.info( "    http://wdi.centralesupelec.fr/software/RiseClipse/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a18 (19 February 2020)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a19 (31 March 2020)" );
         console.info( "" );
     }
 
