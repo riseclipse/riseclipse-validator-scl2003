@@ -631,11 +631,12 @@ public class DataObjectPresenceConditionValidator {
         
         String[] names = new String[] { do_.getName() };
         if( ! presentDO.containsKey( names[0] )) {
-            // if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
-            names = do_.getName().split( "(?=\\d)", 2 );
-            if( names.length == 0 ) {
-                console.error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
-                return false;
+            if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
+                names = do_.getName().split( "(?=\\d)", 2 );
+                if( names.length != 2 ) {
+                    console.error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
+                    return false;
+                }
             }
         }
         if( ! presentDO.containsKey( names[0] )) {
