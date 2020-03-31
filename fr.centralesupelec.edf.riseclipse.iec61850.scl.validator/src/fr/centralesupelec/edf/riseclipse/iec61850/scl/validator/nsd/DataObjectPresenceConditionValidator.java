@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      http://wdi.centralesupelec.fr/software/RiseClipse/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -626,16 +626,17 @@ public class DataObjectPresenceConditionValidator {
     
     private boolean addDO( DO do_, String anyLNClassName, DiagnosticChain diagnostics ) {
         // An instance number may be set as a suffix
-        String[] names;
-        if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
+        // but a number at the end of the name is not always an instance number !
+        // Therefore, we first look for with the full name, then with the name without the suffix
+        
+        String[] names = new String[] { do_.getName() };
+        if( ! presentDO.containsKey( names[0] )) {
+            // if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
             names = do_.getName().split( "(?=\\d)", 2 );
-        }
-        else {
-            names = new String[] { do_.getName() };
-        }
-        if( names.length == 0 ) {
-            console.error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
-            return false;
+            if( names.length == 0 ) {
+                console.error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
+                return false;
+            }
         }
         if( ! presentDO.containsKey( names[0] )) {
             if( base != null ) {
