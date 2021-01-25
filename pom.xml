@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2021 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io
 *************************************************************************
 -->
 
@@ -45,87 +45,79 @@
     <tag>HEAD</tag>
   </scm>
 
+  <repositories>
+    <repository>
+      <id>p2_to_m2</id>
+      <name>p2_to_m2</name>
+      <url>file://${project.basedir}${file.separator}..${file.separator}..${file.separator}riseclipse-developer${file.separator}fr.centralesupelec.edf.riseclipse.developer.p2_to_m2${file.separator}target${file.separator}maven${file.separator}repository${file.separator}final${file.separator}</url>
+    </repository>
+  </repositories>
+
   <!-- Common dependencies -->
   <dependencies>
 
-    <!-- These dependencies are found locally after using the command
-           mvn eclipse:to-maven -DstripQualifier=true
-         on a computer with Eclipse installed
-         and answering (replacing ~ with path to the home directory)
-           ~/.p2/pool
-         to the question
-           [INFO] Eclipse directory? 
-     -->
+    <!-- Eclipse EMF and OCL needed plugins -->
     <dependency>
        <groupId>org.eclipse.equinox</groupId>
-       <artifactId>app</artifactId>
-       <version>${eclipse-equinox-app-version}</version>
+       <artifactId>org.eclipse.equinox.app</artifactId>
     </dependency>
     
     <dependency>
       <groupId>org.eclipse.emf</groupId>
-      <artifactId>ecore</artifactId>
-      <version>${eclipse-emf-ecore-version}</version>
+      <artifactId>org.eclipse.emf.ecore</artifactId>
     </dependency>
     
     <dependency>
       <groupId>org.eclipse.emf</groupId>
-      <artifactId>common</artifactId>
-      <version>${eclipse-emf-common-version}</version>
+      <artifactId>org.eclipse.emf.common</artifactId>
     </dependency>
     
     <dependency>
-      <groupId>org.eclipse.emf.ecore</groupId>
-      <artifactId>xmi</artifactId>
-      <version>${eclipse-emf-xmi-version}</version>
+      <groupId>org.eclipse.emf</groupId>
+      <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
     </dependency>
     
     <dependency>
        <groupId>org.eclipse.ocl</groupId>
-       <artifactId>pivot</artifactId>
-       <version>${eclipse-ocl-version}</version>
+       <artifactId>org.eclipse.ocl.pivot</artifactId>
     </dependency>
     
     <dependency>
-       <groupId>org.eclipse.ocl.xtext</groupId>
-       <artifactId>completeocl</artifactId>
-       <version>${eclipse-ocl-version}</version>
+       <groupId>org.eclipse.ocl</groupId>
+       <artifactId>org.eclipse.ocl.xtext.completeocl</artifactId>
     </dependency>
     
     <dependency>
-       <groupId>org.eclipse.ocl.xtext</groupId>
-       <artifactId>oclstdlib</artifactId>
-       <version>${eclipse-ocl-version}</version>
+       <groupId>org.eclipse.ocl</groupId>
+       <artifactId>org.eclipse.ocl.xtext.oclstdlib</artifactId>
     </dependency>
     
     <dependency>
-       <groupId>org.eclipse.ocl.xtext</groupId>
-       <artifactId>oclinecore</artifactId>
-       <version>${eclipse-ocl-version}</version>
+       <groupId>org.eclipse.ocl</groupId>
+       <artifactId>org.eclipse.ocl.xtext.oclinecore</artifactId>
     </dependency>
     
+    <dependency>
+      <groupId>org.eclipse.osgi</groupId>
+      <artifactId>org.eclipse.osgi</artifactId>
+    </dependency>
+      
     <!-- RiseClipse dependencies not found automatically -->
-    <!-- https://mvnrepository.com/artifact/log4j/log4j -->
     <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>${log4j-version}</version>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
     </dependency>
     
-    <!-- https://mvnrepository.com/artifact/javax.inject/javax.inject -->
-    <dependency>
-        <groupId>javax.inject</groupId>
-        <artifactId>javax.inject</artifactId>
-        <version>${javax-inject-version}</version>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/javax.inject/javax.inject -->
     <dependency>
         <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>${apache-lang3-version}</version>
+        <artifactId>org.apache.commons.lang3</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.log4j</groupId>
+      <artifactId>org.apache.log4j</artifactId>
+    </dependency>
+    
     <!-- RiseClipse needed plugins -->
     <dependency>
       <groupId>fr.centralesupelec.edf.riseclipse</groupId>
@@ -172,7 +164,9 @@
 
   <modules>
     <module>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator</module>
+<!-- 
     <module>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui</module>
+ -->
   </modules>
 
 </project>
