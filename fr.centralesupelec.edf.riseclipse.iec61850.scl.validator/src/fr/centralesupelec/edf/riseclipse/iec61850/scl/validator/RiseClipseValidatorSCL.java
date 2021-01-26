@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
+
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SCL;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
@@ -527,9 +529,17 @@ public class RiseClipseValidatorSCL {
 
             @Override
             public String getObjectLabel( EObject eObject ) {
-                IItemLabelProvider labelProvider = ( IItemLabelProvider ) adapter.adapt( eObject,
-                        IItemLabelProvider.class );
-                return labelProvider.getText( eObject );
+            	// plugin.properties files are not included in a fat jar when it is created
+            	// with Export… → Java → Runnable JAR file, leading to IllegalArgumentException.
+            	// If a string is missing, this is MissingResourceException
+            	try {
+            		IItemLabelProvider labelProvider = ( IItemLabelProvider ) adapter.adapt( eObject,
+            				IItemLabelProvider.class );
+            		return labelProvider.getText( eObject );
+            	}
+            	catch( IllegalArgumentException | MissingResourceException ex ) {
+            		return eObject.eClass().getName();
+            	}
             }
 
             @Override

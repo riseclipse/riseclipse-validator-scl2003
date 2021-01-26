@@ -76,6 +76,10 @@ public class TreeFilePane extends JTree {
         if( files == null ) return;
 
         for( File file : files ) {
+        	// Files started with a dot are discarded
+        	// This is to avoid an exception when a file is not an OCL one.
+        	// It may happen with the .project file 
+        	if( file.getName().startsWith( "." )) continue;
             DefaultMutableTreeNode childNode = new DefaultMutableTreeNode( new FileCheckBox( file ) );
             node.add( childNode );
             if( file.isDirectory() ) {
