@@ -31,6 +31,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.SubDataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.FCEnum;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
@@ -66,7 +67,7 @@ public class CDCValidator {
     public void reset() {
         validatedDOType = new HashSet<>();
         
-        dataAttributeValidatorMap.values().stream().forEach( v -> v.reset() );
+        dataAttributeTypeValidatorMap.values().stream().forEach( v -> v.reset() );
         subDataObjectValidatorMap.values().stream().forEach( v -> v.reset() );
     }
 
@@ -74,20 +75,30 @@ public class CDCValidator {
 
     private DataAttributePresenceConditionValidator dataAttributePresenceConditionValidator;
     private SubDataObjectPresenceConditionValidator subDataObjectPresenceConditionValidator;
-    private HashMap< String, TypeValidator > dataAttributeValidatorMap = new HashMap<>();
+    
+    private HashMap< String, TypeValidator > dataAttributeTypeValidatorMap = new HashMap<>();
     private HashMap< String, CDCValidator > subDataObjectValidatorMap = new HashMap<>();
+    private HashMap< String, FunctionalConstraintValidator > dataAttributeFunctionalConstraintValidatorMap = new HashMap<>();
 
     private CDCValidator( CDC cdc ) {
         dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( cdc );
         subDataObjectPresenceConditionValidator = SubDataObjectPresenceConditionValidator.get( cdc );
         
         for( DataAttribute da : cdc.getDataAttribute() ) {
-            TypeValidator validator = TypeValidator.get( da.getType() );
-            if( validator != null ) {
-                dataAttributeValidatorMap.put( da.getName(), validator );
+            TypeValidator typeValidator = TypeValidator.get( da.getType() );
+            if( typeValidator != null ) {
+                dataAttributeTypeValidatorMap.put( da.getName(), typeValidator );
             }
             else {
                 AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + da.getFilename() + ":" + da.getLineNumber() + ") Type not found for DataAttribute " + da.getName() );
+            }
+            
+            FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( FCEnum.getByName( da.getFc() ));
+            if( fcValidator != null ) {
+                dataAttributeFunctionalConstraintValidatorMap.put( da.getName(), fcValidator );
+            }
+            else {
+                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + da.getFilename() + ":" + da.getLineNumber() + ") Functional Constraint unknown for DataAttribute " + da.getName() );
             }
         }
         
@@ -128,13 +139,22 @@ public class CDCValidator {
         res = subDataObjectPresenceConditionValidator.validate( doType, diagnostics ) && res;
         
         for( DA da : doType.getDA() ) {
-            TypeValidator validator = dataAttributeValidatorMap.get( da.getName() );
+            TypeValidator validator = dataAttributeTypeValidatorMap.get( da.getName() );
             if( validator != null ) {
                 validator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
                 // DA not allowed, error will be reported by PresenceConditionValidator
-                //AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): validator for DA " + da.getName() + " not found" );
+                //AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): type validator for DA " + da.getName() + " not found" );
+            }
+
+            FunctionalConstraintValidator fcValidator = dataAttributeFunctionalConstraintValidatorMap.get( da.getName() );
+            if( fcValidator != null ) {
+                fcValidator.validateAbstractDataAttribute( da, diagnostics );
+            }
+            else {
+                // DA not allowed, error will be reported by PresenceConditionValidator
+                //AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): functional constraint validator for DA " + da.getName() + " not found" );
             }
         }
       
