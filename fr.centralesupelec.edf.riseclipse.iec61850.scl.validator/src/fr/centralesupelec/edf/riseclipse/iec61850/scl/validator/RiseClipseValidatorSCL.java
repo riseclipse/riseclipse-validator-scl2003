@@ -419,6 +419,12 @@ public class RiseClipseValidatorSCL {
                                 .stream()
                                 .forEach( doi -> {
                                     console.info(  "      DOI: " + doi.getName() + "\t\t\t" + doi.getNamespace() );
+//                                    doi
+//                                    .getDAI()
+//                                    .stream()
+//                                    .forEach( dai -> {
+//                                        console.info(  "        DAI: " + dai.getName() + "\t\t\t" + dai.getNamespace() );
+//                                    });
                                 });
                             });
                         });
@@ -440,7 +446,7 @@ public class RiseClipseValidatorSCL {
     public static void displayLegal() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
-        console.info( "Copyright (c) 2020 CentraleSupélec & EDF." );
+        console.info( "Copyright (c) 2016-2021 CentraleSupélec & EDF." );
         console.info( "All rights reserved. This program and the accompanying materials" );
         console.info( "are made available under the terms of the Eclipse Public License v2.0" );
         console.info( "which accompanies this distribution, and is available at" );
@@ -454,9 +460,9 @@ public class RiseClipseValidatorSCL {
         console.info( "    dominique.marcadet@centralesupelec.fr" );
         console.info( "    aurelie.dehouck-neveu@edf.fr" );
         console.info( "Web site:" );
-        console.info( "    http://wdi.centralesupelec.fr/software/RiseClipse/" );
+        console.info( "    https://riseclipse.github.io/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a19 (31 March 2020)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a20 (26 february 2021)" );
         console.info( "" );
     }
 
