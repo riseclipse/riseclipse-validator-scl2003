@@ -477,7 +477,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    https://riseclipse.github.io/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a20 (26 february 2021)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a21 (12 april 2021)" );
         console.info( "" );
     }
 
