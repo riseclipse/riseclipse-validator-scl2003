@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2021 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 
@@ -523,6 +523,8 @@ public class RiseClipseValidatorSCL {
     }
 
     private static void validate( @NonNull Resource resource, final AdapterFactory adapter ) {
+        if( resource.getContents().isEmpty() ) return;
+
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         Map< Object, Object > context = new HashMap< Object, Object >();
@@ -538,12 +540,13 @@ public class RiseClipseValidatorSCL {
             	// plugin.properties files are not included in a fat jar when it is created
             	// with Export… → Java → Runnable JAR file, leading to IllegalArgumentException.
             	// If a string is missing, this is MissingResourceException
+                // A NPE may also happen if eObject has no label provider (not an object of our metamodels)
             	try {
             		IItemLabelProvider labelProvider = ( IItemLabelProvider ) adapter.adapt( eObject,
             				IItemLabelProvider.class );
             		return labelProvider.getText( eObject );
             	}
-            	catch( IllegalArgumentException | MissingResourceException ex ) {
+            	catch( NullPointerException | IllegalArgumentException | MissingResourceException ex ) {
             		return eObject.eClass().getName();
             	}
             }
@@ -555,8 +558,11 @@ public class RiseClipseValidatorSCL {
         };
         context.put( EValidator.SubstitutionLabelProvider.class, substitutionLabelProvider );
 
-        for( int n = 0; n < resource.getContents().size(); ++n ) {
-            Diagnostic diagnostic = Diagnostician.INSTANCE.validate( resource.getContents().get( n ), context );
+        // The resource should have only one root element, an SCL object.
+        // If there are other objects, it means that something is wrong in the SCL file
+        // and it is useless to try to validate them.
+        if( resource.getContents().get( 0 ) instanceof SCL  ) {
+            Diagnostic diagnostic = Diagnostician.INSTANCE.validate( resource.getContents().get( 0 ), context );
 
             for( Iterator< Diagnostic > i = diagnostic.getChildren().iterator(); i.hasNext(); ) {
                 Diagnostic childDiagnostic = i.next();
@@ -564,7 +570,7 @@ public class RiseClipseValidatorSCL {
                 List< ? > data = childDiagnostic.getData();
                 EObject object = ( EObject ) data.get( 0 );
                 String message = childDiagnostic.getMessage();
-                if(( data.size() > 1 ) && ( data.get( 1 ) instanceof EAttribute )) {
+                if(( data.size() > 1 ) && ( data.get( 1 ) instanceof EAttribute ) && ( ! childDiagnostic.getChildren().isEmpty() )) {
                     EAttribute attribute = ( EAttribute ) data.get( 1 );
                     if( attribute == null ) continue;
                     message = "\tAttribute " + attribute.getName() + " of "
