@@ -74,6 +74,7 @@ public class RiseClipseValidatorSCL {
     private static final String ERROR_OPTION                    = "--error";
     private static final String LEVEL_OPTION                    = VERBOSE_OPTION + " | " + INFO_OPTION + " | " + WARNING_OPTION + " | " + ERROR_OPTION;
     private static final String OUTPUT_OPTION                   = "--output";
+    private static final String XSD_OPTION                      = "--xml-schema";
     
     private static final String MAKE_EXPLICIT_LINKS_OPTION      = "--make-explicit-links";
     private static final String USE_COLOR_OPTION                = "--use-color";
@@ -83,6 +84,7 @@ public class RiseClipseValidatorSCL {
     private static final String RISECLIPSE_VARIABLE_PREFIX             = "RISECLIPSE_";
     private static final String CONSOLE_LEVEL_VARIABLE_NAME            = RISECLIPSE_VARIABLE_PREFIX + "CONSOLE_LEVEL";
     private static final String OUTPUT_FILE_VARIABLE_NAME              = RISECLIPSE_VARIABLE_PREFIX + "OUTPUT_FILE";
+    private static final String XSD_FILE_VARIABLE_NAME                 = RISECLIPSE_VARIABLE_PREFIX + "XSD_FILE";
     private static final String USE_COLOR_VARIABLE_NAME                = RISECLIPSE_VARIABLE_PREFIX + "USE_COLOR";
     private static final String MAKE_EXPLICIT_LINKS_VARIABLE_NAME      = RISECLIPSE_VARIABLE_PREFIX + "MAKE_EXPLICIT_LINKS";
     private static final String DISPLAY_NSD_MESSAGES_VARIABLE_NAME     = RISECLIPSE_VARIABLE_PREFIX + "DISPLAY_NSD_MESSAGES";
@@ -126,6 +128,7 @@ public class RiseClipseValidatorSCL {
     private static boolean displayNsdMessages = false;
     private static int consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
     private static String outputFile = null;
+    private static String xsdFile = null;
 
     private static void usage() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
@@ -171,6 +174,8 @@ public class RiseClipseValidatorSCL {
         console.info( "\t\tThe amount of messages displayed is chosen according to this option, default is " + WARNING_OPTION + "." );
         console.info( "\t" + OUTPUT_OPTION + " <file>" );
         console.info( "\t\tmessages are outputed in the given file" );
+        console.info( "\t" + XSD_OPTION + " <file>" );
+        console.info( "\t\tA preliminary XML validation is done against the given XML schema file" );
         console.info( "\t" + USE_COLOR_OPTION );
         console.info( "\t\tcolors (using ANSI escape sequences) are used on message prefixes." );
         console.info( "\t" + MAKE_EXPLICIT_LINKS_OPTION );
@@ -199,6 +204,7 @@ public class RiseClipseValidatorSCL {
                     + VERBOSE_KEYWORD + ", " + INFO_KEYWORD + ", " + WARNING_KEYWORD + " or " + ERROR_KEYWORD
                     + ", then the corresponding level is set, otherwise the variable is ignored." );
         console.info( "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
+        console.info( "\t" + XSD_FILE_VARIABLE_NAME + ": path to the SCL XML schema." );
         console.info( "\t" + USE_COLOR_VARIABLE_NAME + ": if its value is not equal to FALSE "
                 + "(ignoring case), it is equivalent to the use of " + USE_COLOR_OPTION + " option." );
         console.info( "\t" + MAKE_EXPLICIT_LINKS_VARIABLE_NAME + ": if its value is not equal to FALSE "
@@ -231,6 +237,8 @@ public class RiseClipseValidatorSCL {
         }
         
         outputFile = System.getenv( OUTPUT_FILE_VARIABLE_NAME );
+        
+        xsdFile = System.getenv( XSD_FILE_VARIABLE_NAME );
         
         s = System.getenv( USE_COLOR_VARIABLE_NAME );
         if( s != null ) {
@@ -294,6 +302,13 @@ public class RiseClipseValidatorSCL {
                 else if( OUTPUT_OPTION.equals( args[i] ) ) {
                     if( ++i < args.length ) {
                         outputFile = args[i];
+                        ++posFiles;
+                    }
+                    else usage();
+                }
+                else if( XSD_OPTION.equals( args[i] ) ) {
+                    if( ++i < args.length ) {
+                        xsdFile = args[i];
                         ++posFiles;
                     }
                     else usage();
@@ -500,11 +515,18 @@ public class RiseClipseValidatorSCL {
         sclLoader = new SclModelLoader();
         sclAdapter = new SclItemProviderAdapterFactory();
 
+        if( xsdFile != null ) {
+            XSDValidator.prepare( xsdFile );
+        }
     }
 
     // public because used by ui
     public static void run( boolean make_explicit_links, @NonNull String sclFile ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        
+        if( xsdFile != null ) {
+            XSDValidator.validate( sclFile );
+        }
         
         sclLoader.reset();
         Resource resource = sclLoader.loadWithoutValidation( sclFile );
