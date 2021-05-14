@@ -32,15 +32,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 
 public abstract class TypeValidator {
 
-    private static HashMap< String, TypeValidator > validators;
-    
-    public static void initialize() {
-        validators = new HashMap<>();
-        
-        BasicTypeValidator.initialize();
-        EnumerationValidator.initialize();
-        ConstructedAttributeValidator.initialize();
-    }
+    private static HashMap< String, TypeValidator > validators = new HashMap<>();
     
     public static TypeValidator get( String name ) {
         if( validators == null ) return null;

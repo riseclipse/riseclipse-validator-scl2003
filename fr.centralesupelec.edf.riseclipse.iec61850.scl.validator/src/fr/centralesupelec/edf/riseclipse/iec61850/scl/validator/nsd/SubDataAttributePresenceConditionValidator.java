@@ -34,11 +34,7 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class SubDataAttributePresenceConditionValidator extends GenericPresenceConditionValidator< ConstructedAttribute, DAType, @Nullable BDA >{
     
-    private static HashMap< String, SubDataAttributePresenceConditionValidator > validators;
-    
-    public static void initialize() {
-        validators = new HashMap<>();
-    }
+    private static HashMap< String, SubDataAttributePresenceConditionValidator > validators = new HashMap<>();
     
     public static SubDataAttributePresenceConditionValidator get( ConstructedAttribute constructedAttribute ) {
         if( ! validators.containsKey( constructedAttribute.getName() )) {

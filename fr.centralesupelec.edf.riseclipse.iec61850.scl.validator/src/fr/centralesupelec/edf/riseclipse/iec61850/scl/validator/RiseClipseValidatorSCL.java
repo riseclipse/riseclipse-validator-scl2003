@@ -670,9 +670,6 @@ public class RiseClipseValidatorSCL {
         }
 
         if(( nsdFiles != null ) && ( ! nsdFiles.isEmpty() )) {
-            // There are some static attributes
-            NsdValidator.initialize();
-            
             nsdValidator = new NsdValidator( sclPg );
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );

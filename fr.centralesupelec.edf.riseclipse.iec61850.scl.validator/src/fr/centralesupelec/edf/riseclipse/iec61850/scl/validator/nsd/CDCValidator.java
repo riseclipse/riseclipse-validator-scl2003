@@ -39,16 +39,8 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class CDCValidator {
 
-    private static HashMap< String, CDCValidator > validators;
+    private static HashMap< String, CDCValidator > validators = new HashMap<>();
     
-    public static void initialize() {
-        // Allow reentrancy
-        validators = new HashMap<>();
-        
-        DataAttributePresenceConditionValidator.initialize();
-        SubDataObjectPresenceConditionValidator.initialize();
-    }
-
     public static CDCValidator get( String name ) {
         if( validators == null ) return null;
        return validators.get( name );

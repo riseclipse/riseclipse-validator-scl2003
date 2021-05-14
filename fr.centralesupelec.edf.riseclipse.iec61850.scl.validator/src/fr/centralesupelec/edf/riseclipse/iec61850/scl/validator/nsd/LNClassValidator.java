@@ -38,15 +38,8 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class LNClassValidator {
     
-    private static HashMap< String, LNClassValidator > validators;
+    private static HashMap< String, LNClassValidator > validators = new HashMap<>();
     
-    public static void initialize() {
-        // Allow reentrancy
-        validators = new HashMap<>();
-        
-        DataObjectPresenceConditionValidator.initialize();
-    }
-
     public static LNClassValidator get( String name ) {
         if( validators == null ) return null;
         return validators.get( name );

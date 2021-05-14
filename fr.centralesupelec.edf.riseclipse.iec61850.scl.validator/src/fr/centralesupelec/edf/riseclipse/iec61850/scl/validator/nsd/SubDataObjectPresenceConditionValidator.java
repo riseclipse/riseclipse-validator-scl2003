@@ -39,11 +39,7 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class SubDataObjectPresenceConditionValidator extends GenericPresenceConditionValidator< CDC, DOType, @Nullable SDO >{
 
-    private static HashMap< String, SubDataObjectPresenceConditionValidator > validators;
-    
-    public static void initialize() {
-        validators = new HashMap<>();
-    }
+    private static HashMap< String, SubDataObjectPresenceConditionValidator > validators = new HashMap<>();
     
     public static SubDataObjectPresenceConditionValidator get( CDC cdc ) {
         if( ! validators.containsKey( cdc.getName() )) {

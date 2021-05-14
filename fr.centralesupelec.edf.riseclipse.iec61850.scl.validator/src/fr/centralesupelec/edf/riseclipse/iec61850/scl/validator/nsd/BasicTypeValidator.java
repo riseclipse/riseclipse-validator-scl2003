@@ -41,11 +41,6 @@ public abstract class BasicTypeValidator extends TypeValidator {
 
     private static HashMap< String, BasicTypeValidator > validators = new HashMap<>();
 
-    public static void initialize() {
-        // No store data
-        //validators = new HashMap<>();
-    }
-    
     public static BasicTypeValidator get( BasicType basicType ) {
         return validators.get( basicType.getName() );
     }

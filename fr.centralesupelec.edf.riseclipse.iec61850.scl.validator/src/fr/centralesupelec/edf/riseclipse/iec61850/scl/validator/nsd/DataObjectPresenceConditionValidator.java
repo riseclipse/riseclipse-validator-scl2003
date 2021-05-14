@@ -46,11 +46,7 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class DataObjectPresenceConditionValidator {
     
-    private static HashMap< String, DataObjectPresenceConditionValidator > validators;
-    
-    public static void initialize() {
-        validators = new HashMap<>();
-    }
+    private static HashMap< String, DataObjectPresenceConditionValidator > validators = new HashMap<>();
     
     public static DataObjectPresenceConditionValidator get( AnyLNClass anyLNClass ) {
         if( ! validators.containsKey( anyLNClass.getName() )) {

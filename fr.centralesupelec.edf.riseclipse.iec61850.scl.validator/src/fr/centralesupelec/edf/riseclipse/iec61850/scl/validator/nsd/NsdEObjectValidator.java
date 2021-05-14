@@ -37,22 +37,16 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class NsdEObjectValidator implements EValidator {
 
-    public static void initialize() {
-        TypeValidator.initialize();
-        CDCValidator.initialize();
-        LNClassValidator.initialize();
-    }
-
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
         // Order is important !
         TypeValidator.buildValidators(
-                nsdResourceSet.getBasicTypeStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ),
-                nsdResourceSet.getEnumerationStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ),
-                nsdResourceSet.getConstructedAttributeStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
+                nsdResourceSet.getBasicTypeStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION, true ),
+                nsdResourceSet.getEnumerationStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION, true ),
+                nsdResourceSet.getConstructedAttributeStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION, true ));
         CDCValidator.buildValidators(
-                nsdResourceSet.getCDCStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
+                nsdResourceSet.getCDCStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION, true ));
         LNClassValidator.buildValidators(
-                nsdResourceSet.getLNClassStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
+                nsdResourceSet.getLNClassStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION, true ));
     }
 
     /*

@@ -34,10 +34,6 @@ public class NsdValidator {
     static final String      SETUP_NSD_CATEGORY = "NSD/Setup";
     static final String VALIDATION_NSD_CATEGORY = "NSD/Validation";
     
-    public static void initialize() {
-        NsdEObjectValidator.initialize();
-    }
-
     private @NonNull NsdModelLoader nsdLoader;
     private @NonNull NsdEObjectValidator nsdEObjectValidator;
 
