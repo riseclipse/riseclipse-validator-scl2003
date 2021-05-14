@@ -34,10 +34,6 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class ConstructedAttributeValidator extends TypeValidator {
 
-    public static void initialize() {
-        SubDataAttributePresenceConditionValidator.initialize();
-    }
-    
     private HashSet< String > validatedDAType; 
 
     private SubDataAttributePresenceConditionValidator subDataAttributePresenceConditionValidator;

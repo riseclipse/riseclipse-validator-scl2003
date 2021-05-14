@@ -40,10 +40,6 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class EnumerationValidator extends TypeValidator {
     
-    public static void initialize() {
-        // Nothing here
-    }
-    
     private HashSet< String > validatedEnumType;
 
     // Name of EnumVal may be empty, so we use LiteralVal as key

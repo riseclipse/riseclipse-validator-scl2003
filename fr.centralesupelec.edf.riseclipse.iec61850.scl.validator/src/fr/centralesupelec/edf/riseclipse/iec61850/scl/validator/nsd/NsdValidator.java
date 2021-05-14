@@ -29,10 +29,6 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class NsdValidator {
 
-    public static void initialize() {
-        NsdEObjectValidator.initialize();
-    }
-
     private NsdModelLoader nsdLoader;
     private NsdEObjectValidator nsdEObjectValidator;
 

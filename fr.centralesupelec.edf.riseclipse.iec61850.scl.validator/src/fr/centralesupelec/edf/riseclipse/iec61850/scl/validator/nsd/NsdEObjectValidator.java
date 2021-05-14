@@ -41,12 +41,6 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 
 public class NsdEObjectValidator implements EValidator {
 
-    public static void initialize() {
-        TypeValidator.initialize();
-        CDCValidator.initialize();
-        LNClassValidator.initialize();
-    }
-
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
         // Order is important !
         TypeValidator.buildValidators(
