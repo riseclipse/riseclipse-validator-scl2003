@@ -506,7 +506,7 @@ public class RiseClipseValidatorSCL {
         console.setLevel( Severity.INFO );
         console.setFormatString( INFO_FORMAT_STRING );
             
-        prepare( oclFiles, nsdFiles, false );
+        prepare( false );
             
         for( int i = 0; i < sclFiles.size(); ++i ) {
             sclLoader.reset();
@@ -565,8 +565,8 @@ public class RiseClipseValidatorSCL {
         console.setLevel( Severity.INFO );
         console.setFormatString( INFO_FORMAT_STRING );
             
-        prepare( oclFiles, nsdFiles, false );
-        
+        prepare( false );
+            
         for( int i = 0; i < sclFiles.size(); ++i ) {
             sclLoader.reset();
             Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
@@ -588,8 +588,8 @@ public class RiseClipseValidatorSCL {
         console.setLevel( Severity.INFO );
         console.setFormatString( INFO_FORMAT_STRING );
             
-        prepare( oclFiles, nsdFiles, false );
-        
+        prepare( false );
+            
         for( int i = 0; i < nsdValidator.getNsdLoader().getResourceSet().getResources().size(); ++i ) {
             Resource resource = nsdValidator.getNsdLoader().getResourceSet().getResources().get( i );
             DocumentRoot root = (DocumentRoot) resource.getContents().get( 0 );
@@ -644,13 +644,7 @@ public class RiseClipseValidatorSCL {
     }
 
     // public because used by ui
-    public static void prepare( List< String > oclFileNames, List< String > nsdFileNames, boolean displayNsdMessages ) {
-        oclFiles = oclFileNames;
-        nsdFiles = nsdFileNames;
-        prepare( displayNsdMessages );
-    }
-
-    private static void prepare( boolean displayNsdMessages ) {
+    public static void prepare( boolean displayNsdMessages ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         SclPackage sclPg = SclPackage.eINSTANCE;
