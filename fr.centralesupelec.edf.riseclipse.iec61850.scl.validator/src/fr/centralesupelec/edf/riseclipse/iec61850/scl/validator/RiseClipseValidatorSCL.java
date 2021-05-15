@@ -21,6 +21,10 @@
 
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -134,6 +138,10 @@ public class RiseClipseValidatorSCL {
     private static int consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
     private static String outputFile = null;
     private static String xsdFile = null;
+    
+    private static ArrayList< @NonNull String > oclFiles;
+    private static ArrayList< @NonNull String > nsdFiles;
+    private static ArrayList< @NonNull String > sclFiles;
 
     private static void usage() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
@@ -163,6 +171,7 @@ public class RiseClipseValidatorSCL {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         displayLegal();
         console.info( "java -jar RiseClipseValidatorSCL.jar option* file*" );
+        console.info( "\tDirectories are searched recursively," );
         console.info( "\tFiles ending with \".ocl\" are considered OCL files," );
         console.info( "\tfiles ending with \".nsd\" are considered NS files," );
         console.info( "\tfiles ending with \".snsd\" are considered ServiceNS files," );
@@ -352,51 +361,71 @@ public class RiseClipseValidatorSCL {
         
         //console.doNotDisplayIdenticalMessages();
 
-        ArrayList< @NonNull String > oclFiles = new ArrayList<>();
-        ArrayList< @NonNull String > nsdFiles = new ArrayList<>();
-        ArrayList< @NonNull String > sclFiles = new ArrayList<>();
+        oclFiles = new ArrayList<>();
+        nsdFiles = new ArrayList<>();
+        sclFiles = new ArrayList<>();
         for( int i = posFiles; i < args.length; ++i ) {
-            int dotPos = args[i].indexOf( "." );
-            if( dotPos != -1 ) {
-                if( args[i].substring( dotPos ).equalsIgnoreCase( OCL_FILE_EXTENSION )) {
-                    oclFiles.add( args[i] );
-                }
-                else if( args[i].substring( dotPos ).equalsIgnoreCase( NSD_FILE_EXTENSION )) {
-                    nsdFiles.add( args[i] );
-                }
-                else if( args[i].substring( dotPos ).equalsIgnoreCase( SNSD_FILE_EXTENSION )) {
-                    nsdFiles.add( args[i] );
-                }
-                else if( args[i].substring( dotPos ).equalsIgnoreCase( APP_NS_FILE_EXTENSION )) {
-                    nsdFiles.add( args[i] );
-                }
-                else if( args[i].substring( dotPos ).equalsIgnoreCase( NSDOC_FILE_EXTENSION )) {
-                    nsdFiles.add( args[i] );
-                }
-                else {
-                    sclFiles.add( args[i] );
-                }
-            }
-            else {
-                sclFiles.add( args[i] );
-            }
+            getFiles( Paths.get( args[i] ), console );
         }
         
         if( hiddenDoor ) {
-            doHiddenDoor( oclFiles, nsdFiles, sclFiles );
+            doHiddenDoor();
         }
 
-        prepare( oclFiles, nsdFiles, displayNsdMessages );
+        prepare( displayNsdMessages );
         for( int i = 0; i < sclFiles.size(); ++i ) {
             run( makeExplicitLinks, sclFiles.get( i ));
         }
     }
 
+    private static void getFiles( Path path, IRiseClipseConsole console ) {
+        if( Files.isDirectory( path )) {
+            try {
+                Files.list( path )
+                    .forEach( f -> getFiles( f.normalize(), console ));
+            }
+            catch( IOException e ) {
+                console.error( "got IOException while listing content of directory " + path );
+            }
+        }
+        else if( Files.isReadable( path )) {
+            String name = path.toString();
+            int dotPos = name.indexOf( "." );
+            if( dotPos != -1 ) {
+                if( name.substring( dotPos ).equalsIgnoreCase( OCL_FILE_EXTENSION )) {
+                    oclFiles.add( name );
+                }
+                else if( name.substring( dotPos ).equalsIgnoreCase( NSD_FILE_EXTENSION )) {
+                    nsdFiles.add( name );
+                }
+                else if( name.substring( dotPos ).equalsIgnoreCase( SNSD_FILE_EXTENSION )) {
+                    nsdFiles.add( name );
+                }
+                else if( name.substring( dotPos ).equalsIgnoreCase( APP_NS_FILE_EXTENSION )) {
+                    nsdFiles.add( name );
+                }
+                else if( name.substring( dotPos ).equalsIgnoreCase( NSDOC_FILE_EXTENSION )) {
+                    nsdFiles.add( name );
+                }
+                else {
+                    sclFiles.add( name );
+                }
+            }
+            else {
+                sclFiles.add( name );
+            }
+        }
+        else {
+            console.error(  "Cannot read file " + path );
+        }
+        
+    }
+
     @SuppressWarnings( "unused" )
-    private static void doHiddenDoor_1( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, List<String> sclFiles ) {
+    private static void doHiddenDoor_1() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
-        prepare( oclFiles, nsdFiles, false );
+        prepare( false );
         
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
 
@@ -410,10 +439,10 @@ public class RiseClipseValidatorSCL {
     }
         
     @SuppressWarnings( "unused" )
-    private static void doHiddenDoor_2( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, List<String> sclFiles ) {
+    private static void doHiddenDoor_2() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
             
-        prepare( oclFiles, nsdFiles, false );
+        prepare( false );
             
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         for( int i = 0; i < sclFiles.size(); ++i ) {
@@ -468,10 +497,10 @@ public class RiseClipseValidatorSCL {
     }
 
     @SuppressWarnings( "unused" )
-    private static void doHiddenDoor_3( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, List<String> sclFiles ) {
+    private static void doHiddenDoor_3() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
             
-        prepare( oclFiles, nsdFiles, false );
+        prepare( false );
             
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         for( int i = 0; i < sclFiles.size(); ++i ) {
@@ -490,10 +519,10 @@ public class RiseClipseValidatorSCL {
         System.exit( 0 );
     }
     
-    private static void doHiddenDoor( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, List<String> sclFiles ) {
+    private static void doHiddenDoor() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
             
-        prepare( oclFiles, nsdFiles, false );
+        prepare( false );
             
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         
@@ -546,7 +575,7 @@ public class RiseClipseValidatorSCL {
     }
 
     // public because used by ui
-    public static void prepare( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, boolean displayNsdMessages ) {
+    public static void prepare( boolean displayNsdMessages ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         SclPackage sclPg = SclPackage.eINSTANCE;
