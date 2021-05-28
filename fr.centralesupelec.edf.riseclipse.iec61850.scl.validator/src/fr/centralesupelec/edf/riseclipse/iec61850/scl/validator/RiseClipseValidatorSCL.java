@@ -113,18 +113,6 @@ public class RiseClipseValidatorSCL {
 
     public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
     
-    private static final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
-    private static final Integer DEFAULT_NAMESPACE_VERSION = new Integer( 2007 );
-    private static final String DEFAULT_NAMESPACE_REVISION = "B";
-    private static final Integer DEFAULT_NAMESPACE_RELEASE = new Integer( 1 );
-    
-    public static final NsIdentification DEFAULT_NS_IDENTIFICATION = new NsIdentification(
-            DEFAULT_NAMESPACE_ID,
-            DEFAULT_NAMESPACE_VERSION,
-            DEFAULT_NAMESPACE_REVISION,
-            DEFAULT_NAMESPACE_RELEASE
-    );
-    
     private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
     private static SclModelLoader sclLoader;
@@ -429,6 +417,18 @@ public class RiseClipseValidatorSCL {
         
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
 
+        final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
+        final Integer DEFAULT_NAMESPACE_VERSION = new Integer( 2007 );
+        final String DEFAULT_NAMESPACE_REVISION = "B";
+        final Integer DEFAULT_NAMESPACE_RELEASE = new Integer( 1 );
+
+        final NsIdentification DEFAULT_NS_IDENTIFICATION = new NsIdentification(
+                DEFAULT_NAMESPACE_ID,
+                DEFAULT_NAMESPACE_VERSION,
+                DEFAULT_NAMESPACE_REVISION,
+                DEFAULT_NAMESPACE_RELEASE
+                );
+      
         Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION, true );
         pc.forEach( c -> console.info(  "PresenceCondition " + c.getName() ));
         
