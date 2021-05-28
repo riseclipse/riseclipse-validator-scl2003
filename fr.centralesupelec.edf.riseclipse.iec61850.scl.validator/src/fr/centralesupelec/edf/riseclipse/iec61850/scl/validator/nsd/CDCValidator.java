@@ -30,7 +30,11 @@ import org.eclipse.jdt.annotation.NonNull;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.SubDataObject;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.FCEnum;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
@@ -39,16 +43,20 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class CDCValidator {
 
-    private static HashMap< String, CDCValidator > validators = new HashMap<>();
+    private static HashMap< NsIdentificationName, CDCValidator > validators = new HashMap<>();
     
-    public static CDCValidator get( String name ) {
+    public static CDCValidator get( NsIdentification nsIdentification, String doTypeName ) {
         if( validators == null ) return null;
-       return validators.get( name );
+        if( nsIdentification == null ) return null;
+        if( doTypeName == null ) return null;
+       return validators.get( new NsIdentificationName( nsIdentification, doTypeName ));
     }
     
-    public static void buildValidators( Stream< CDC > stream ) {
+    public static void buildValidators( NsIdentification nsIdentification, Stream< CDC > stream, IRiseClipseConsole console ) {
         stream
-        .forEach( cdc -> validators.put( cdc.getName(), new CDCValidator( cdc )));
+        .forEach( cdc -> validators.put(
+                new NsIdentificationName( nsIdentification, cdc.getName() ),
+                new CDCValidator( nsIdentification, cdc, console )));
     }
 
     /*
@@ -61,65 +69,147 @@ public class CDCValidator {
     public void reset() {
         validatedDOType = new HashSet<>();
         
-        dataAttributeTypeValidatorMap.values().stream().forEach( v -> v.reset() );
-        subDataObjectValidatorMap.values().stream().forEach( v -> v.reset() );
+//        dataAttributeTypeValidatorMap.values().stream().forEach( v -> v.reset() );
+//        subDataObjectValidatorMap.values().stream().forEach( v -> v.reset() );
     }
 
+    private String name;
+    private NsIdentification nsIdentification;
     private HashSet< String > validatedDOType; 
 
+    // CDC defines a set of DataAttribute, SubDataObject, ServiceParameter
+    // Each DataAttribute has a name, a type (basic, enumerated or constructed), a functional constraint and a presence condition
+    // Type may be missing if enumParameterized is true (then at least one DataAttribute has typeKind="ENUMERATED")
+    // Type may be missing if typeKindParameterized is true  (then at least one DataAttribute has typeKind="undefined")
+    // Each SubDataObject has a name, a type (name of a CDC) and a presence condition
+    
+    
+    // This will check the presence condition of DataAttribute
     private DataAttributePresenceConditionValidator dataAttributePresenceConditionValidator;
+    // This will check the presence condition of SubDataObject
     private SubDataObjectPresenceConditionValidator subDataObjectPresenceConditionValidator;
     
+    // Key is DataAttribute name (the corresponding DA has the same name)
+    // Value is the TypeValidator given by the DataAttribute type
     private HashMap< String, TypeValidator > dataAttributeTypeValidatorMap = new HashMap<>();
-    private HashMap< String, CDCValidator > subDataObjectValidatorMap = new HashMap<>();
+    // Key is DataAttribute name (the corresponding DA has the same name)
+    // Value is the FunctionalConstraintValidator given by the DataAttribute fc
     private HashMap< String, FunctionalConstraintValidator > dataAttributeFunctionalConstraintValidatorMap = new HashMap<>();
+    // Key is SubDataObject name (the corresponding SDO has the same name)
+    // Value is the CDCValidator given by the SubDataObject type
+    private HashMap< String, CDCValidator > subDataObjectValidatorMap = new HashMap<>();
 
-    private CDCValidator( CDC cdc ) {
-        dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( cdc );
-        subDataObjectPresenceConditionValidator = SubDataObjectPresenceConditionValidator.get( cdc );
+    private CDCValidator( NsIdentification nsIdentification, CDC cdc, IRiseClipseConsole console ) {
+        console.verbose( NsdValidator.SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
+                "build CDCValidator for ", cdc.getName(), " in namespace \"", nsIdentification, "\"" );
+
+        this.name = cdc.getName();
+        this.nsIdentification = nsIdentification;
+        dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( nsIdentification, cdc );
+        subDataObjectPresenceConditionValidator = SubDataObjectPresenceConditionValidator.get( nsIdentification, cdc );
         
-        @NonNull
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         for( DataAttribute da : cdc.getDataAttribute() ) {
-            TypeValidator typeValidator = TypeValidator.get( da.getType() );
-            if( typeValidator != null ) {
-                dataAttributeTypeValidatorMap.put( da.getName(), typeValidator );
+            // may be null if enumParameterized or typeKindParameterized
+            if( da.getType() != null ) {
+                // When we look for a validator, we first search in the current namespace.
+                // If this fails, we use DependsOn links
+                TypeValidator typeValidator = null;
+                // Reinitialize before searching
+                nsIdentification = this.nsIdentification;
+                while( nsIdentification != null ) {
+                    typeValidator = TypeValidator.get( nsIdentification, da.getType() );
+                    if( typeValidator != null ) break;
+                    if(( da.eResource() != null ) && ( da.eResource().getResourceSet() instanceof NsdResourceSetImpl )) {
+                        nsIdentification = (( NsdResourceSetImpl ) da.eResource().getResourceSet() ).getDependsOn( nsIdentification );
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if( typeValidator != null ) {
+                    dataAttributeTypeValidatorMap.put( da.getName(), typeValidator );
+                    console.verbose( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                                     "type validator for DataAttribute ", da.getName(), " found with type ", da.getType(),
+                                     " in namespace \"", this.nsIdentification, "\"" );
+                }
+                else {
+                    console.warning( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                                     "type validator not found for DataAttribute ", da.getName(), " with type ", da.getType(),
+                                     " in namespace \"", this.nsIdentification, "\"" );
+                }
             }
             else {
+                if( cdc.isEnumParameterized() ) {
+                    if( "ENUMERATED".equals( da.getTypeKind().getLiteral() )) {
+                        dataAttributeTypeValidatorMap.put( da.getName(), new EnumeratedTypeValidator() );
+                        continue;
+                    }
+                }
+                if( cdc.isTypeKindParameterized() ) {
+                    if( "undefined".equals( da.getTypeKind().getLiteral() )) {
+                        dataAttributeTypeValidatorMap.put( da.getName(), new UndefinedTypeValidator() );
+                        continue;
+                    }
+                }
                 console.warning( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
-                                 "Type not found for DataAttribute ", da.getName() );
+                                 "Type not found for DataAttribute ", da.getName(),
+                                 " in namespace \"", this.nsIdentification, "\"" );
             }
             
             FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( FCEnum.getByName( da.getFc() ));
             if( fcValidator != null ) {
                 dataAttributeFunctionalConstraintValidatorMap.put( da.getName(), fcValidator );
+                console.verbose( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                                 "Functional constraint validator for DataAttribute " + da.getName() + " found with fc " + da.getFc(),
+                                 " in namespace \"", this.nsIdentification, "\"" );
             }
             else {
                 console.warning( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
-                                 "Functional Constraint unknown for DataAttribute ", da.getName() );
+                                 "Functional Constraint unknown for DataAttribute ", da.getName(), " with fc ", da.getFc(),
+                                 " in namespace \"", this.nsIdentification, "\"" );
             }
         }
         
         for( SubDataObject sdo : cdc.getSubDataObject() ) {
-            CDCValidator validator = CDCValidator.get( sdo.getType() );
-            if( validator != null ) {
-                subDataObjectValidatorMap.put( sdo.getName(), validator );
+            // When we look for a validator, we first search in the current namespace.
+            // If this fails, we use DependsOn links
+            CDCValidator cdcValidator = null;
+            // Reinitialize before searching
+            nsIdentification = this.nsIdentification;
+            while( nsIdentification != null ) {
+                cdcValidator = CDCValidator.get( nsIdentification, sdo.getType() );
+                if( cdcValidator != null ) break;
+                if(( sdo.eResource() != null ) && ( sdo.eResource().getResourceSet() instanceof NsdResourceSetImpl )) {
+                    nsIdentification = (( NsdResourceSetImpl ) sdo.eResource().getResourceSet() ).getDependsOn( nsIdentification );
+                }
+                else {
+                    break;
+                }
+            }
+            if( cdcValidator != null ) {
+                subDataObjectValidatorMap.put( sdo.getName(), cdcValidator );
+                console.verbose( NsdValidator.SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
+                                 "CDC validator for SubDataObject ", sdo.getName(), " found with type ", sdo.getType() );
             }
             else {
                 console.warning( NsdValidator.SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
-                                 "CDC not found for SubDataObject ", sdo.getName() );
+                                 "CDC not found for SubDataObject ", sdo.getName(), " in namespace \"", this.nsIdentification, "\"" );
             }
         }
         
         reset();
     }
+    
+    public String getName() {
+        return name;
+    }
 
-    public boolean validateDOType( DOType doType, DiagnosticChain diagnostics ) {
+    private boolean validateDOType( DOType doType, DiagnosticChain diagnostics ) {
         if( validatedDOType.contains( doType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
-                         "CDCValidator.validateDOType( ", doType.getId(), " )" );
+                         "CDCValidator.validateDOType( ", doType.getId(), " ) in namespace \"", nsIdentification, "\"" );
         validatedDOType.add( doType.getId() );
         
         dataAttributePresenceConditionValidator.resetModelData();
@@ -136,48 +226,79 @@ public class CDCValidator {
         doType
         .getSDO()
         .stream()
-        .forEach( d -> subDataObjectPresenceConditionValidator.addModelData( d, d.getName(), diagnostics ));
+        .forEach( sdo -> {
+            if(( sdo.getNamespace() == null ) || nsIdentification.equals( new NsIdentification( sdo.getNamespace() ))) {
+                subDataObjectPresenceConditionValidator.addModelData( sdo, sdo.getName(), diagnostics );
+            }
+            else {
+                console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, sdo.getLineNumber(),
+                                 "Presence condition of SDO ", sdo.getName(),
+                                 " is not checked because its namespace \"", sdo.getNamespace(),
+                                 "\" is not the same as the namespace of its DOType \"", nsIdentification, "\"" );
+            }
+        });
         
         res = subDataObjectPresenceConditionValidator.validate( doType, diagnostics ) && res;
         
         for( DA da : doType.getDA() ) {
-            TypeValidator validator = dataAttributeTypeValidatorMap.get( da.getName() );
-            if( validator != null ) {
-                validator.validateAbstractDataAttribute( da, diagnostics );
+            TypeValidator typeValidator = dataAttributeTypeValidatorMap.get( da.getName() );
+            if( typeValidator != null ) {
+                typeValidator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                // DA not allowed, error will be reported by PresenceConditionValidator
-                //console.warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): type validator for DA " + da.getName() + " not found" );
+                console.error( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
+                               "DA ", da.getName(), " of type " + da.getType(),
+                               " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
             }
 
-            FunctionalConstraintValidator fcValidator = dataAttributeFunctionalConstraintValidatorMap.get( da.getName() );
+            FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( da.getFc() );
             if( fcValidator != null ) {
                 fcValidator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                // DA not allowed, error will be reported by PresenceConditionValidator
-                //console.warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): functional constraint validator for DA " + da.getName() + " not found" );
+                console.error( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
+                               "FunctionalConstraint ", da.getFc(), " of DA " + da.getName(),
+                               " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
             }
         }
       
         for( SDO sdo : doType.getSDO() ) {
-            CDCValidator validator = subDataObjectValidatorMap.get( sdo.getName() );
-            if( validator != null ) {
+            CDCValidator cdcValidator = subDataObjectValidatorMap.get( sdo.getName() );
+            NsIdentification nsId = nsIdentification;
+            if( sdo.getNamespace() != null ) {
+                nsId = new NsIdentification( sdo.getNamespace() );
+            }
+            if( cdcValidator != null ) {
                 if( sdo.getRefersToDOType() != null ) {
-                    res = validator.validateDOType( sdo.getRefersToDOType(), diagnostics ) && res;
+                    res = cdcValidator.validateDOType( sdo.getRefersToDOType(), diagnostics ) && res;
                 }
                 else {
                     console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
-                                     "while validating DOType: DOType for SDO ", sdo.getName(), " not found" );
+                                     "while validating DOType: DOType for SDO ", sdo.getName(), " not found in namespace \"", nsId, "\"" );
                 }
             }
             else {
                 console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
-                                 "while validating DOType: validator for SDO ", sdo.getType(), " not found" );
+                                 "while validating DOType: validator for SDO ", sdo.getType(), " not found in namespace \"", nsId, "\"" );
             }
         }
 
         return res;
+    }
+
+    public boolean validateDO( DO do_, DiagnosticChain diagnostics ) {
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                         "CDCValidator.validateDO( ", do_.getName(), " ) in namespace \"", nsIdentification, "\"" );
+        
+        DOType doType = do_.getRefersToDOType();
+        if( doType == null ) {
+            console.error( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                           "DOType for DO \"", do_.getName(), " not found in namespace \"", nsIdentification, "\"" );
+            return false;
+        }
+        return validateDOType( doType, diagnostics );
     }
 
 }

@@ -500,8 +500,8 @@ public class RiseClipseValidatorSCL {
         System.exit( 0 );
     }
         
-    @SuppressWarnings( "unused" )
-    private static void doHiddenDoor_2() {
+//    @SuppressWarnings( "unused" )
+    private static void doHiddenDoor() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.setLevel( Severity.INFO );
         console.setFormatString( INFO_FORMAT_STRING );
@@ -512,6 +512,7 @@ public class RiseClipseValidatorSCL {
             sclLoader.reset();
             Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
             sclLoader.finalizeLoad( console );
+            if( resource.getContents().size() == 0 ) continue;
             SCL scl = ( SCL ) resource.getContents().get( 0 );
             scl
             .getIED()
@@ -583,7 +584,7 @@ public class RiseClipseValidatorSCL {
         System.exit( 0 );
     }
     
-    private static void doHiddenDoor() {
+    private static void doHiddenDoor_4() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.setLevel( Severity.INFO );
         console.setFormatString( INFO_FORMAT_STRING );
@@ -644,7 +645,13 @@ public class RiseClipseValidatorSCL {
     }
 
     // public because used by ui
-    public static void prepare( boolean displayNsdMessages ) {
+    public static void prepare( List< String > oclFileNames, List< String > nsdFileNames, boolean displayNsdMessages ) {
+        oclFiles = new ArrayList< String >( oclFileNames );
+        nsdFiles = new ArrayList< String >( nsdFileNames );
+        prepare( displayNsdMessages );
+    }
+
+    private static void prepare( boolean displayNsdMessages ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         SclPackage sclPg = SclPackage.eINSTANCE;

@@ -51,7 +51,7 @@ public class NsdValidator {
             level = console.setLevel( Severity.ERROR );            
         }
         nsdLoader.getResourceSet().finalizeLoad( console );
-        nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet() );
+        nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet(), console );
         validator.addChild( nsdEObjectValidator );
         if( ! displayNsdMessages ) {
             console.setLevel( level );            
