@@ -27,28 +27,61 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.SubDataAttribute;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.BDA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAType;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class ConstructedAttributeValidator extends TypeValidator {
 
     private HashSet< String > validatedDAType; 
 
     private SubDataAttributePresenceConditionValidator subDataAttributePresenceConditionValidator;
-    private HashMap< String, TypeValidator > subDataAttributeValidatorMap = new HashMap<>();
+    private HashMap< NsIdentificationName, TypeValidator > subDataAttributeValidatorMap = new HashMap<>();
 
-    public ConstructedAttributeValidator( ConstructedAttribute contructedAttribute ) {
-        subDataAttributePresenceConditionValidator = SubDataAttributePresenceConditionValidator.get( contructedAttribute );
+    private NsIdentification nsIdentification;
+
+    public ConstructedAttributeValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute, IRiseClipseConsole console ) {
+        this.nsIdentification = nsIdentification;
+        subDataAttributePresenceConditionValidator = SubDataAttributePresenceConditionValidator.get( nsIdentification, constructedAttribute );
         
-        for( SubDataAttribute sda : contructedAttribute.getSubDataAttribute() ) {
-            TypeValidator validator = TypeValidator.get( sda.getType() );
-            if( validator != null ) {
-                subDataAttributeValidatorMap.put( sda.getName(), validator );
+        for( SubDataAttribute sda : constructedAttribute.getSubDataAttribute() ) {
+            if( sda.getType() == null ) {
+                console.warning( "[NSD setup] (" + sda.getFilename() + ":" + sda.getLineNumber()
+                    + ") type not specified for SubDataAttribute " + sda.getName() );
+                continue;
+            }
+            // When we look for a validator, we first search in the current namespace.
+            // If this fails, we use DependsOn links
+            TypeValidator typeValidator = null;
+            // Reinitialize before searching
+            nsIdentification = this.nsIdentification;
+            while( nsIdentification != null ) {
+                typeValidator = TypeValidator.get( nsIdentification, sda.getType() );
+                if( typeValidator != null ) break;
+                if(( sda.eResource() != null ) && ( sda.eResource().getResourceSet() instanceof NsdResourceSetImpl )) {
+                    nsIdentification = (( NsdResourceSetImpl ) sda.eResource().getResourceSet() ).getDependsOn( nsIdentification );
+                }
+                else {
+                    break;
+                }
+            }
+            // The type of the SubDataAttribute may be a ConstructedAttribute whose validator is not yet built
+            if(( typeValidator == null ) && ( sda.getRefersToConstructedAttribute() != null )) {
+                console.verbose( "[NSD setup] Validator for ConstructedAttribute " + constructedAttribute.getName()
+                    + " needs validator for SubDataAttribute " + sda.getName() + " of type " + sda.getType() + " which is not yet built" );
+                typeValidator = TypeValidator.buildConstructedAttributeValidator( this.nsIdentification, sda.getRefersToConstructedAttribute(), console );
+            }
+            if( typeValidator != null ) {
+                subDataAttributeValidatorMap.put( new NsIdentificationName( this.nsIdentification, sda.getName() ), typeValidator );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + sda.getFilename() + ":" + sda.getLineNumber() + ") Type not found for DataAttribute " + sda.getName() );
+                console.warning( "[NSD setup] (" + sda.getFilename() + ":" + sda.getLineNumber()
+                    + ") Type " + sda.getType() + " not found for SubDataAttribute " + sda.getName() );
             }
         }
         
@@ -67,7 +100,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
 
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute da, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateAbstractDataAttribute( " + da.getName() + " ) at line " + da.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateAbstractDataAttribute( "
+                + da.getName() + " ) at line " + da.getLineNumber() + " in namespace \"" + nsIdentification + "\"" );
         boolean res = true;
         
         if( da.getRefersToDAType() != null ) {
@@ -78,7 +112,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
 
     private boolean validateDAType( DAType daType, DiagnosticChain diagnostics ) {
         if( validatedDAType.contains( daType.getId() )) return true;
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateDAType( " + daType.getId() + " ) at line " + daType.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateDAType( " + daType.getId()
+            + " ) at line " + daType.getLineNumber() + " in namespace \"" + nsIdentification + "\"" );
         validatedDAType.add( daType.getId() );
         
         subDataAttributePresenceConditionValidator.resetModelData();
@@ -91,7 +126,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
         boolean res = subDataAttributePresenceConditionValidator.validate( daType, diagnostics );
         
         for( BDA bda : daType.getBDA() ) {
-            TypeValidator validator = subDataAttributeValidatorMap.get( bda.getName() );
+            TypeValidator validator = subDataAttributeValidatorMap.get( new NsIdentificationName( nsIdentification, bda.getName() ) );
             if( validator != null ) {
                 validator.validateAbstractDataAttribute( bda, diagnostics );
             }

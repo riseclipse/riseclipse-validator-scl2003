@@ -44,6 +44,11 @@ public abstract class BasicTypeValidator extends TypeValidator {
         return validators.get( basicType.getName() );
     }
     
+    // For UndefinedTypeValidator
+    public static BasicTypeValidator get( String basicTypeName ) {
+        return validators.get( basicTypeName );
+    }
+    
     static {
         validators.put( "BOOLEAN", new BasicTypeValidator( "BOOLEAN" ) {
 

@@ -47,7 +47,7 @@ public class NsdValidator {
             level = console.setLevel( IRiseClipseConsole.ERROR_LEVEL );            
         }
         nsdLoader.getResourceSet().finalizeLoad( console );
-        nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet() );
+        nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet(), console );
         validator.addChild( nsdEObjectValidator );
         if( ! displayNsdMessages ) {
             console.setLevel( level );            

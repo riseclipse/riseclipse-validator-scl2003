@@ -29,6 +29,7 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Enumeration;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAI;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.EnumType;
@@ -37,6 +38,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.UnNaming;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class EnumerationValidator extends TypeValidator {
     
@@ -47,18 +49,18 @@ public class EnumerationValidator extends TypeValidator {
     private String name;
     private boolean isMultiplierKind;
 
-    public EnumerationValidator( Enumeration enumeration ) {
+    public EnumerationValidator( Enumeration enumeration, NsIdentification nsIdentification, IRiseClipseConsole console ) {
         this.name = enumeration.getName();
         String inheritedFromName = enumeration.getInheritedFrom();
         
         if(( inheritedFromName != null ) && ( ! inheritedFromName.isEmpty() )) {
-            TypeValidator inheritedValidator = TypeValidator.get( inheritedFromName );
+            TypeValidator inheritedValidator = TypeValidator.get( nsIdentification, inheritedFromName );
             if(( inheritedValidator != null ) && ( inheritedValidator instanceof EnumerationValidator )) {
                 EnumerationValidator inheritedFrom = ( EnumerationValidator ) inheritedValidator;
                 literals.putAll( inheritedFrom.literals );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().error( "[NSD setup] validator for inherited enumeration \"" + inheritedFromName + "\" not found" );
+                console.error( "[NSD setup] validator for inherited enumeration \"" + inheritedFromName + "\" not found" );
             }
         }
         

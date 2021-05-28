@@ -429,17 +429,17 @@ public class RiseClipseValidatorSCL {
         
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
 
-        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION );
+        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION, true );
         pc.forEach( c -> console.info(  "PresenceCondition " + c.getName() ));
         
-        Stream< ConstructedAttribute > ca = nsdValidator.getNsdLoader().getResourceSet().getConstructedAttributeStream( DEFAULT_NS_IDENTIFICATION );
+        Stream< ConstructedAttribute > ca = nsdValidator.getNsdLoader().getResourceSet().getConstructedAttributeStream( DEFAULT_NS_IDENTIFICATION, true );
         ca.forEach( c -> console.info(  "ConstructedAttribute " + c.getName() ));
         
         System.exit( 0 );
     }
         
-    @SuppressWarnings( "unused" )
-    private static void doHiddenDoor_2() {
+//    @SuppressWarnings( "unused" )
+    private static void doHiddenDoor() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
             
         prepare( false );
@@ -449,6 +449,7 @@ public class RiseClipseValidatorSCL {
             sclLoader.reset();
             Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
             sclLoader.finalizeLoad( console );
+            if( resource.getContents().size() == 0 ) continue;
             SCL scl = ( SCL ) resource.getContents().get( 0 );
             scl
             .getIED()
@@ -519,7 +520,7 @@ public class RiseClipseValidatorSCL {
         System.exit( 0 );
     }
     
-    private static void doHiddenDoor() {
+    private static void doHiddenDoor_4() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
             
         prepare( false );
@@ -570,12 +571,18 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    https://riseclipse.github.io/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a21 (12 april 2021)" );
+        console.info( "RiseClipseValidatorSCL version: 1.2.0 a1 (27 may 2021)" );
         console.info( "" );
     }
 
     // public because used by ui
-    public static void prepare( boolean displayNsdMessages ) {
+    public static void prepare( List< String > oclFileNames, List< String > nsdFileNames, boolean displayNsdMessages ) {
+        oclFiles = new ArrayList< String >( oclFileNames );
+        nsdFiles = new ArrayList< String >( nsdFileNames );
+        prepare( displayNsdMessages );
+    }
+
+    private static void prepare( boolean displayNsdMessages ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         SclPackage sclPg = SclPackage.eINSTANCE;
