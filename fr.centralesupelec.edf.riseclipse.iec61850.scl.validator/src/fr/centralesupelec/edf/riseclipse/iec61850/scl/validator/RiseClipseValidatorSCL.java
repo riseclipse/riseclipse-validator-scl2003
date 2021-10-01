@@ -416,7 +416,7 @@ public class RiseClipseValidatorSCL {
         
     }
 
-    private static void doHiddenDoor( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, List<String> sclFiles ) {
+    private static void doHiddenDoor() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         prepare( false );
@@ -506,7 +506,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    https://riseclipse.github.io/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a21 (12 april 2021)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a22 (1 october 2021)" );
         console.info( "" );
     }
 
