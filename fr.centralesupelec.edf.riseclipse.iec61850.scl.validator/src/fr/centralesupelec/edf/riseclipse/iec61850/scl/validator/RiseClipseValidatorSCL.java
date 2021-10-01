@@ -134,9 +134,9 @@ public class RiseClipseValidatorSCL {
     private static String outputFile = null;
     private static String xsdFile = null;
     
-    private static ArrayList< @NonNull String > oclFiles;
-    private static ArrayList< @NonNull String > nsdFiles;
-    private static ArrayList< @NonNull String > sclFiles;
+    private static List< @NonNull String> oclFiles;
+    private static List< @NonNull String > nsdFiles;
+    private static List< @NonNull String > sclFiles;
 
     private static void usage() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
@@ -511,7 +511,13 @@ public class RiseClipseValidatorSCL {
     }
 
     // public because used by ui
-    public static void prepare( boolean displayNsdMessages ) {
+    public static void prepare( List< String > oclFileNames, List< String > nsdFileNames, boolean displayNsdMessages ) {
+        oclFiles = oclFileNames;
+        nsdFiles = nsdFileNames;
+        prepare( displayNsdMessages );
+    }
+
+    private static void prepare( boolean displayNsdMessages ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         SclPackage sclPg = SclPackage.eINSTANCE;
