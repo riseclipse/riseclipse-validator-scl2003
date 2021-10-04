@@ -21,10 +21,6 @@
 
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,12 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
-import java.util.stream.Stream;
 
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DependsOn;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DocumentRoot;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.PresenceCondition;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SCL;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
@@ -113,6 +104,18 @@ public class RiseClipseValidatorSCL {
 
     public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
     
+    private static final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
+    private static final Integer DEFAULT_NAMESPACE_VERSION = new Integer( 2007 );
+    private static final String DEFAULT_NAMESPACE_REVISION = "B";
+    private static final Integer DEFAULT_NAMESPACE_RELEASE = new Integer( 1 );
+    
+    public static final NsIdentification DEFAULT_NS_IDENTIFICATION = new NsIdentification(
+            DEFAULT_NAMESPACE_ID,
+            DEFAULT_NAMESPACE_VERSION,
+            DEFAULT_NAMESPACE_REVISION,
+            DEFAULT_NAMESPACE_RELEASE
+    );
+    
     private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
     private static SclModelLoader sclLoader;
@@ -126,10 +129,6 @@ public class RiseClipseValidatorSCL {
     private static int consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
     private static String outputFile = null;
     private static String xsdFile = null;
-    
-    private static ArrayList< @NonNull String > oclFiles;
-    private static ArrayList< @NonNull String > nsdFiles;
-    private static ArrayList< @NonNull String > sclFiles;
 
     private static void usage() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
@@ -159,7 +158,6 @@ public class RiseClipseValidatorSCL {
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         displayLegal();
         console.info( "java -jar RiseClipseValidatorSCL.jar option* file*" );
-        console.info( "\tDirectories are searched recursively," );
         console.info( "\tFiles ending with \".ocl\" are considered OCL files," );
         console.info( "\tfiles ending with \".nsd\" are considered NS files," );
         console.info( "\tfiles ending with \".snsd\" are considered ServiceNS files," );
@@ -349,107 +347,64 @@ public class RiseClipseValidatorSCL {
         
         //console.doNotDisplayIdenticalMessages();
 
-        oclFiles = new ArrayList<>();
-        nsdFiles = new ArrayList<>();
-        sclFiles = new ArrayList<>();
+        ArrayList< @NonNull String > oclFiles = new ArrayList<>();
+        ArrayList< @NonNull String > nsdFiles = new ArrayList<>();
+        ArrayList< @NonNull String > sclFiles = new ArrayList<>();
         for( int i = posFiles; i < args.length; ++i ) {
-            getFiles( Paths.get( args[i] ), console );
+            int dotPos = args[i].indexOf( "." );
+            if( dotPos != -1 ) {
+                if( args[i].substring( dotPos ).equalsIgnoreCase( OCL_FILE_EXTENSION )) {
+                    oclFiles.add( args[i] );
+                }
+                else if( args[i].substring( dotPos ).equalsIgnoreCase( NSD_FILE_EXTENSION )) {
+                    nsdFiles.add( args[i] );
+                }
+                else if( args[i].substring( dotPos ).equalsIgnoreCase( SNSD_FILE_EXTENSION )) {
+                    nsdFiles.add( args[i] );
+                }
+                else if( args[i].substring( dotPos ).equalsIgnoreCase( APP_NS_FILE_EXTENSION )) {
+                    nsdFiles.add( args[i] );
+                }
+                else if( args[i].substring( dotPos ).equalsIgnoreCase( NSDOC_FILE_EXTENSION )) {
+                    nsdFiles.add( args[i] );
+                }
+                else {
+                    sclFiles.add( args[i] );
+                }
+            }
+            else {
+                sclFiles.add( args[i] );
+            }
         }
         
         if( hiddenDoor ) {
-            doHiddenDoor();
+            doHiddenDoor( oclFiles, nsdFiles, sclFiles );
         }
 
-        prepare( displayNsdMessages );
+        prepare( oclFiles, nsdFiles, displayNsdMessages );
         for( int i = 0; i < sclFiles.size(); ++i ) {
             run( makeExplicitLinks, sclFiles.get( i ));
         }
     }
 
-    private static void getFiles( Path path, IRiseClipseConsole console ) {
-        if( Files.isDirectory( path )) {
-            try {
-                Files.list( path )
-                    .forEach( f -> getFiles( f.normalize(), console ));
-            }
-            catch( IOException e ) {
-                console.error( "got IOException while listing content of directory " + path );
-            }
-        }
-        else if( Files.isReadable( path )) {
-            String name = path.toString();
-            int dotPos = name.indexOf( "." );
-            if( dotPos != -1 ) {
-                if( name.substring( dotPos ).equalsIgnoreCase( OCL_FILE_EXTENSION )) {
-                    oclFiles.add( name );
-                }
-                else if( name.substring( dotPos ).equalsIgnoreCase( NSD_FILE_EXTENSION )) {
-                    nsdFiles.add( name );
-                }
-                else if( name.substring( dotPos ).equalsIgnoreCase( SNSD_FILE_EXTENSION )) {
-                    nsdFiles.add( name );
-                }
-                else if( name.substring( dotPos ).equalsIgnoreCase( APP_NS_FILE_EXTENSION )) {
-                    nsdFiles.add( name );
-                }
-                else if( name.substring( dotPos ).equalsIgnoreCase( NSDOC_FILE_EXTENSION )) {
-                    nsdFiles.add( name );
-                }
-                else {
-                    sclFiles.add( name );
-                }
-            }
-            else {
-                sclFiles.add( name );
-            }
-        }
-        else {
-            console.error(  "Cannot read file " + path );
-        }
-        
-    }
-
-    @SuppressWarnings( "unused" )
-    private static void doHiddenDoor_1() {
+    private static void doHiddenDoor( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, List<String> sclFiles ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
-        prepare( false );
+        prepare( oclFiles, nsdFiles, false );
         
-        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-
-        final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
-        final Integer DEFAULT_NAMESPACE_VERSION = new Integer( 2007 );
-        final String DEFAULT_NAMESPACE_REVISION = "B";
-        final Integer DEFAULT_NAMESPACE_RELEASE = new Integer( 1 );
-
-        final NsIdentification DEFAULT_NS_IDENTIFICATION = new NsIdentification(
-                DEFAULT_NAMESPACE_ID,
-                DEFAULT_NAMESPACE_VERSION,
-                DEFAULT_NAMESPACE_REVISION,
-                DEFAULT_NAMESPACE_RELEASE
-                );
-      
-        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION, true );
-        pc.forEach( c -> console.info(  "PresenceCondition " + c.getName() ));
+//        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION );
+//        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+//        pc.forEach( c -> console.info(  "PresenceCondition " + c.getName() ));
         
-        Stream< ConstructedAttribute > ca = nsdValidator.getNsdLoader().getResourceSet().getConstructedAttributeStream( DEFAULT_NS_IDENTIFICATION, true );
-        ca.forEach( c -> console.info(  "ConstructedAttribute " + c.getName() ));
+//        Stream< ConstructedAttribute > ca = nsdValidator.getNsdLoader().getResourceSet().getConstructedAttributeStream( DEFAULT_NS_IDENTIFICATION );
+//        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+//        ca.forEach( c -> console.info(  "ConstructedAttribute " + c.getName() ));
         
-        System.exit( 0 );
-    }
-        
-//    @SuppressWarnings( "unused" )
-    private static void doHiddenDoor() {
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-            
-        prepare( false );
-            
         console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         for( int i = 0; i < sclFiles.size(); ++i ) {
             sclLoader.reset();
             Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
             sclLoader.finalizeLoad( console );
-            if( resource.getContents().size() == 0 ) continue;
             SCL scl = ( SCL ) resource.getContents().get( 0 );
             scl
             .getIED()
@@ -492,24 +447,6 @@ public class RiseClipseValidatorSCL {
                 });
             });
             
-        }
-        
-        System.exit( 0 );
-    }
-
-    @SuppressWarnings( "unused" )
-    private static void doHiddenDoor_3() {
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-            
-        prepare( false );
-            
-        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-        for( int i = 0; i < sclFiles.size(); ++i ) {
-            sclLoader.reset();
-            Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
-            sclLoader.finalizeLoad( console );
-            SCL scl = ( SCL ) resource.getContents().get( 0 );
-            
             for( TreeIterator< ? extends EObject > t = EcoreUtil.getAllContents( Collections.singleton( scl ) ); t.hasNext(); ) {
                 EObject child = t.next();
                 console.info( child.getClass().getName() );
@@ -519,38 +456,7 @@ public class RiseClipseValidatorSCL {
         
         System.exit( 0 );
     }
-    
-    private static void doHiddenDoor_4() {
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-            
-        prepare( false );
-            
-        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-        
-        for( int i = 0; i < nsdValidator.getNsdLoader().getResourceSet().getResources().size(); ++i ) {
-            Resource resource = nsdValidator.getNsdLoader().getResourceSet().getResources().get( i );
-            DocumentRoot root = (DocumentRoot) resource.getContents().get( 0 );
-            if( root.getNS() != null ) {
-                console.info( "Id: " + root.getNS().getId() );
-                console.info( "Version: " + root.getNS().getVersion() + "-" + root.getNS().getRevision()  + root.getNS().getRelease() + "-" + root.getNS().getPublicationStage() );
-                DependsOn dependsOn = root.getNS().getDependsOn();
-                if( dependsOn != null ) {
-                    console.info( "DependsOn Id: " + dependsOn.getId() );
-                    console.info( "DependsOn Version: " + dependsOn.getVersion() + "-"  + dependsOn.getRevision()  + dependsOn.getRelease() + "-" + dependsOn.getPublicationStage() );
-                    if( dependsOn.getRefersToNS() != null ) {
-                        console.info( "DependsOn.refersToNS found " );
-                    }
-                    else {
-                        console.info( "DependsOn.refersToNS NOT FOUND " );                        
-                    }
-                }
-            }
-            console.info();
-        }
-        
-        System.exit( 0 );
-    }
-    
+
     // public because used by ui
     public static void displayLegal() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
@@ -571,18 +477,12 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    https://riseclipse.github.io/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.2.0 a1 (27 may 2021)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a21 (12 april 2021)" );
         console.info( "" );
     }
 
     // public because used by ui
-    public static void prepare( List< String > oclFileNames, List< String > nsdFileNames, boolean displayNsdMessages ) {
-        oclFiles = new ArrayList< String >( oclFileNames );
-        nsdFiles = new ArrayList< String >( nsdFileNames );
-        prepare( displayNsdMessages );
-    }
-
-    private static void prepare( boolean displayNsdMessages ) {
+    public static void prepare( List< @NonNull String > oclFiles, List< @NonNull String > nsdFiles, boolean displayNsdMessages ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         SclPackage sclPg = SclPackage.eINSTANCE;
@@ -602,6 +502,9 @@ public class RiseClipseValidatorSCL {
         }
 
         if(( nsdFiles != null ) && ( ! nsdFiles.isEmpty() )) {
+            // There are some static attributes
+            NsdValidator.initialize();
+            
             nsdValidator = new NsdValidator( sclPg );
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );

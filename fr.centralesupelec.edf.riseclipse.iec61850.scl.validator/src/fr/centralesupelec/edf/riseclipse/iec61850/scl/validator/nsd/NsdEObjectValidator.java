@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019-2021 CentraleSupélec & EDF.
+**  Copyright (c) 2019 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,12 +15,14 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      https://riseclipse.github.io/
+**      http://wdi.supelec.fr/software/RiseClipse/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import java.util.Map;
+import java.util.Optional;
+
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
@@ -28,44 +30,33 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
-
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.util.SclSwitch;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
-import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class NsdEObjectValidator implements EValidator {
 
-    public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet, IRiseClipseConsole console ) {
-        // To avoid building several times the validators, we process the ordered list of NsIdentification (root first)
-        for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList() ) {
-            console.info( "[NSD setup] Getting NSD rules for namespace \"" + nsIdentification + "\"" );
-            // Order is important !
-            TypeValidator.buildBasicTypeValidators(
-                    nsIdentification,
-                    nsdResourceSet.getBasicTypeStream( nsIdentification, false ),
-                    console );
-            TypeValidator.builEnumerationdValidators(
-                    nsIdentification,
-                    nsdResourceSet.getEnumerationStream( nsIdentification, false ),
-                    console );
-            TypeValidator.buildConstructedAttributeValidators(
-                    nsIdentification,
-                    nsdResourceSet.getConstructedAttributeStream( nsIdentification, false ),
-                    console );
-            CDCValidator.buildValidators(
-                    nsIdentification,
-                    nsdResourceSet.getCDCStream( nsIdentification, false ),
-                    console );
-            LNClassValidator.buildValidators(
-                    nsIdentification,
-                    nsdResourceSet.getLNClassStream( nsIdentification, false ),
-                    console );
-        }
+    public static void initialize() {
+        TypeValidator.initialize();
+        CDCValidator.initialize();
+        LNClassValidator.initialize();
+    }
+
+    public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet ) {
+        // Order is important !
+        TypeValidator.buildValidators(
+                nsdResourceSet.getBasicTypeStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ),
+                nsdResourceSet.getEnumerationStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ),
+                nsdResourceSet.getConstructedAttributeStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
+        CDCValidator.buildValidators(
+                nsdResourceSet.getCDCStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
+        LNClassValidator.buildValidators(
+                nsdResourceSet.getLNClassStream( RiseClipseValidatorSCL.DEFAULT_NS_IDENTIFICATION ) );
     }
 
     /*
@@ -89,6 +80,7 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseLNodeType( LNodeType lNodeType ) {
+                AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validate( " + lNodeType.getId() + " ) at line " + lNodeType.getLineNumber() );
                 return validateLNodeType( lNodeType, diagnostics );
             }
 
@@ -112,59 +104,70 @@ public class NsdEObjectValidator implements EValidator {
         return true;
     }
 
-    private boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validateLNodeType( " + lNodeType.getId()
-            + " ) at line " + lNodeType.getLineNumber() );
-
-        boolean res = true;
-        
-        if( lNodeType.getNamespace() != null ) {
-            res = validateLNodeType( lNodeType, lNodeType.getNamespace(), diagnostics ) && res;
-        }
-        else {
-            AbstractRiseClipseConsole.getConsole().info( "[NSD validation] LNodeType " + lNodeType.getId()
-                    + " at line " + lNodeType.getLineNumber() + " has no namespace and cannot be validated in isolation."
-                    + " It will be checked if any LN with a namespace points to it." );
-        }
-
-        if( lNodeType.getReferredByAnyLN().size() == 0 ) {
-            if( lNodeType.getNamespace() != null ) return res;
-            
-            AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] LNodeType " + lNodeType.getId()
-                + " at line " + lNodeType.getLineNumber() + " will not be validated, no LN with a namespace points to it." );
-
-            return false;
-        }
-        
-        for( AnyLN ln : lNodeType.getReferredByAnyLN() ) {
-            if( ln.getNamespace() != null ) {
-                res = validateLNodeType( lNodeType, ln.getNamespace(), diagnostics ) && res;
-            }
-        }
-
-        return res;
-    }
-
-    private boolean validateLNodeType( LNodeType lNodeType, String namespace, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validateLNodeType( " + lNodeType.getId()
-            + " ) at line " + lNodeType.getLineNumber() + " in namespace " + namespace );
+    protected Boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
+        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validateLNodeType( " + lNodeType.getLnClass() + " )" );
 
         // Check that LNodeType has valid LNClass
-        LNClassValidator lnClassValidator = LNClassValidator.get( new NsIdentification( namespace ), lNodeType.getLnClass() );
-        if( lnClassValidator != null ) {
+        if( LNClassValidator.get( lNodeType.getLnClass() ) != null ) {
             AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] LNClass " + lNodeType.getLnClass()
-                + " found for LNodeType at line " + lNodeType.getLineNumber() + " in namespace \"" + namespace + "\"" );
+                + " found for LNodeType at line " + lNodeType.getLineNumber() );
 
-            return lnClassValidator.validateLNodeType( lNodeType, diagnostics );
+            // LNClassValidator validates LNodeType content
+            return LNClassValidator.get( lNodeType.getLnClass() ).validateLNodeType( lNodeType, diagnostics );
         }
         
+        // A specific LNodeType:
+        // - must have a DO with name "NamPlt"
+        // - its DOType must have a DA with name "lnNs"
+        Optional< DOType > doType =
+                lNodeType
+                .getDO()
+                .stream()
+                .filter( d -> "NamPlt".equals( d.getName() ))
+                .findAny()
+                .map( d -> d.getRefersToDOType() );
+        if( doType.isPresent() ) {
+            Optional< DA > da =
+                    doType
+                    .get()
+                    .getDA()
+                    .stream()
+                    .filter( d -> "lnNs".equals( d.getName() ))
+                    .findAny();
+            if( da.isPresent() ) {
+                if( da.get().getVal().size() > 0 ) {
+                    String value = "";
+                    for( Val v : da.get().getVal() ) {
+                        value += " " + v.getValue();
+                    }
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.INFO,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] LNodeType at line " + lNodeType.getLineNumber() + " with lnClass " + lNodeType.getLnClass()
+                                + " is specific because it has DA \"lnNs\" in DO \"NamPlt\" with value [" + value + " ]",
+                            new Object[] { lNodeType } ));
+                    return true;
+                }
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        "[NSD validation] LNodeType at line " + lNodeType.getLineNumber() + " with lnClass " + lNodeType.getLnClass()
+                            + " is specific because it has DA \"lnNs\" in DO \"NamPlt\" but value is missing",
+                        new Object[] { lNodeType } ));
+                return false;
+            }  
+        }
+
         diagnostics.add( new BasicDiagnostic(
                 Diagnostic.ERROR,
                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                 0,
-                "[NSD validation] LNClass " + lNodeType.getLnClass() + " not found for LNodeType at line "
-                            + lNodeType.getLineNumber() + " in namespace \"" + namespace + "\"",
+                "[NSD validation] LNClass " + lNodeType.getLnClass() + " not found for LNodeType at line " + lNodeType.getLineNumber()
+                        + " and DA \"lnNs\" in DO \"NamPlt\" not found",
                 new Object[] { lNodeType } ));
         return false;
     }
+
 }
