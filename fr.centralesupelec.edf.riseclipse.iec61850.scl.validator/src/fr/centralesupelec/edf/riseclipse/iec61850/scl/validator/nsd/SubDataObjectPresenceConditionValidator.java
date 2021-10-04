@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019-2021 CentraleSupélec & EDF.
+**  Copyright (c) 2019 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      https://riseclipse.github.io/
+**      http://wdi.supelec.fr/software/RiseClipse/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -30,8 +30,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.annotation.Nullable;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
@@ -40,19 +38,23 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValida
 
 public class SubDataObjectPresenceConditionValidator extends GenericPresenceConditionValidator< CDC, DOType, @Nullable SDO >{
 
-    private static HashMap< NsIdentificationName, SubDataObjectPresenceConditionValidator > validators = new HashMap<>();
+    private static HashMap< String, SubDataObjectPresenceConditionValidator > validators;
     
-    public static SubDataObjectPresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
-        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, cdc.getName() ))) {
-            validators.put( new NsIdentificationName( nsIdentification, cdc.getName() ), new SubDataObjectPresenceConditionValidator( nsIdentification, cdc ));
+    public static void initialize() {
+        validators = new HashMap<>();
+    }
+    
+    public static SubDataObjectPresenceConditionValidator get( CDC cdc ) {
+        if( ! validators.containsKey( cdc.getName() )) {
+            validators.put( cdc.getName(), new SubDataObjectPresenceConditionValidator( cdc ));
         }
-        return validators.get( new NsIdentificationName( nsIdentification, cdc.getName() ) );
+        return validators.get( cdc.getName() );
     }
     
     private CDC cdc;
 
-    public SubDataObjectPresenceConditionValidator( NsIdentification nsIdentification, CDC cdc ) {
-        super( nsIdentification, cdc );
+    public SubDataObjectPresenceConditionValidator( CDC cdc ) {
+        super( cdc );
         
         this.cdc = cdc;
     }
