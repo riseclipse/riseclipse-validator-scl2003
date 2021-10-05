@@ -385,7 +385,7 @@ public class RiseClipseValidatorSCL {
         }
         else if( Files.isReadable( path )) {
             String name = path.toString();
-            int dotPos = name.indexOf( "." );
+            int dotPos = name.lastIndexOf( "." );
             if( dotPos != -1 ) {
                 if( name.substring( dotPos ).equalsIgnoreCase( OCL_FILE_EXTENSION )) {
                     oclFiles.add( name );
