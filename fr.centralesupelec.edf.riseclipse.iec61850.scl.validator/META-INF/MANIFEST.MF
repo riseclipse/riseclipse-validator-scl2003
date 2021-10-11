@@ -5,7 +5,7 @@ Bundle-Vendor: CentraleSupélec & EDF
 Bundle-SymbolicName: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
 Bundle-Version: 1.1.0.qualifier
 Export-Package: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore,
  org.eclipse.emf.edit,
