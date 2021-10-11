@@ -7,20 +7,22 @@ Bundle-Version: 1.1.0.qualifier
 Export-Package: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
  org.eclipse.emf.ecore,
  org.eclipse.emf.edit,
  org.eclipse.emf.common,
  org.eclipse.emf.ecore.xmi,
- fr.centralesupelec.edf.riseclipse.main,
+ org.eclipse.ocl,
  org.eclipse.ocl.pivot,
+ org.eclipse.ocl.xtext.oclinecore,
  org.eclipse.ocl.xtext.completeocl,
  org.eclipse.ocl.xtext.oclstdlib,
+ org.apache.commons.lang3,
+ fr.centralesupelec.edf.riseclipse.main,
  fr.centralesupelec.edf.riseclipse.iec61850.scl,
  fr.centralesupelec.edf.riseclipse.iec61850.scl.edit,
  fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities,
  fr.centralesupelec.edf.riseclipse.validation.ocl,
  fr.centralesupelec.edf.riseclipse.iec61850.nsd,
  fr.centralesupelec.edf.riseclipse.iec61850.nsd.edit,
- fr.centralesupelec.edf.riseclipse.iec61850.nsd.utilities,
- org.eclipse.ocl.xtext.oclinecore,
- org.apache.commons.lang3
+ fr.centralesupelec.edf.riseclipse.iec61850.nsd.utilities
