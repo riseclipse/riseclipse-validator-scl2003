@@ -109,9 +109,9 @@ public class RiseClipseValidatorSCL {
     public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
     
     private static final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
-    private static final Integer DEFAULT_NAMESPACE_VERSION = new Integer( 2007 );
+    private static final Integer DEFAULT_NAMESPACE_VERSION = Integer.valueOf( 2007 );
     private static final String DEFAULT_NAMESPACE_REVISION = "B";
-    private static final Integer DEFAULT_NAMESPACE_RELEASE = new Integer( 1 );
+    private static final Integer DEFAULT_NAMESPACE_RELEASE = Integer.valueOf( 1 );
     
     public static final NsIdentification DEFAULT_NS_IDENTIFICATION = new NsIdentification(
             DEFAULT_NAMESPACE_ID,
