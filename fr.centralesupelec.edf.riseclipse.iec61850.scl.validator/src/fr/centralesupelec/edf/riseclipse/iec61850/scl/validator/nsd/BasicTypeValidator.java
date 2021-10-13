@@ -74,7 +74,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // Signed integer: [-128, 127]
                 try {
-                    new Byte( value );
+                    Byte.valueOf( value );
                 }
                 catch( NumberFormatException e ) {
                     return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
@@ -90,7 +90,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // Signed integer: [-32 768, 32 767]
                 try {
-                    new Short( value );
+                    Short.valueOf( value );
                 }
                 catch( NumberFormatException e ) {
                     return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
@@ -106,7 +106,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // Signed integer: [-2 147 483 648, 2 147 483 647]
                 try {
-                    new Integer( value );
+                    Integer.valueOf( value );
                 }
                 catch( NumberFormatException e ) {
                     return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
@@ -122,7 +122,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // Signed integer: [-2**63, (2**63)-1]
                 try {
-                    new Long( value );
+                    Long.valueOf( value );
                 }
                 catch( NumberFormatException e ) {
                     return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
@@ -139,7 +139,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
                 // Unsigned integer: [0, 255]
                 Long v;
                 try {
-                    v = new Long( value );
+                    v = Long.valueOf( value );
                 }
                 catch( NumberFormatException e ) {
                     return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
@@ -156,7 +156,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
                 // Unsigned integer: [0, 65 535]
                 Long v;
                 try {
-                    v = new Long( value );
+                    v = Long.valueOf( value );
                 }
                 catch( NumberFormatException e ) {
                     return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
@@ -173,7 +173,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
                 // Unsigned integer: [0, 4 294 967 295]
                 Long v;
                 try {
-                    v = new Long( value );
+                    v = Long.valueOf( value );
                 }
                 catch( NumberFormatException e ) {
                     return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
@@ -189,7 +189,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
             protected boolean validateValue( UnNaming daOrDai, String value, DiagnosticChain diagnostics ) {
                 // Single-precision floating point according to IEEE 754)
                 try {
-                    new Float( value );
+                    Float.valueOf( value );
                 }
                 catch( NumberFormatException e ) {
                     return addDiagnosticErrorIfTrue( true, value, daOrDai, diagnostics );
