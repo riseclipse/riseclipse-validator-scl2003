@@ -69,30 +69,33 @@ public class RiseClipseValidatorSCL {
     private static final String SNSD_FILE_EXTENSION = ".snsd";
     private static final String NSD_FILE_EXTENSION = ".nsd";
     private static final String OCL_FILE_EXTENSION = ".ocl";
-    private static final String HELP_OPTION                     = "--help";
-    private static final String HELP_ENVIRONMENT_OPTION         = "--help-environment";
+
+    private static final String HELP_OPTION                            = "--help";
+    private static final String HELP_ENVIRONMENT_OPTION                = "--help-environment";
     
-    private static final String VERBOSE_OPTION                  = "--verbose";
-    private static final String INFO_OPTION                     = "--info";
-    private static final String WARNING_OPTION                  = "--warning";
-    private static final String ERROR_OPTION                    = "--error";
-    private static final String LEVEL_OPTION                    = VERBOSE_OPTION + " | " + INFO_OPTION + " | " + WARNING_OPTION + " | " + ERROR_OPTION;
-    private static final String OUTPUT_OPTION                   = "--output";
-    private static final String XSD_OPTION                      = "--xml-schema";
+    private static final String VERBOSE_OPTION                         = "--verbose";
+    private static final String INFO_OPTION                            = "--info";
+    private static final String WARNING_OPTION                         = "--warning";
+    private static final String ERROR_OPTION                           = "--error";
+    private static final String LEVEL_OPTION                           = VERBOSE_OPTION + " | " + INFO_OPTION + " | " + WARNING_OPTION + " | " + ERROR_OPTION;
+    private static final String OUTPUT_OPTION                          = "--output";
+    private static final String XSD_OPTION                             = "--xml-schema";
     
-    private static final String MAKE_EXPLICIT_LINKS_OPTION      = "--make-explicit-links";
-    private static final String USE_COLOR_OPTION                = "--use-color";
-    private static final String DISPLAY_NSD_MESSAGES_OPTION     = "--display-nsd-messages";
-    private static final String DO_NOT_DISPLAY_COPYRIGHT_OPTION = "--do-not-display-copyright";
+    private static final String MAKE_EXPLICIT_LINKS_OPTION             = "--make-explicit-links";
+    private static final String USE_COLOR_OPTION                       = "--use-color";
+    private static final String DISPLAY_NSD_MESSAGES_OPTION            = "--display-nsd-messages";
+    private static final String DO_NOT_DISPLAY_COPYRIGHT_OPTION        = "--do-not-display-copyright";
+    private static final String USE_FILENAMES_STARTING_WITH_DOT_OPTION = "--use-filenames-starting-with-dot";
     
-    private static final String RISECLIPSE_VARIABLE_PREFIX             = "RISECLIPSE_";
-    private static final String CONSOLE_LEVEL_VARIABLE_NAME            = RISECLIPSE_VARIABLE_PREFIX + "CONSOLE_LEVEL";
-    private static final String OUTPUT_FILE_VARIABLE_NAME              = RISECLIPSE_VARIABLE_PREFIX + "OUTPUT_FILE";
-    private static final String XSD_FILE_VARIABLE_NAME                 = RISECLIPSE_VARIABLE_PREFIX + "XSD_FILE";
-    private static final String USE_COLOR_VARIABLE_NAME                = RISECLIPSE_VARIABLE_PREFIX + "USE_COLOR";
-    private static final String MAKE_EXPLICIT_LINKS_VARIABLE_NAME      = RISECLIPSE_VARIABLE_PREFIX + "MAKE_EXPLICIT_LINKS";
-    private static final String DISPLAY_NSD_MESSAGES_VARIABLE_NAME     = RISECLIPSE_VARIABLE_PREFIX + "DISPLAY_NSD_MESSAGES";
-    private static final String DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME = RISECLIPSE_VARIABLE_PREFIX + "DO_NOT_DISPLAY_COPYRIGHT";
+    private static final String RISECLIPSE_VARIABLE_PREFIX                    = "RISECLIPSE_";
+    private static final String CONSOLE_LEVEL_VARIABLE_NAME                   = RISECLIPSE_VARIABLE_PREFIX + "CONSOLE_LEVEL";
+    private static final String OUTPUT_FILE_VARIABLE_NAME                     = RISECLIPSE_VARIABLE_PREFIX + "OUTPUT_FILE";
+    private static final String XSD_FILE_VARIABLE_NAME                        = RISECLIPSE_VARIABLE_PREFIX + "XSD_FILE";
+    private static final String USE_COLOR_VARIABLE_NAME                       = RISECLIPSE_VARIABLE_PREFIX + "USE_COLOR";
+    private static final String MAKE_EXPLICIT_LINKS_VARIABLE_NAME             = RISECLIPSE_VARIABLE_PREFIX + "MAKE_EXPLICIT_LINKS";
+    private static final String DISPLAY_NSD_MESSAGES_VARIABLE_NAME            = RISECLIPSE_VARIABLE_PREFIX + "DISPLAY_NSD_MESSAGES";
+    private static final String DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME        = RISECLIPSE_VARIABLE_PREFIX + "DO_NOT_DISPLAY_COPYRIGHT";
+    private static final String USE_FILENAMES_STARTING_WITH_DOT_VARIABLE_NAME = RISECLIPSE_VARIABLE_PREFIX + "USE_FILENAMES_STARTING_WITH_DOT";
 
     private static final String FALSE_VARIABLE_VALUE = "FALSE";
 
@@ -130,6 +133,7 @@ public class RiseClipseValidatorSCL {
     private static boolean useColor = false;
     private static boolean displayCopyright = true;
     private static boolean displayNsdMessages = false;
+    private static boolean keepDotFiles = false;
     private static int consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
     private static String outputFile = null;
     private static String xsdFile = null;
@@ -196,6 +200,8 @@ public class RiseClipseValidatorSCL {
                 + "This option allows for other messages to be displayed (according to the chosen level).");
         console.info( "\t" + DO_NOT_DISPLAY_COPYRIGHT_OPTION );
         console.info( "\t\tThe tool information is not displayed at the beginning." );
+        console.info( "\t" + USE_FILENAMES_STARTING_WITH_DOT_OPTION );
+        console.info( "\t\tFiles whose name begins with a dot are not ignored." );
         console.info( "\t" + HELP_ENVIRONMENT_OPTION );
         console.info( "\t\tEnvironment variables used are displayed." );
         System.exit( 0 );
@@ -222,6 +228,8 @@ public class RiseClipseValidatorSCL {
                 + "(ignoring case), it is equibvalent to the use of " + DISPLAY_NSD_MESSAGES_OPTION + " option." );
         console.info( "\t" + DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME + ": if its value is not equal to FALSE "
                 + "(ignoring case), it is equivalent to the use of " + DO_NOT_DISPLAY_COPYRIGHT_OPTION + " option." );
+        console.info( "\t" + USE_FILENAMES_STARTING_WITH_DOT_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                + "(ignoring case), it is equivalent to the use of " + USE_FILENAMES_STARTING_WITH_DOT_OPTION + " option." );
         System.exit( 0 );
     }
     
@@ -276,6 +284,13 @@ public class RiseClipseValidatorSCL {
                 displayCopyright = false;
             }
         }
+        
+        s = System.getenv( USE_FILENAMES_STARTING_WITH_DOT_VARIABLE_NAME );
+        if( s != null ) {
+            if( ! s.equalsIgnoreCase( FALSE_VARIABLE_VALUE )) {
+                keepDotFiles = true;
+            }
+        }
     }
     
     public static void main( @NonNull String[] args ) {
@@ -290,49 +305,52 @@ public class RiseClipseValidatorSCL {
         for( int i = 0; i < args.length; ++i ) {
             if( args[i].startsWith( "--" ) ) {
                 posFiles = i + 1;
-                if( HELP_OPTION.equals( args[i] ) ) {
+                if( HELP_OPTION.equals( args[i] )) {
                     help();
                 }
-                else if( HELP_ENVIRONMENT_OPTION.equals( args[i] ) ) {
+                else if( HELP_ENVIRONMENT_OPTION.equals( args[i] )) {
                     helpEnvironment();
                 }
-                else if( VERBOSE_OPTION.equals( args[i] ) ) {
+                else if( VERBOSE_OPTION.equals( args[i] )) {
                     consoleLevel = IRiseClipseConsole.VERBOSE_LEVEL;
                 }
-                else if( INFO_OPTION.equals( args[i] ) ) {
+                else if( INFO_OPTION.equals( args[i] )) {
                     consoleLevel = IRiseClipseConsole.INFO_LEVEL;
                 }
-                else if( WARNING_OPTION.equals( args[i] ) ) {
+                else if( WARNING_OPTION.equals( args[i] )) {
                     consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
                 }
-                else if( ERROR_OPTION.equals( args[i] ) ) {
+                else if( ERROR_OPTION.equals( args[i] )) {
                     consoleLevel = IRiseClipseConsole.ERROR_LEVEL;
                 }
-                else if( OUTPUT_OPTION.equals( args[i] ) ) {
+                else if( OUTPUT_OPTION.equals( args[i] )) {
                     if( ++i < args.length ) {
                         outputFile = args[i];
                         ++posFiles;
                     }
                     else usage();
                 }
-                else if( XSD_OPTION.equals( args[i] ) ) {
+                else if( XSD_OPTION.equals( args[i] )) {
                     if( ++i < args.length ) {
                         xsdFile = args[i];
                         ++posFiles;
                     }
                     else usage();
                 }
-                else if( MAKE_EXPLICIT_LINKS_OPTION.equals( args[i] ) ) {
+                else if( MAKE_EXPLICIT_LINKS_OPTION.equals( args[i] )) {
                     makeExplicitLinks = true;
                 }
-                else if( USE_COLOR_OPTION.equals( args[i] ) ) {
+                else if( USE_COLOR_OPTION.equals( args[i] )) {
                     useColor = true;
                 }
-                else if( DO_NOT_DISPLAY_COPYRIGHT_OPTION.equals( args[i] ) ) {
+                else if( DO_NOT_DISPLAY_COPYRIGHT_OPTION.equals( args[i] )) {
                     displayCopyright = false;
                 }
-                else if( DISPLAY_NSD_MESSAGES_OPTION.equals( args[i] ) ) {
+                else if( DISPLAY_NSD_MESSAGES_OPTION.equals( args[i] )) {
                     displayNsdMessages = true;
+                }
+                else if( USE_FILENAMES_STARTING_WITH_DOT_OPTION.equals( args[i] )) {
+                    keepDotFiles = true;
                 }
                 else if( "--hidden-door".equals( args[i] ) ) {
                     hiddenDoor  = true;
@@ -374,6 +392,12 @@ public class RiseClipseValidatorSCL {
     }
 
     private static void getFiles( Path path, IRiseClipseConsole console ) {
+        if( path.getName( path.getNameCount() - 1 ).toString().startsWith( "." )) {
+            if( ! keepDotFiles ) {
+                console.info( path + " is ignored because it starts with a dot" );
+                return;
+            }
+        }
         if( Files.isDirectory( path )) {
             try {
                 Files.list( path )
