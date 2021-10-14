@@ -15,7 +15,7 @@
  *  This file is part of the RiseClipse tool
  *  
  *  Web site:
- *      http://wdi.supelec.fr/software/RiseClipse/
+ *      https://riseclipse.github.io
  */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.component;
 
