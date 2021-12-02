@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:sxy="http://www.iec.ch/61850/2003/SCLcoordinates"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.iec.ch/61850/2003/SCL SCL.xsd http://www.iec.ch/61850/2003/SCLcoordinates SCL_Coordinates.xsd" version="2007" revision="B" release="4">
+  <Private type="test"/>
+  <Header id="ID" version="2007" revision="B" />
+  <Substation name="TEMPLATE" desc="Substation">
+    <Private type="test">dc28ddcf-cb1a-4097-a22e-619dd1807c19</Private>
+    <VoltageLevel name="D1" desc="230kV" sxy:x="0" sxy:y="0">
+      <Private type="test">238ea78a-c369-459f-96e6-51e30ed09263</Private>
+      <Voltage unit="V" multiplier="k">220</Voltage>
+      <Bay name="Q01" desc="INCOMMER_A">
+        <Private type="test">f165e0fe-763c-4994-a13d-f9ee5966947b</Private>
+        <LNode iedName="TEMPLATE" ldInst="LD0" lnClass="LLN0" lnType="M6_Rev1_1_LLN0"/>
+      </Bay>
+    </VoltageLevel>
+  </Substation>
+  <Communication>
+    <SubNetwork name="WA1" desc="USB Subnetwork" type="USB">
+      <Private type="test">bc57712a-d2e9-4dad-8a66-3091e19b032f</Private>
+      <ConnectedAP iedName="TEMPLATE" apName="M6ServerModel">
+        <Address>
+          <P type="IP" xsi:type="tP_IP">127.0.0.1</P>
+          <P type="IP-SUBNET" xsi:type="tP_IP-SUBNET">255.255.255.0</P>
+          <P type="IP-GATEWAY" xsi:type="tP_IP-GATEWAY">192.0.2.1</P>
+        </Address>
+      </ConnectedAP>
+    </SubNetwork>
+    <SubNetwork name="WA2" type="8-MMS">
+      <ConnectedAP iedName="TEMPLATE" apName="S1" redProt="hsr">
+          <Address>
+          <P type="IP" xsi:type="tP_IP">127.0.0.2</P>
+          <P type="IP-SUBNET" xsi:type="tP_IP-SUBNET">255.255.255.0</P>
+          <P type="IP-GATEWAY" xsi:type="tP_IP-GATEWAY">192.0.2.1</P>
+        </Address>
+        <SMV desc="9-2LE SV" ldInst="MU01" cbName="MSVCB01">
+          <Address>
+            <P type="VLAN-ID" xsi:type="tP_VLAN-ID">000</P>
+            <P type="VLAN-PRIORITY" xsi:type="tP_VLAN-PRIORITY">4</P>
+            <P type="MAC-Address" xsi:type="tP_MAC-Address">01-0C-CD-04-00-01</P>
+            <P type="APPID" xsi:type="tP_APPID">4000</P>
+          </Address>
+        </SMV>
+        <PhysConn type="Connection">
+          <P type="Port">TS1-X103</P>
+          <P type="Type">RJ45</P>
+        </PhysConn>
+        <PhysConn type="RedConn">
+          <P type="Port">TS1-X104</P>
+          <P type="Type">RJ45</P>
+        </PhysConn>
+      </ConnectedAP>
+    </SubNetwork>
+  </Communication>
+  <IED name="TEMPLATE" desc="MU" type="M6" manufacturer="test" configVersion="1.0">
+    <Services nameLength="64">
+      <ClientServices supportsLdName="true">
+        <TimeSyncProt sntp="false" c37_238="true" other="true" />
+      </ClientServices>
+      <TimeSyncProt sntp="false" c37_238="true" other="true" />
+    </Services>
+    <AccessPoint name="M6ServerModel">
+      <Server>
+        <Authentication />
+        <LDevice inst="LD0">
+          <LN0 lnClass="LLN0" inst="" lnType="M6_Rev1_1_LLN0" />
+          <LN lnClass="LPHD" inst="1" lnType="M6_Rev1_2_LPHD" />
+          <LN prefix="U00A" lnClass="TVTR" inst="1" lnType="M6_Rev1_2_TVTR_Fake" />
+          <LN prefix="U00B" lnClass="TVTR" inst="2" lnType="M6_Rev1_2_TVTR_Fake" />
+          <LN prefix="U00C" lnClass="TVTR" inst="3" lnType="M6_Rev1_2_TVTR_Fake" />
+          <LN prefix="U00N" lnClass="TVTR" inst="4" lnType="M6_Rev1_2_TVTR_Fake" />
+          <LN prefix="I00A" lnClass="TCTR" inst="1" lnType="M6_Rev1_2_TCTR_Fake" />
+          <LN prefix="I00B" lnClass="TCTR" inst="2" lnType="M6_Rev1_2_TCTR_Fake" />
+          <LN prefix="I00C" lnClass="TCTR" inst="3" lnType="M6_Rev1_2_TCTR_Fake" />
+          <LN prefix="I00N" lnClass="TCTR" inst="4" lnType="M6_Rev1_2_TCTR_Fake" />
+        </LDevice>
+        <LDevice desc="Time Synchronisation Module" inst="TS1">
+          <LN0 lnClass="LLN0" inst="" lnType="M6_Rev1_1_LLN0_TS" />
+          <LN prefix="TS1" lnClass="LPHD" inst="1" lnType="M6_Rev1_1_LPHD_TS">
+            <Private type="test">74b947f9-d5c8-42a3-83de-7c3ad6d963ea</Private>
+          </LN>
+        </LDevice>
+        <LDevice desc="Current Transformert Module" inst="CT1">
+          <LN0 lnClass="LLN0" inst="" lnType="M6_Rev1_1_LLN0_CT" />
+          <LN prefix="CT1" lnClass="LPHD" inst="1" lnType="M6_Rev1_1_LPHD_CT">
+            <Private type="test">954aa697-042d-46a9-b100-4cc4ed53f7ca</Private>
+          </LN>
+          <LN prefix="I01A" lnClass="TCTR" inst="1" lnType="M6_Rev1_2_TCTR">
+            <Private type="test">954aa697-042d-46a9-b100-4cc4ed53f7ca</Private>
+            <DOI name="ARtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>1000</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="HzRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>50</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="Clip">
+              <SDI name="setMag">
+                <DAI name="f">
+                  <Val>80</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+          </LN>
+          <LN prefix="I01B" lnClass="TCTR" inst="2" lnType="M6_Rev1_2_TCTR">
+            <Private type="test">954aa697-042d-46a9-b100-4cc4ed53f7ca</Private>
+            <DOI name="ARtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>1000</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="HzRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>50</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="Clip">
+              <SDI name="setMag">
+                <DAI name="f">
+                  <Val>80</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+          </LN>
+          <LN prefix="I01C" lnClass="TCTR" inst="3" lnType="M6_Rev1_2_TCTR">
+            <Private type="test">954aa697-042d-46a9-b100-4cc4ed53f7ca</Private>
+            <DOI name="ARtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>1000</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="HzRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>50</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="Clip">
+              <SDI name="setMag">
+                <DAI name="f">
+                  <Val>80</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+          </LN>
+          <LN prefix="I01N" lnClass="TCTR" inst="4" lnType="M6_Rev1_2_TCTR">
+            <Private type="test">954aa697-042d-46a9-b100-4cc4ed53f7ca</Private>
+            <DOI name="ARtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>1000</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="HzRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>50</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="Clip">
+              <SDI name="setMag">
+                <DAI name="f">
+                  <Val>80</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice desc="Voltage Transformert Module" inst="VT1">
+          <LN0 lnClass="LLN0" inst="" lnType="M6_Rev1_1_LLN0_VT" />
+          <LN prefix="VT1" lnClass="LPHD" inst="1" lnType="M6_Rev1_1_LPHD_VT">
+            <Private type="test">e3e3b31e-f49f-4d60-b08e-a9ccc844a8ee</Private>
+          </LN>
+          <LN prefix="U01A" lnClass="TVTR" inst="1" lnType="M6_Rev1_2_TVTR">
+            <Private type="test">e3e3b31e-f49f-4d60-b08e-a9ccc844a8ee</Private>
+            <DOI name="VRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>110</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="HzRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>50</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="Clip">
+              <SDI name="setMag">
+                <DAI name="f">
+                  <Val>2.5</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+          </LN>
+          <LN prefix="U01B" lnClass="TVTR" inst="2" lnType="M6_Rev1_2_TVTR">
+            <Private type="test">e3e3b31e-f49f-4d60-b08e-a9ccc844a8ee</Private>
+            <DOI name="VRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>110</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="HzRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>50</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="Clip">
+              <SDI name="setMag">
+                <DAI name="f">
+                  <Val>2.5</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+          </LN>
+          <LN prefix="U01C" lnClass="TVTR" inst="3" lnType="M6_Rev1_2_TVTR">
+            <Private type="test">e3e3b31e-f49f-4d60-b08e-a9ccc844a8ee</Private>
+            <DOI name="VRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>110</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="HzRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>50</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="Clip">
+              <SDI name="setMag">
+                <DAI name="f">
+                  <Val>2.5</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+          </LN>
+          <LN prefix="U01N" lnClass="TVTR" inst="4" lnType="M6_Rev1_2_TVTR">
+            <Private type="test">e3e3b31e-f49f-4d60-b08e-a9ccc844a8ee</Private>
+            <DOI name="VRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>110</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="HzRtg">
+              <SDI name="setMag">
+                <DAI name="i">
+                  <Val>50</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+            <DOI name="Clip">
+              <SDI name="setMag">
+                <DAI name="f">
+                  <Val>2.5</Val>
+                </DAI>
+              </SDI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="MU01">
+          <LN0 lnClass="LLN0" inst="" lnType="M6_Rev1_1_LLN0_MU">
+            <DataSet name="PhsMeas1">
+              <FCDA ldInst="CT1" prefix="I01A" lnClass="TCTR" lnInst="1" doName="AmpSv" daName="instMag.i" fc="MX" />
+              <FCDA ldInst="CT1" prefix="I01A" lnClass="TCTR" lnInst="1" doName="AmpSv" daName="q" fc="MX" />
+              <FCDA ldInst="CT1" prefix="I01B" lnClass="TCTR" lnInst="2" doName="AmpSv" daName="instMag.i" fc="MX" />
+              <FCDA ldInst="CT1" prefix="I01B" lnClass="TCTR" lnInst="2" doName="AmpSv" daName="q" fc="MX" />
+              <FCDA ldInst="CT1" prefix="I01C" lnClass="TCTR" lnInst="3" doName="AmpSv" daName="instMag.i" fc="MX" />
+              <FCDA ldInst="CT1" prefix="I01C" lnClass="TCTR" lnInst="3" doName="AmpSv" daName="q" fc="MX" />
+              <FCDA ldInst="CT1" prefix="I01N" lnClass="TCTR" lnInst="4" doName="AmpSv" daName="instMag.i" fc="MX" />
+              <FCDA ldInst="CT1" prefix="I01N" lnClass="TCTR" lnInst="4" doName="AmpSv" daName="q" fc="MX" />
+              <FCDA ldInst="VT1" prefix="U01A" lnClass="TVTR" lnInst="1" doName="VolSv" daName="instMag.i" fc="MX" />
+              <FCDA ldInst="VT1" prefix="U01A" lnClass="TVTR" lnInst="1" doName="VolSv" daName="q" fc="MX" />
+              <FCDA ldInst="VT1" prefix="U01B" lnClass="TVTR" lnInst="2" doName="VolSv" daName="instMag.i" fc="MX" />
+              <FCDA ldInst="VT1" prefix="U01B" lnClass="TVTR" lnInst="2" doName="VolSv" daName="q" fc="MX" />
+              <FCDA ldInst="VT1" prefix="U01C" lnClass="TVTR" lnInst="3" doName="VolSv" daName="instMag.i" fc="MX" />
+              <FCDA ldInst="VT1" prefix="U01C" lnClass="TVTR" lnInst="3" doName="VolSv" daName="q" fc="MX" />
+              <FCDA ldInst="VT1" prefix="U01N" lnClass="TVTR" lnInst="4" doName="VolSv" daName="instMag.i" fc="MX" />
+              <FCDA ldInst="VT1" prefix="U01N" lnClass="TVTR" lnInst="4" doName="VolSv" daName="q" fc="MX" />
+            </DataSet>
+            <SampledValueControl multicast="true" name="MSVCB01" datSet="PhsMeas1" confRev="1" smvID="IncAMU0101" smpRate="80" nofASDU="1">
+              <SmvOpts />
+            </SampledValueControl>
+          </LN0>
+        </LDevice>
+      </Server>
+    </AccessPoint>
+    <AccessPoint name="S1">
+      <ServerAt apName="M6ServerModel" />
+      <Services>
+        <SMVsc max="1" deliveryConf="true" />
+        <SMVSettings>
+          <SmpRate>80</SmpRate>
+        </SMVSettings>
+      </Services>
+    </AccessPoint>
+  </IED>
+  <DataTypeTemplates>
+    <LNodeType id="M6_Rev1_1_LLN0" lnClass="LLN0" iedType="M6">
+      <DO name="NamPlt" type="M6_Rev1_1_LPL_LLN0" />
+      <DO name="Beh" type="M6_Rev1_1_ENS_BehaviourModeKind" />
+      <DO name="Health" type="M6_Rev1_1_ENS_HealthKind" />
+      <DO name="Mod" type="M6_Rev1_1_ENC_BehaviourModeKind" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_2_LPHD" lnClass="LPHD" iedType="M6">
+      <DO name="PhyNam" type="M6_Rev1_1_DPL" />
+      <DO name="PhyHealth" type="M6_Rev1_1_ENS_HealthKind" />
+      <DO name="Proxy" type="M6_Rev1_1_SPS_NoProxy" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_2_TVTR_Fake" lnClass="TVTR" iedType="M6">
+      <DO name="Beh" type="M6_Rev1_1_ENS_BehaviourModeKind" />
+      <DO name="FuFail" type="M6_Rev1_1_SPS_VT" />
+      <DO name="VolSv" type="M6_Rev1_1_SAV_VT" />
+      <DO name="VRtg" type="M6_Rev1_2_ASG_VRtg" />
+      <DO name="HzRtg" type="M6_Rev1_2_ASG_HzRtg" />
+      <DO name="Clip" type="M6_Rev1_2_ASG_Clip_TVTR" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_2_TCTR_Fake" lnClass="TCTR" iedType="M6">
+      <DO name="Beh" type="M6_Rev1_1_ENS_BehaviourModeKind" />
+      <DO name="AmpSv" type="M6_Rev1_1_SAV_CT" />
+      <DO name="ARtg" type="M6_Rev1_2_ASG_ARtg" />
+      <DO name="HzRtg" type="M6_Rev1_2_ASG_HzRtg" />
+      <DO name="Clip" type="M6_Rev1_2_ASG_Clip_TCTR" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_1_LLN0_TS" desc="Timesynchronisation Module" lnClass="LLN0" iedType="M6">
+      <DO name="Beh" type="M6_Rev1_1_ENS_BehaviourModeKind" />
+      <DO name="GrRef" type="M6_Rev1_1_ORG_GrRef" />
+            <DO name="Mod" type="M6_Rev1_1_ENC_BehaviourModeKind" />
+                  <DO name="Health" type="M6_Rev1_1_ENS_HealthKind" />
+                        <DO name="NamPlt" type="M6_Rev1_1_LPL_LLN0" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_1_LPHD_TS" lnClass="LPHD" iedType="M6">
+      <DO name="PhyNam" type="M6_Rev1_1_DPL_TS" />
+      <DO name="PhyHealth" type="M6_Rev1_1_ENS_HealthKind" />
+      <DO name="Proxy" type="M6_Rev1_1_SPS_NoProxy" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_1_LLN0_CT" desc="Current Transformer Module" lnClass="LLN0" iedType="M6">
+      <DO name="Beh" type="M6_Rev1_1_ENS_BehaviourModeKind" />
+      <DO name="GrRef" type="M6_Rev1_1_ORG_GrRef" />
+                  <DO name="Mod" type="M6_Rev1_1_ENC_BehaviourModeKind" />
+                  <DO name="Health" type="M6_Rev1_1_ENS_HealthKind" />
+                        <DO name="NamPlt" type="M6_Rev1_1_LPL_LLN0" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_1_LPHD_CT" lnClass="LPHD" iedType="M6">
+      <DO name="PhyNam" type="M6_Rev1_1_DPL_CT" />
+      <DO name="PhyHealth" type="M6_Rev1_1_ENS_HealthKind" />
+      <DO name="Proxy" type="M6_Rev1_1_SPS_NoProxy" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_2_TCTR" lnClass="TCTR" iedType="M6">
+      <DO name="Beh" type="M6_Rev1_1_ENS_BehaviourModeKind" />
+      <DO name="AmpSv" type="M6_Rev1_1_SAV_CT" />
+      <DO name="ARtg" type="M6_Rev1_2_ASG_ARtg" />
+      <DO name="HzRtg" type="M6_Rev1_2_ASG_HzRtg" />
+      <DO name="Clip" type="M6_Rev1_2_ASG_Clip_TCTR" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_1_LLN0_VT" desc="Voltage Transformer Module" lnClass="LLN0" iedType="M6">
+      <DO name="Beh" type="M6_Rev1_1_ENS_BehaviourModeKind" />
+      <DO name="GrRef" type="M6_Rev1_1_ORG_GrRef" />
+                  <DO name="Mod" type="M6_Rev1_1_ENC_BehaviourModeKind" />
+                  <DO name="Health" type="M6_Rev1_1_ENS_HealthKind" />
+                        <DO name="NamPlt" type="M6_Rev1_1_LPL_LLN0" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_1_LPHD_VT" lnClass="LPHD" iedType="M6">
+      <DO name="PhyNam" type="M6_Rev1_1_DPL_VT" />
+      <DO name="PhyHealth" type="M6_Rev1_1_ENS_HealthKind" />
+      <DO name="Proxy" type="M6_Rev1_1_SPS_NoProxy" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_2_TVTR" lnClass="TVTR" iedType="M6">
+      <DO name="Beh" type="M6_Rev1_1_ENS_BehaviourModeKind" />
+      <DO name="FuFail" type="M6_Rev1_1_SPS_VT" />
+      <DO name="VolSv" type="M6_Rev1_1_SAV_VT" />
+      <DO name="VRtg" type="M6_Rev1_2_ASG_VRtg" />
+      <DO name="HzRtg" type="M6_Rev1_2_ASG_HzRtg" />
+      <DO name="Clip" type="M6_Rev1_2_ASG_Clip_TVTR" />
+    </LNodeType>
+    <LNodeType id="M6_Rev1_1_LLN0_MU" lnClass="LLN0" iedType="M6">
+      <DO name="Beh" type="M6_Rev1_1_ENS_BehaviourModeKind" />
+      <DO name="GrRef" type="M6_Rev1_1_ORG_GrRef" />
+                  <DO name="Mod" type="M6_Rev1_1_ENC_BehaviourModeKind" />
+                  <DO name="Health" type="M6_Rev1_1_ENS_HealthKind" />
+                        <DO name="NamPlt" type="M6_Rev1_1_LPL_LLN0" />
+    </LNodeType>
+    <DOType id="M6_Rev1_1_LPL_LLN0" cdc="LPL" iedType="M6">
+      <DA name="vendor" bType="VisString255" valKind="RO" fc="DC">
+        <Val>test</Val>
+      </DA>
+      <DA name="swRev" bType="VisString255" valKind="RO" fc="DC">
+        <Val>1.2</Val>
+      </DA>
+      <DA name="configRev" bType="VisString255" valKind="RO" fc="DC">
+        <Val>1</Val>
+      </DA>
+      <DA name="ldNs" bType="VisString255" fc="EX">
+        <Val>IEC 61850-7-4:2007B</Val>
+      </DA>
+    </DOType>
+    <DOType id="M6_Rev1_1_ENS_BehaviourModeKind" cdc="ENS" iedType="M6">
+      <DA name="stVal" bType="Enum" valKind="RO" type="BehaviourModeKind" fc="ST" dchg="true" />
+      <DA name="q" bType="Quality" valKind="RO" fc="ST" qchg="true" />
+      <DA name="t" bType="Timestamp" valKind="RO" fc="ST" />
+    </DOType>
+    <DOType id="M6_Rev1_1_ENS_HealthKind" cdc="ENS" iedType="M6">
+      <DA name="stVal" bType="Enum" valKind="RO" type="HealthKind" fc="ST" dchg="true" />
+      <DA name="q" bType="Quality" valKind="RO" fc="ST" qchg="true" />
+      <DA name="t" bType="Timestamp" valKind="RO" fc="ST" />
+    </DOType>
+    <DOType id="M6_Rev1_1_ENC_BehaviourModeKind" cdc="ENC" iedType="M6">
+      <DA name="stVal" bType="Enum" valKind="RO" type="BehaviourModeKind" fc="ST" dchg="true" />
+      <DA name="q" bType="Quality" valKind="RO" fc="ST" qchg="true" />
+      <DA name="t" bType="Timestamp" valKind="RO" fc="ST" />
+      <DA name="ctlModel" bType="Enum" valKind="RO" type="M6_CtlModelKind_StatusOnly" fc="CF" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_1_DPL" cdc="DPL" iedType="M6">
+      <DA name="vendor" bType="VisString255" valKind="RO" fc="DC">
+        <Val>ABB</Val>
+      </DA>
+      <DA name="model" bType="VisString255" valKind="RO" fc="DC">
+        <Val>M6</Val>
+      </DA>
+    </DOType>
+    <DOType id="M6_Rev1_1_SPS_NoProxy" cdc="SPS" iedType="M6">
+      <DA name="stVal" bType="BOOLEAN" valKind="RO" fc="ST" dchg="true">
+        <Val>true</Val>
+      </DA>
+      <DA name="q" bType="Quality" valKind="RO" fc="ST" qchg="true" />
+      <DA name="t" bType="Timestamp" valKind="RO" fc="ST" />
+    </DOType>
+    <DOType id="M6_Rev1_2_ING_MaxDI" cdc="ING" iedType="M6">
+      <DA name="setVal" bType="INT32" valKind="RO" fc="SP" dchg="true">
+        <Val>1350</Val>
+      </DA>
+      <DA name="units" bType="Struct" valKind="RO" type="M6_Unit_LPHD" fc="CF" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_2_ING_MinDI" cdc="ING" iedType="M6">
+      <DA name="setVal" bType="INT32" valKind="RO" fc="SP" dchg="true">
+        <Val>850</Val>
+      </DA>
+      <DA name="units" bType="Struct" valKind="RO" type="M6_Unit_LPHD" fc="CF" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_1_SPS_VT" cdc="SPS" iedType="M6">
+      <DA name="stVal" bType="BOOLEAN" valKind="RO" fc="ST" dchg="true" />
+      <DA name="q" bType="Quality" valKind="RO" fc="ST" qchg="true" />
+      <DA name="t" bType="Timestamp" valKind="RO" fc="ST" />
+    </DOType>
+    <DOType id="M6_Rev1_1_SAV_VT" cdc="SAV" iedType="M6">
+      <DA name="instMag" bType="Struct" valKind="RO" type="M6_AnalogueValue" fc="MX" />
+      <DA name="q" bType="Quality" valKind="RO" fc="MX" qchg="true" />
+      <DA name="units" bType="Struct" valKind="RO" type="M6_Unit_VT" fc="CF" dchg="true" />
+      <DA name="sVC" bType="Struct" valKind="RO" type="M6_sVC_VolSv" fc="CF" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_2_ASG_VRtg" cdc="ASG" iedType="M6">
+      <DA name="setMag" bType="Struct" valKind="RO" type="M6_AnalogueValue" fc="SP" dchg="true" />
+      <DA name="units" bType="Struct" valKind="RO" type="M6_Unit_VT" fc="CF" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_2_ASG_HzRtg" cdc="ASG" iedType="M6">
+      <DA name="setMag" bType="Struct" valKind="RO" type="M6_AnalogueValue" fc="SP" dchg="true" />
+      <DA name="units" bType="Struct" valKind="RO" type="M6_Unit_HZ" fc="CF" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_2_ASG_Clip_TVTR" cdc="ASG" iedType="M6">
+      <DA name="setMag" bType="Struct" valKind="RO" type="M6_AnalogueSetPoint" fc="SP" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_1_SAV_CT" cdc="SAV" iedType="M6">
+      <DA name="instMag" bType="Struct" valKind="RO" type="M6_AnalogueValue" fc="MX" />
+      <DA name="q" bType="Quality" valKind="RO" fc="MX" qchg="true" />
+      <DA name="units" bType="Struct" valKind="RO" type="M6_Unit_CT" fc="CF" dchg="true" />
+      <DA name="sVC" bType="Struct" valKind="RO" type="M6_sVC_AmpSv" fc="CF" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_2_ASG_ARtg" cdc="ASG" iedType="M6">
+      <DA name="setMag" bType="Struct" valKind="RO" type="M6_AnalogueValue" fc="SP" dchg="true" />
+      <DA name="units" bType="Struct" valKind="RO" type="M6_Unit_CT" fc="CF" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_2_ASG_Clip_TCTR" cdc="ASG" iedType="M6">
+      <DA name="setMag" bType="Struct" valKind="RO" type="M6_AnalogueSetPoint" fc="SP" dchg="true" />
+    </DOType>
+    <DOType id="M6_Rev1_1_ORG_GrRef" cdc="ORG" iedType="M6">
+      <DA name="setSrcRef" bType="ObjRef" valKind="RO" fc="SP" dchg="true">
+        <Val>@LD0</Val>
+      </DA>
+    </DOType>
+    <DOType id="M6_Rev1_1_DPL_TS" cdc="DPL" iedType="M6">
+      <DA name="vendor" bType="VisString255" valKind="RO" fc="DC">
+        <Val>ABB</Val>
+      </DA>
+      <DA name="hwRev" bType="VisString255" valKind="RO" fc="DC" />
+      <DA name="swRev" bType="VisString255" valKind="RO" fc="DC" />
+      <DA name="serNum" bType="VisString255" valKind="RO" fc="DC" />
+      <DA name="model" bType="VisString255" valKind="RO" fc="DC">
+        <Val>M6-TS</Val>
+      </DA>
+    </DOType>
+    <DOType id="M6_Rev1_1_DPL_CT" cdc="DPL" iedType="M6">
+      <DA name="vendor" bType="VisString255" valKind="RO" fc="DC">
+        <Val>ABB</Val>
+      </DA>
+      <DA name="hwRev" bType="VisString255" valKind="RO" fc="DC" />
+      <DA name="swRev" bType="VisString255" valKind="RO" fc="DC" />
+      <DA name="serNum" bType="VisString255" valKind="RO" fc="DC" />
+      <DA name="model" bType="VisString255" valKind="RO" fc="DC">
+        <Val>M6-CT</Val>
+      </DA>
+    </DOType>
+    <DOType id="M6_Rev1_1_DPL_VT" cdc="DPL" iedType="M6">
+      <DA name="vendor" bType="VisString255" valKind="RO" fc="DC">
+        <Val>ABB</Val>
+      </DA>
+      <DA name="hwRev" bType="VisString255" valKind="RO" fc="DC" />
+      <DA name="swRev" bType="VisString255" valKind="RO" fc="DC" />
+      <DA name="serNum" bType="VisString255" valKind="RO" fc="DC" />
+      <DA name="model" bType="VisString255" valKind="RO" fc="DC">
+        <Val>M6-VT</Val>
+      </DA>
+    </DOType>
+    <DAType id="M6_Unit_LPHD" iedType="M6">
+      <BDA name="SIUnit" bType="Enum" valKind="RO" type="SIUnitKind_#LIB1">
+        <Val>s</Val>
+      </BDA>
+      <BDA name="multiplier" bType="Enum" valKind="RO" type="MultiplierKind">
+        <Val>µ</Val>
+      </BDA>
+    </DAType>
+    <DAType id="M6_AnalogueValue" iedType="M6">
+      <BDA name="i" bType="INT32" valKind="RO" />
+    </DAType>
+    <DAType id="M6_Unit_VT" iedType="M6">
+      <BDA name="SIUnit" bType="Enum" valKind="RO" type="SIUnitKind_#LIB1">
+        <Val>V</Val>
+      </BDA>
+      <BDA name="multiplier" bType="Enum" valKind="RO" type="MultiplierKind">
+        <Val />
+      </BDA>
+    </DAType>
+    <DAType id="M6_sVC_VolSv" iedType="M6">
+      <BDA name="scaleFactor" bType="FLOAT32" valKind="RO">
+        <Val>0.01</Val>
+      </BDA>
+      <BDA name="offset" bType="FLOAT32" valKind="RO">
+        <Val>0</Val>
+      </BDA>
+    </DAType>
+    <DAType id="M6_Unit_HZ" iedType="M6">
+      <BDA name="SIUnit" bType="Enum" valKind="RO" type="SIUnitKind_#LIB1">
+        <Val>Hz</Val>
+      </BDA>
+      <BDA name="multiplier" bType="Enum" valKind="RO" type="MultiplierKind">
+        <Val />
+      </BDA>
+    </DAType>
+    <DAType id="M6_AnalogueSetPoint" iedType="M6">
+      <BDA name="f" bType="FLOAT32" valKind="RO" />
+    </DAType>
+    <DAType id="M6_Unit_CT" iedType="M6">
+      <BDA name="SIUnit" bType="Enum" valKind="RO" type="SIUnitKind_#LIB1">
+        <Val>A</Val>
+      </BDA>
+      <BDA name="multiplier" bType="Enum" valKind="RO" type="MultiplierKind">
+        <Val />
+      </BDA>
+    </DAType>
+    <DAType id="M6_sVC_AmpSv" iedType="M6">
+      <BDA name="scaleFactor" bType="FLOAT32" valKind="RO">
+        <Val>0.001</Val>
+      </BDA>
+      <BDA name="offset" bType="FLOAT32" valKind="RO">
+        <Val>0</Val>
+      </BDA>
+    </DAType>
+    <EnumType id="BehaviourModeKind">
+      <EnumVal ord="1">on</EnumVal>
+      <EnumVal ord="2">blocked</EnumVal>
+      <EnumVal ord="3">test</EnumVal>
+      <EnumVal ord="4">test/blocked</EnumVal>
+      <EnumVal ord="5">off</EnumVal>
+    </EnumType>
+    <EnumType id="HealthKind">
+      <EnumVal ord="1">Ok</EnumVal>
+      <EnumVal ord="2">Warning</EnumVal>
+      <EnumVal ord="3">Alarm</EnumVal>
+    </EnumType>
+    <EnumType id="M6_CtlModelKind_StatusOnly">
+      <EnumVal ord="0">status-only</EnumVal>
+    </EnumType>
+    <EnumType id="SIUnitKind_#LIB1" desc="SI unit (SIUnitKind enumeration)">
+      <EnumVal ord="1" />
+      <EnumVal ord="2">m</EnumVal>
+      <EnumVal ord="3">kg</EnumVal>
+      <EnumVal ord="4">s</EnumVal>
+      <EnumVal ord="5">A</EnumVal>
+      <EnumVal ord="6">K</EnumVal>
+      <EnumVal ord="7">mol</EnumVal>
+      <EnumVal ord="8">cd</EnumVal>
+      <EnumVal ord="9">deg</EnumVal>
+      <EnumVal ord="10">rad</EnumVal>
+      <EnumVal ord="11">sr</EnumVal>
+      <EnumVal ord="21">Gy</EnumVal>
+      <EnumVal ord="22">Bq</EnumVal>
+      <EnumVal ord="23">°C</EnumVal>
+      <EnumVal ord="24">Sv</EnumVal>
+      <EnumVal ord="25">F</EnumVal>
+      <EnumVal ord="26">C</EnumVal>
+      <EnumVal ord="27">S</EnumVal>
+      <EnumVal ord="28">H</EnumVal>
+      <EnumVal ord="29">V</EnumVal>
+      <EnumVal ord="30">ohm</EnumVal>
+      <EnumVal ord="31">J</EnumVal>
+      <EnumVal ord="32">N</EnumVal>
+      <EnumVal ord="33">Hz</EnumVal>
+      <EnumVal ord="34">lx</EnumVal>
+      <EnumVal ord="35">Lm</EnumVal>
+      <EnumVal ord="36">Wb</EnumVal>
+      <EnumVal ord="37">T</EnumVal>
+      <EnumVal ord="38">W</EnumVal>
+      <EnumVal ord="39">Pa</EnumVal>
+      <EnumVal ord="41">m²</EnumVal>
+      <EnumVal ord="42">m³</EnumVal>
+      <EnumVal ord="43">m/s</EnumVal>
+      <EnumVal ord="44">m/s²</EnumVal>
+      <EnumVal ord="45">m³/s</EnumVal>
+      <EnumVal ord="46">m/m³</EnumVal>
+      <EnumVal ord="47">M</EnumVal>
+      <EnumVal ord="48">kg/m³</EnumVal>
+      <EnumVal ord="49">m²/s</EnumVal>
+      <EnumVal ord="50">W/m K</EnumVal>
+      <EnumVal ord="51">J/K</EnumVal>
+      <EnumVal ord="52">ppm</EnumVal>
+      <EnumVal ord="53">1/s</EnumVal>
+      <EnumVal ord="54">rad/s</EnumVal>
+      <EnumVal ord="55">W/m²</EnumVal>
+      <EnumVal ord="56">J/m²</EnumVal>
+      <EnumVal ord="57">S/m</EnumVal>
+      <EnumVal ord="58">K/s</EnumVal>
+      <EnumVal ord="59">Pa/s</EnumVal>
+      <EnumVal ord="60">J/kg K</EnumVal>
+      <EnumVal ord="61">VA</EnumVal>
+      <EnumVal ord="62">Watts</EnumVal>
+      <EnumVal ord="63">VAr</EnumVal>
+      <EnumVal ord="64">phi</EnumVal>
+      <EnumVal ord="65">cos(phi)</EnumVal>
+      <EnumVal ord="66">Vs</EnumVal>
+      <EnumVal ord="67">V²</EnumVal>
+      <EnumVal ord="68">As</EnumVal>
+      <EnumVal ord="69">A²</EnumVal>
+      <EnumVal ord="70">A²t</EnumVal>
+      <EnumVal ord="71">VAh</EnumVal>
+      <EnumVal ord="72">Wh</EnumVal>
+      <EnumVal ord="73">VArh</EnumVal>
+      <EnumVal ord="74">V/Hz</EnumVal>
+      <EnumVal ord="75">Hz/s</EnumVal>
+      <EnumVal ord="76">char</EnumVal>
+      <EnumVal ord="77">char/s</EnumVal>
+      <EnumVal ord="78">kgm²</EnumVal>
+      <EnumVal ord="79">dB</EnumVal>
+      <EnumVal ord="80">J/Wh</EnumVal>
+      <EnumVal ord="81">W/s</EnumVal>
+      <EnumVal ord="82">l/s</EnumVal>
+      <EnumVal ord="83">dBm</EnumVal>
+      <EnumVal ord="84">h</EnumVal>
+      <EnumVal ord="85">min</EnumVal>
+    </EnumType>
+    <EnumType id="MultiplierKind">
+      <EnumVal ord="-24">y</EnumVal>
+      <EnumVal ord="-21">z</EnumVal>
+      <EnumVal ord="-18">a</EnumVal>
+      <EnumVal ord="-15">f</EnumVal>
+      <EnumVal ord="-12">p</EnumVal>
+      <EnumVal ord="-9">n</EnumVal>
+      <EnumVal ord="-6">µ</EnumVal>
+      <EnumVal ord="-3">m</EnumVal>
+      <EnumVal ord="-2">c</EnumVal>
+      <EnumVal ord="-1">d</EnumVal>
+      <EnumVal ord="0" />
+      <EnumVal ord="1">da</EnumVal>
+      <EnumVal ord="2">h</EnumVal>
+      <EnumVal ord="3">k</EnumVal>
+      <EnumVal ord="6">M</EnumVal>
+      <EnumVal ord="9">G</EnumVal>
+      <EnumVal ord="12">T</EnumVal>
+      <EnumVal ord="15">P</EnumVal>
+      <EnumVal ord="18">E</EnumVal>
+      <EnumVal ord="21">Z</EnumVal>
+      <EnumVal ord="24">Y</EnumVal>
+    </EnumType>
+  </DataTypeTemplates>
+</SCL>
