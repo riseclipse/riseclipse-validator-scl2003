@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./init_vars.sh
+source ./setup_vars.sh $*
 
 CREATED_SNAPSHOTS_COUNT=0
 CREATED_SNAPSHOTS=""

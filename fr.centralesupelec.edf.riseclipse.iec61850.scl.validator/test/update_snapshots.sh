@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./init_vars.sh
+source ./setup_vars.sh $*
 
 UPDATED_SNAPSHOTS_COUNT=0
 UPDATED_SNAPSHOTS=""
