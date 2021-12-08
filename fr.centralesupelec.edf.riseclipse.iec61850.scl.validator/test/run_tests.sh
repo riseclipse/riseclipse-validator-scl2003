@@ -1,8 +1,6 @@
 #!/bin/bash
 
-VALIDATOR_VERSION=$(grep -oPm1 '(?<=version>)[^<]*' ../pom.xml)
-JAR_NAME=RiseClipseValidatorSCL-${VALIDATOR_VERSION}.jar
-JAR_PATH=../target/$JAR_NAME
+source ./init_vars.sh
 
 CREATED_SNAPSHOTS_COUNT=0
 CREATED_SNAPSHOTS=""
@@ -19,6 +17,9 @@ for filepath in input/*; do
     SNAPSHOT_FILEPATH=${SNAPSHOT_FILEPATH%\.xml}.out
 
     if [ ! -f $SNAPSHOT_FILEPATH ]; then
+        if [ ! -d snapshots ]; then
+            mkdir snapshots
+        fi
         printf "$OUTPUT" > $SNAPSHOT_FILEPATH
         CREATED_SNAPSHOTS_COUNT=$((CREATED_SNAPSHOTS_COUNT + 1))
         CREATED_SNAPSHOTS="$CREATED_SNAPSHOTS> $SNAPSHOT_FILEPATH\n"
