@@ -1,8 +1,10 @@
+VALIDATOR_ROOT=../fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
+
 case $# in
 0) 
-    VALIDATOR_VERSION=$(grep -oPm1 '(?<=version>)[^<]*' ../pom.xml)
+    VALIDATOR_VERSION=$(grep -oPm1 '(?<=version>)[^<]*' $VALIDATOR_ROOT/pom.xml)
     JAR_NAME=RiseClipseValidatorSCL-${VALIDATOR_VERSION}.jar
-    JAR_PATH=../target/$JAR_NAME;;
+    JAR_PATH=$VALIDATOR_ROOT/target/$JAR_NAME;;
 1) 
     JAR_PATH=$1;;
 *) 
