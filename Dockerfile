@@ -1,6 +1,6 @@
 FROM openjdk:11.0.13-jre-slim
 
-COPY ${{ github.workspace }}/RiseClipse-Validator-SCL-CLI.jar /home
+COPY RiseClipse-Validator-SCL-CLI.jar /home
 
 # Create environment variable
 RUN RCV="/home/RiseClipse-Validator-SCL-CLI.jar"
