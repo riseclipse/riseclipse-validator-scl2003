@@ -8,4 +8,4 @@ Export-Package: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.appl
  fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.component
 Require-Bundle: fr.centralesupelec.edf.riseclipse.main,
  fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11

@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2016-2021 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -112,9 +112,9 @@ public class RiseClipseValidatorSCL {
     public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
     
     private static final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
-    private static final Integer DEFAULT_NAMESPACE_VERSION = new Integer( 2007 );
+    private static final Integer DEFAULT_NAMESPACE_VERSION = Integer.valueOf( 2007 );
     private static final String DEFAULT_NAMESPACE_REVISION = "B";
-    private static final Integer DEFAULT_NAMESPACE_RELEASE = new Integer( 1 );
+    private static final Integer DEFAULT_NAMESPACE_RELEASE = Integer.valueOf( 1 );
     
     public static final NsIdentification DEFAULT_NS_IDENTIFICATION = new NsIdentification(
             DEFAULT_NAMESPACE_ID,
@@ -530,7 +530,7 @@ public class RiseClipseValidatorSCL {
         console.info( "Web site:" );
         console.info( "    https://riseclipse.github.io/" );
         console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a23 (13 october 2021)" );
+        console.info( "RiseClipseValidatorSCL version: 1.1.0 a24 (20 january 2022)" );
         console.info( "" );
     }
 

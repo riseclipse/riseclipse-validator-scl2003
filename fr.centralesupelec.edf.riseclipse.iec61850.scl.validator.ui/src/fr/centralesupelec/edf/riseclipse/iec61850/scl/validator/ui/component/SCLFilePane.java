@@ -21,17 +21,20 @@
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.component;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.FileDialog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application.RiseClipseValidatorSCLApplication;
@@ -74,13 +77,21 @@ public class SCLFilePane extends JPanel implements ActionListener {
         Object source = e.getSource();
 
         if( source == btnAddSclFile ) {
-            JFileChooser fileChooser = new JFileChooser();
-            if( fileChooser.showOpenDialog( this ) == JFileChooser.APPROVE_OPTION ) {
+/*
+             if( fileChooser.showOpenDialog( this ) == JFileChooser.APPROVE_OPTION ) {
                 sclFilesList.add( fileChooser.getSelectedFile() );
+            }
+*/
+
+            JFrame frame = (JFrame) SwingUtilities.getRoot(( Component ) source );
+            FileDialog fileDialog = new FileDialog( frame, "SCL - Choose a file" );
+            fileDialog.setMode( FileDialog.LOAD );
+            fileDialog.setVisible( true );
+            if( fileDialog.getFiles().length != 0 ) {
+                sclFilesList.add( fileDialog.getFiles()[0] );
             }
             return;
         }
-
         if( source == btnValidate ) {
             ArrayList< File > oclFiles = application.getOclFiles();
             List< String > oclFileNames =
