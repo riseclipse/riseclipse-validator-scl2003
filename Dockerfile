@@ -1,12 +1,12 @@
 FROM openjdk:11.0.13-jre-slim
 
-COPY RiseClipse-Validator-SCL-CLI.jar /home
+COPY RiseClipseValidatorSCL-*.jar /home
 
 # Create environment variable
-RUN RCV="/home/RiseClipse-Validator-SCL-CLI.jar"
+RUN RCV="/home/RiseClipseValidatorSCL-*.jar"
 
 # Execute CLI
-ENTRYPOINT java -jar ./home/RiseClipse-Validator-SCL-CLI.jar
+ENTRYPOINT java -jar ./home/RiseClipseValidatorSCL-*.jar
 
 #Default command (version)
 CMD -version
