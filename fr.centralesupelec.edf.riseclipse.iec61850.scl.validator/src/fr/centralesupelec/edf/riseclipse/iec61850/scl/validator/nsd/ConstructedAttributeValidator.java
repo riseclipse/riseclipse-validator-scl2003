@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.eclipse.emf.common.util.DiagnosticChain;
+import org.eclipse.jdt.annotation.NonNull;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.SubDataAttribute;
@@ -31,6 +32,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.BDA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAType;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class ConstructedAttributeValidator extends TypeValidator {
 
@@ -52,7 +54,10 @@ public class ConstructedAttributeValidator extends TypeValidator {
                 subDataAttributeValidatorMap.put( sda.getName(), validator );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + sda.getFilename() + ":" + sda.getLineNumber() + ") Type not found for DataAttribute " + sda.getName() );
+                @NonNull
+                IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+                console.warning( NsdValidator.SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
+                                 ") Type not found for DataAttribute ", sda.getName() );
             }
         }
         
@@ -71,7 +76,10 @@ public class ConstructedAttributeValidator extends TypeValidator {
 
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute da, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateAbstractDataAttribute( " + da.getName() + " ) at line " + da.getLineNumber() );
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
+                         "ConstructedAttributeValidator.validateAbstractDataAttribute( ", da.getName(), " )" );
         boolean res = true;
         
         if( da.getRefersToDAType() != null ) {
@@ -82,7 +90,10 @@ public class ConstructedAttributeValidator extends TypeValidator {
 
     private boolean validateDAType( DAType daType, DiagnosticChain diagnostics ) {
         if( validatedDAType.contains( daType.getId() )) return true;
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] ConstructedAttributeValidator.validateDAType( " + daType.getId() + " ) at line " + daType.getLineNumber() );
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, daType.getLineNumber(),
+                         "ConstructedAttributeValidator.validateDAType( ", daType.getId(), " )" );
         validatedDAType.add( daType.getId() );
         
         subDataAttributePresenceConditionValidator.resetModelData();

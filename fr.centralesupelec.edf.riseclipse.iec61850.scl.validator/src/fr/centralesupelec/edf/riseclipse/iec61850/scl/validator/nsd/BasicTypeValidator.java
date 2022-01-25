@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -35,6 +35,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.UnNaming;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public abstract class BasicTypeValidator extends TypeValidator {
 
@@ -528,26 +529,35 @@ public abstract class BasicTypeValidator extends TypeValidator {
     
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] BasicTypeValidator.validateAbstractDataAttribute( " + ada.getName() + " ) at line " + ada.getLineNumber() );
+        AbstractRiseClipseConsole.getConsole().verbose( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
+                                                        "BasicTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " )" );
         boolean res = true;
         if( ! getName().equals( ada.getBType() )) {
+            
+            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(), 
+                                      "type of DA/BDA \"", ada.getName(), "\" is not \"", getName(), "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] type of DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is not " + getName(),
-                    new Object[] { ada } ));
+                    error.getMessage(),
+                    new Object[] { ada, error } ));
             res = false;
         }
+        
         for( Val val : ada.getVal() ) {
             if( val.getValue().isEmpty() ) {
                 if( ! acceptEmptyValue() ) {
+                    
+                    RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(), 
+                                              "empty value of Val in DA/BDA \"", ada.getName(), "\" is not valid for \"",
+                                              getName(), "\" type" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] empty value of Val in DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is not valid for " + getName() + " type",
-                            new Object[] { ada } ));
+                            error.getMessage(),
+                            new Object[] { ada, error } ));
                     res = false;
                 }
             }
@@ -555,17 +565,22 @@ public abstract class BasicTypeValidator extends TypeValidator {
                 res = validateValue( ada, val.getValue(), diagnostics ) && res;
             }
         }
+        
         for( DAI dai : ada.getReferredByDAI() ) {
             // name is OK because it has been used to create link DAI -> DA
             for( Val val : dai.getVal() ) {
                 if( val.getValue().isEmpty() ) {
                     if( ! acceptEmptyValue() ) {
+                        
+                        RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, dai.getLineNumber(), 
+                                                  "empty value of Val in DAI \"", dai.getName(), "\" is not valid for \"",
+                                                  getName(), "\" type" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                "[NSD validation] empty value of Val in DAI \"" + dai.getName() + "\" (line = " + dai.getLineNumber() + ") is not valid for " + getName() + " type",
-                                new Object[] { ada } ));
+                                error.getMessage(),
+                                new Object[] { ada, error } ));
                         res = false;
                     }
                 }
@@ -584,12 +599,15 @@ public abstract class BasicTypeValidator extends TypeValidator {
             if( daOrDai instanceof AbstractDataAttribute ) name = (( AbstractDataAttribute ) daOrDai ).getName();
             if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
             String msgValue = value.isEmpty() ? "empty value" : "value \"" + value + "\"";
+            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, daOrDai.getLineNumber(), 
+                                      msgValue, " of Val in DA/BDA/DAI \"", name, "\" is not a valid \"",
+                                      getName(), "\" value" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] " + msgValue + " of Val in DA/BDA/DAI \"" + name + "\" (line = " + daOrDai.getLineNumber() + ") is not a valid " + getName() + " value",
-                    new Object[] { daOrDai } ));
+                    error.getMessage(),
+                    new Object[] { daOrDai, error } ));
             return false;
             
         }
@@ -600,12 +618,15 @@ public abstract class BasicTypeValidator extends TypeValidator {
         String name = "";
         if( daOrDai instanceof AbstractDataAttribute ) name = (( AbstractDataAttribute ) daOrDai ).getName();
         if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
+        RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, daOrDai.getLineNumber(), 
+                                    "verification of value \"", value, "\" of Val in DA/BDA/DAI \"", name,
+                                    "\" is not implemented for BasicType \"", getName(), "\"" );
         diagnostics.add( new BasicDiagnostic(
                 Diagnostic.WARNING,
                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                 0,
-                "[NSD validation] verification of value \"" + value + "\" of Val in DA/BDA/DAI \"" + name + "\" (line = " + daOrDai.getLineNumber() + ") is not implemented for BasicType " + getName(),
-                new Object[] { daOrDai } ));
+                warning.getMessage(),
+                new Object[] { daOrDai, warning } ));
         return true;
     }
 

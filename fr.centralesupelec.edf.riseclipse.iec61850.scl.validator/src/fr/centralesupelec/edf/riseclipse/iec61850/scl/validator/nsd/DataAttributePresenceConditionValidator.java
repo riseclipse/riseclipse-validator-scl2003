@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -34,6 +34,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
+import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class DataAttributePresenceConditionValidator extends GenericPresenceConditionValidator< CDC, DOType, @Nullable DA >{
 
@@ -112,12 +113,14 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                     for( String attribute : mandatoryInLLN0ElseOptional ) {
                         DA da = presentSclComponent.get( attribute );
                         if( da == null ) {
+                            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
+                                                      getSclComponentClassName(), " ", attribute, " is mandatory in ", getSclModelClassName(), " with LNClass LLN0" );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD validation] " + getSclComponentClassName() + " " + attribute + " is mandatory in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with LNClass LLN0",
-                                    new Object[] { sclModel } ));
+                                    error.getMessage(),
+                                    new Object[] { sclModel, error } ));
                             res = false;
                         }
                     }
@@ -141,12 +144,14 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                     for( String attribute : mandatoryInLLN0ElseForbidden ) {
                         DA da = presentSclComponent.get( attribute );
                         if( da == null ) {
+                            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
+                                                      getSclComponentClassName(), " ", attribute, " is mandatory in ", getSclModelClassName(), " with LNClass LLN0" );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD validation] " + getSclComponentClassName() + " " + attribute + " is mandatory in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with LNClass LLN0",
-                                    new Object[] { sclModel } ));
+                                    error.getMessage(),
+                                    new Object[] { sclModel, error } ));
                             res = false;
                         }
                     }
@@ -155,12 +160,14 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                     for( String attribute : mandatoryInLLN0ElseForbidden ) {
                         DA da = presentSclComponent.get( attribute );
                         if( da != null ) {
+                            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
+                                                      getSclComponentClassName(), " ", attribute, " is forbidden in ", getSclModelClassName(), " with LNClass ", do_.getParentLNodeType().getLnClass() );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                     0,
-                                    "[NSD validation] " + getSclComponentClassName() + " " + attribute + " is forbidden in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with LNClass " + do_.getParentLNodeType().getLnClass(),
-                                    new Object[] { sclModel } ));
+                                    error.getMessage(),
+                                    new Object[] { sclModel, error } ));
                             res = false;
                         }
                     }
@@ -177,12 +184,14 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     protected boolean validateOMSynPh( DOType sclModel, DiagnosticChain diagnostics ) {
         for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
             if( presentSclComponent.get( name ) != null ) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
+                                            "verification of PresenceCondition \"OMSynPh\" for", getSclComponentClassName(), " is not implemented in ", getSclModelClassName(), ") with ", getNsdModelClassName(), " ", getNsdModelName() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] verification of PresenceCondition \"OMSynPh\" for " + getSclComponentClassName() + " " + name + " is not implemented in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with " + getNsdModelClassName() + " " + getNsdModelName(),
-                        new Object[] { sclModel } ));
+                        warning.getMessage(),
+                        new Object[] { sclModel, warning } ));
             }
         }
         return true;

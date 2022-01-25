@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.DiagnosticChain;
+import org.eclipse.jdt.annotation.NonNull;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AnyLNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
@@ -33,6 +34,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class LNClassValidator {
     
@@ -77,14 +79,18 @@ public class LNClassValidator {
         dataObjectPresenceConditionValidator = DataObjectPresenceConditionValidator.get( anyLNClass );
         
         AnyLNClass lnClass = anyLNClass;
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         while( lnClass != null ) {
             for( DataObject do_ : lnClass.getDataObject() ) {
                 if( CDCValidator.get( do_.getType() ) != null ) {
                     dataObjectValidatorMap.put( do_.getName(), CDCValidator.get( do_.getType() ));
-                    AbstractRiseClipseConsole.getConsole().verbose( "[NSD setup] (" + do_.getFilename() + ":" + do_.getLineNumber() + ") CDC for DataObject " + do_.getName() + " found with type " + do_.getType() );
+                    console.verbose( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                                     "CDC for DataObject ", do_.getName(), " found with type ", do_.getType() );
                 }
                 else {
-                    AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + do_.getFilename() + ":" + do_.getLineNumber() + ") CDC not found for DataObject " + do_.getName() );
+                    console.warning( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                                     "CDC not found for DataObject ", do_.getName() );
                 }
             }
 
@@ -96,7 +102,10 @@ public class LNClassValidator {
     
     public boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
         if( validatedLNodeType.contains( lNodeType.getId() )) return true;
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] LNClassValidator.validateLNodeType( " + lNodeType.getId() + " ) at line " + lNodeType.getLineNumber() );
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                         "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " )" );
         validatedLNodeType.add( lNodeType.getId() );
 
         boolean res = true;
@@ -134,7 +143,8 @@ public class LNClassValidator {
                 }
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] DOType for DO " + do_.getName() + " not found" );
+                console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                                 "DOType for DO " + do_.getName() + " not found" );
             }
         }
         

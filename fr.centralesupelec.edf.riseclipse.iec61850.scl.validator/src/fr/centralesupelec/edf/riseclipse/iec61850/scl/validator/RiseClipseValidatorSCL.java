@@ -43,6 +43,8 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.FileRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseFatalException;
+import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
+import fr.centralesupelec.edf.riseclipse.util.Severity;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.validation.ocl.OCLValidator;
 
@@ -123,6 +125,9 @@ public class RiseClipseValidatorSCL {
             DEFAULT_NAMESPACE_RELEASE
     );
     
+    private static final String VALIDATOR_SCL_CATEGORY = "SCL/Validator";
+    private static final String INFO_FORMAT_STRING = "%1$-7s: %4$s";
+    
     private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
     private static SclModelLoader sclLoader;
@@ -134,7 +139,7 @@ public class RiseClipseValidatorSCL {
     private static boolean displayCopyright = true;
     private static boolean displayNsdMessages = false;
     private static boolean keepDotFiles = false;
-    private static int consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
+    private static Severity consoleLevel = Severity.WARNING;
     private static String outputFile = null;
     private static String xsdFile = null;
     
@@ -144,17 +149,20 @@ public class RiseClipseValidatorSCL {
 
     private static void usage() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.setLevel( Severity.INFO );
+        console.setFormatString( INFO_FORMAT_STRING );
         
-        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-        console.info( "java -jar RiseClipseValidatorSCL.jar " + HELP_OPTION );
-        console.info( "java -jar RiseClipseValidatorSCL.jar " + HELP_ENVIRONMENT_OPTION );
-        console.info( "java -jar RiseClipseValidatorSCL.jar"
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "java -jar RiseClipseValidatorSCL.jar " + HELP_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "java -jar RiseClipseValidatorSCL.jar " + HELP_ENVIRONMENT_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0,
+                          "java -jar RiseClipseValidatorSCL.jar"
                         + " [" + LEVEL_OPTION + "]"
                         + " [" + OUTPUT_OPTION + " <file>]"
                         + " [" + MAKE_EXPLICIT_LINKS_OPTION + "]"
                         + " (<oclFile> | <nsdFile> | <sclFile>)+" 
         );
-        console.info( "Files ending with \".ocl\" are considered OCL files, "
+        console.info( VALIDATOR_SCL_CATEGORY, 0,
+                  "Files ending with \".ocl\" are considered OCL files, "
                 + "files ending with \".nsd\" are considered NS files, "
                 + "files ending with \".snsd\" are considered ServiceNS files, "
                 + "files ending with \".AppNS\" are considered ApplicableServiceNS files, "
@@ -166,70 +174,79 @@ public class RiseClipseValidatorSCL {
 
     private static void help() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.setLevel( Severity.INFO );
+        console.setFormatString( INFO_FORMAT_STRING );
         
-        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         displayLegal();
-        console.info( "java -jar RiseClipseValidatorSCL.jar option* file*" );
-        console.info( "\tDirectories are searched recursively," );
-        console.info( "\tFiles ending with \".ocl\" are considered OCL files," );
-        console.info( "\tfiles ending with \".nsd\" are considered NS files," );
-        console.info( "\tfiles ending with \".snsd\" are considered ServiceNS files," );
-        console.info( "\tfiles ending with \".AppNS\" are considered ApplicableServiceNS files (at most one should be given)," );
-        console.info( "\tfiles ending with \".nsdoc\" are considered NSDoc files," );
-        console.info( "\tcase is ignored for all these extensions," );
-        console.info( "\tall others are considered SCL files." );
-        console.info( "" );
-        console.info( "The following options are recognized:" );
-        console.info( "\t" + VERBOSE_OPTION );
-        console.info( "\t" + INFO_OPTION );
-        console.info( "\t" + WARNING_OPTION );
-        console.info( "\t" + ERROR_OPTION );
-        console.info( "\t\tThe amount of messages displayed is chosen according to this option, default is " + WARNING_OPTION + "." );
-        console.info( "\t" + OUTPUT_OPTION + " <file>" );
-        console.info( "\t\tmessages are outputed in the given file" );
-        console.info( "\t" + XSD_OPTION + " <file>" );
-        console.info( "\t\tA preliminary XML validation is done against the given XML schema file" );
-        console.info( "\t" + USE_COLOR_OPTION );
-        console.info( "\t\tcolors (using ANSI escape sequences) are used on message prefixes." );
-        console.info( "\t" + MAKE_EXPLICIT_LINKS_OPTION );
-        console.info( "\t\tImplicit links in SCL files are made explicit, this is usually needed for complete validation. "
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "java -jar RiseClipseValidatorSCL.jar option* file*" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\tDirectories are searched recursively," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\tFiles ending with \".ocl\" are considered OCL files," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\tfiles ending with \".nsd\" are considered NS files," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\tfiles ending with \".snsd\" are considered ServiceNS files," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\tfiles ending with \".AppNS\" are considered ApplicableServiceNS files (at most one should be given)," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\tfiles ending with \".nsdoc\" are considered NSDoc files," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\tcase is ignored for all these extensions," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\tall others are considered SCL files." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "The following options are recognized:" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + VERBOSE_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + INFO_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + WARNING_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + ERROR_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tThe amount of messages displayed is chosen according to this option, default is " + WARNING_OPTION + "." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + OUTPUT_OPTION + " <file>" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tmessages are outputed in the given file" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + XSD_OPTION + " <file>" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tA preliminary XML validation is done against the given XML schema file" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_COLOR_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tcolors (using ANSI escape sequences) are used on message prefixes." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + MAKE_EXPLICIT_LINKS_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, 
+                  "\t\tImplicit links in SCL files are made explicit, this is usually needed for complete validation. "
                 + "Warnings are displayed when problems are detected. Infos are displayed about explicit links being made. "
                 + "Verbosity is about how explicit links are made." );
-        console.info( "\t" + DISPLAY_NSD_MESSAGES_OPTION );
-        console.info( "\t\tOnly errors detected in NSD files are displayed by default. "
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + DISPLAY_NSD_MESSAGES_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, 
+                  "\t\tOnly errors detected in NSD files are displayed by default. "
                 + "This option allows for other messages to be displayed (according to the chosen level).");
-        console.info( "\t" + DO_NOT_DISPLAY_COPYRIGHT_OPTION );
-        console.info( "\t\tThe tool information is not displayed at the beginning." );
-        console.info( "\t" + USE_FILENAMES_STARTING_WITH_DOT_OPTION );
-        console.info( "\t\tFiles whose name begins with a dot are not ignored." );
-        console.info( "\t" + HELP_ENVIRONMENT_OPTION );
-        console.info( "\t\tEnvironment variables used are displayed." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + DO_NOT_DISPLAY_COPYRIGHT_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tThe tool information is not displayed at the beginning." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_FILENAMES_STARTING_WITH_DOT_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tFiles whose name begins with a dot are not ignored." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + HELP_ENVIRONMENT_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tEnvironment variables used are displayed." );
         System.exit( 0 );
     }
     
     private static void helpEnvironment() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.setLevel( Severity.INFO );
+        console.setFormatString( INFO_FORMAT_STRING );
         
-        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
         displayLegal();
         
-        console.info( "The folowing environment variables may be used in addition to command line options, "
+        console.info( VALIDATOR_SCL_CATEGORY, 0,
+                      "The folowing environment variables may be used in addition to command line options, "
                     + "however, the latter have precedence." );
-        console.info( "\t" + CONSOLE_LEVEL_VARIABLE_NAME + ": if its value is one of (ignoring case) "
+        console.info( VALIDATOR_SCL_CATEGORY, 0,
+                      "\t" + CONSOLE_LEVEL_VARIABLE_NAME + ": if its value is one of (ignoring case) "
                     + VERBOSE_KEYWORD + ", " + INFO_KEYWORD + ", " + WARNING_KEYWORD + " or " + ERROR_KEYWORD
                     + ", then the corresponding level is set, otherwise the variable is ignored." );
-        console.info( "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
-        console.info( "\t" + XSD_FILE_VARIABLE_NAME + ": path to the SCL XML schema." );
-        console.info( "\t" + USE_COLOR_VARIABLE_NAME + ": if its value is not equal to FALSE "
-                + "(ignoring case), it is equivalent to the use of " + USE_COLOR_OPTION + " option." );
-        console.info( "\t" + MAKE_EXPLICIT_LINKS_VARIABLE_NAME + ": if its value is not equal to FALSE "
-                + "(ignoring case), it is equivalent to the use of " + MAKE_EXPLICIT_LINKS_OPTION + " option." );
-        console.info( "\t" + DISPLAY_NSD_MESSAGES_VARIABLE_NAME + ": if its value is not equal to FALSE "
-                + "(ignoring case), it is equibvalent to the use of " + DISPLAY_NSD_MESSAGES_OPTION + " option." );
-        console.info( "\t" + DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME + ": if its value is not equal to FALSE "
-                + "(ignoring case), it is equivalent to the use of " + DO_NOT_DISPLAY_COPYRIGHT_OPTION + " option." );
-        console.info( "\t" + USE_FILENAMES_STARTING_WITH_DOT_VARIABLE_NAME + ": if its value is not equal to FALSE "
-                + "(ignoring case), it is equivalent to the use of " + USE_FILENAMES_STARTING_WITH_DOT_OPTION + " option." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0,
+                      "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0,
+                      "\t" + XSD_FILE_VARIABLE_NAME + ": path to the SCL XML schema." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0,
+                      "\t" + USE_COLOR_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                    + "(ignoring case), it is equivalent to the use of " + USE_COLOR_OPTION + " option." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + MAKE_EXPLICIT_LINKS_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                    + "(ignoring case), it is equivalent to the use of " + MAKE_EXPLICIT_LINKS_OPTION + " option." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + DISPLAY_NSD_MESSAGES_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                    + "(ignoring case), it is equibvalent to the use of " + DISPLAY_NSD_MESSAGES_OPTION + " option." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                    + "(ignoring case), it is equivalent to the use of " + DO_NOT_DISPLAY_COPYRIGHT_OPTION + " option." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_FILENAMES_STARTING_WITH_DOT_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                    + "(ignoring case), it is equivalent to the use of " + USE_FILENAMES_STARTING_WITH_DOT_OPTION + " option." );
         System.exit( 0 );
     }
     
@@ -237,19 +254,21 @@ public class RiseClipseValidatorSCL {
         String s = System.getenv( CONSOLE_LEVEL_VARIABLE_NAME );
         if( s != null ) {
             if( s.equalsIgnoreCase( VERBOSE_KEYWORD )) {
-                consoleLevel = IRiseClipseConsole.VERBOSE_LEVEL;
+                consoleLevel = Severity.VERBOSE;
             }
             else if( s.equalsIgnoreCase( INFO_KEYWORD )) {
-                consoleLevel = IRiseClipseConsole.INFO_LEVEL;
+                consoleLevel = Severity.INFO;
             }
             else if( s.equalsIgnoreCase( WARNING_KEYWORD )) {
-                consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
+                consoleLevel = Severity.WARNING;
             }
             else if( s.equalsIgnoreCase( ERROR_KEYWORD )) {
-                consoleLevel = IRiseClipseConsole.ERROR_LEVEL;
+                consoleLevel = Severity.ERROR;
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "Value of environment variable " + CONSOLE_LEVEL_VARIABLE_NAME + " is not recognized and ignored" );
+                AbstractRiseClipseConsole.getConsole().warning(
+                    VALIDATOR_SCL_CATEGORY, 0,
+                    "Value of environment variable " + CONSOLE_LEVEL_VARIABLE_NAME + " is not recognized and ignored" );
             }
         }
         
@@ -312,16 +331,16 @@ public class RiseClipseValidatorSCL {
                     helpEnvironment();
                 }
                 else if( VERBOSE_OPTION.equals( args[i] )) {
-                    consoleLevel = IRiseClipseConsole.VERBOSE_LEVEL;
+                    consoleLevel = Severity.VERBOSE;
                 }
                 else if( INFO_OPTION.equals( args[i] )) {
-                    consoleLevel = IRiseClipseConsole.INFO_LEVEL;
+                    consoleLevel = Severity.INFO;
                 }
                 else if( WARNING_OPTION.equals( args[i] )) {
-                    consoleLevel = IRiseClipseConsole.WARNING_LEVEL;
+                    consoleLevel = Severity.WARNING;
                 }
                 else if( ERROR_OPTION.equals( args[i] )) {
-                    consoleLevel = IRiseClipseConsole.ERROR_LEVEL;
+                    consoleLevel = Severity.ERROR;
                 }
                 else if( OUTPUT_OPTION.equals( args[i] )) {
                     if( ++i < args.length ) {
@@ -356,7 +375,7 @@ public class RiseClipseValidatorSCL {
                     hiddenDoor  = true;
                 }
                 else {
-                    AbstractRiseClipseConsole.getConsole().error( "Unrecognized option " + args[i] );
+                    AbstractRiseClipseConsole.getConsole().error( VALIDATOR_SCL_CATEGORY, 0, "Unrecognized option " + args[i] );
                     usage();
                 }
             }
@@ -367,7 +386,7 @@ public class RiseClipseValidatorSCL {
         console.setLevel( consoleLevel );
 
         if( displayCopyright ) {
-            int level = console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+            Severity level = console.setLevel( Severity.INFO );
             displayLegal();
             console.setLevel( level );
         }
@@ -394,7 +413,7 @@ public class RiseClipseValidatorSCL {
     private static void getFiles( Path path, IRiseClipseConsole console ) {
         if( path.getName( path.getNameCount() - 1 ).toString().startsWith( "." )) {
             if( ! keepDotFiles ) {
-                console.info( path + " is ignored because it starts with a dot" );
+                console.info( VALIDATOR_SCL_CATEGORY, 0, path, " is ignored because it starts with a dot" );
                 return;
             }
         }
@@ -404,7 +423,7 @@ public class RiseClipseValidatorSCL {
                     .forEach( f -> getFiles( f.normalize(), console ));
             }
             catch( IOException e ) {
-                console.error( "got IOException while listing content of directory " + path );
+                console.error( VALIDATOR_SCL_CATEGORY, 0, "got IOException while listing content of directory ", path );
             }
         }
         else if( Files.isReadable( path )) {
@@ -435,7 +454,7 @@ public class RiseClipseValidatorSCL {
             }
         }
         else {
-            console.error(  "Cannot read file " + path );
+            console.error( VALIDATOR_SCL_CATEGORY, 0, "Cannot read file ", path );
         }
         
     }
@@ -453,7 +472,7 @@ public class RiseClipseValidatorSCL {
 //        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
 //        ca.forEach( c -> console.info(  "ConstructedAttribute " + c.getName() ));
         
-        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
+        console.setLevel( Severity.INFO );
         for( int i = 0; i < sclFiles.size(); ++i ) {
             sclLoader.reset();
             Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
@@ -463,35 +482,35 @@ public class RiseClipseValidatorSCL {
             .getIED()
             .stream()
             .forEach( ied -> {
-                console.info(  "IED: " + ied.getName() );
+                console.info( VALIDATOR_SCL_CATEGORY, 0, "IED: " + ied.getName() );
                 ied
                 .getAccessPoint()
                 .stream()
                 .forEach( ap -> {
-                    console.info(  "  AccessPoint: " + ap.getName() );
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "  AccessPoint: " + ap.getName() );
                     if( ap.getServer() != null ) {
                         ap
                         .getServer()
                         .getLDevice()
                         .stream()
                         .forEach( ld -> {
-                            console.info(  "  LDevice: " + ld.getInst() + "\t\t" + ld.getNamespace() );
-                            console.info(  "    LN: " + ld.getLN0().getLnClass() + "\t\t\t" + ld.getLN0().getNamespace() );
+                            console.info( VALIDATOR_SCL_CATEGORY, 0, "  LDevice: " + ld.getInst() + "\t\t" + ld.getNamespace() );
+                            console.info( VALIDATOR_SCL_CATEGORY, 0, "    LN: " + ld.getLN0().getLnClass() + "\t\t\t" + ld.getLN0().getNamespace() );
                             ld
                             .getLN()
                             .stream()
                             .forEach( ln -> {
-                                console.info(  "    LN: " + ln.getLnClass() + "\t\t\t" + ln.getNamespace() );
+                                console.info( VALIDATOR_SCL_CATEGORY, 0, "    LN: " + ln.getLnClass() + "\t\t\t" + ln.getNamespace() );
                                 ln
                                 .getDOI()
                                 .stream()
                                 .forEach( doi -> {
-                                    console.info(  "      DOI: " + doi.getName() + "\t\t\t" + doi.getNamespace() );
+                                    console.info( VALIDATOR_SCL_CATEGORY, 0, "      DOI: " + doi.getName() + "\t\t\t" + doi.getNamespace() );
 //                                    doi
 //                                    .getDAI()
 //                                    .stream()
 //                                    .forEach( dai -> {
-//                                        console.info(  "        DAI: " + dai.getName() + "\t\t\t" + dai.getNamespace() );
+//                                        console.info( VALIDATOR_SCL_CATEGORY, 0, "        DAI: " + dai.getName() + "\t\t\t" + dai.getNamespace() );
 //                                    });
                                 });
                             });
@@ -502,7 +521,7 @@ public class RiseClipseValidatorSCL {
             
             for( TreeIterator< ? extends EObject > t = EcoreUtil.getAllContents( Collections.singleton( scl ) ); t.hasNext(); ) {
                 EObject child = t.next();
-                console.info( child.getClass().getName() );
+                console.info( VALIDATOR_SCL_CATEGORY, 0, child.getClass().getName() );
             }
 
         }
@@ -513,25 +532,30 @@ public class RiseClipseValidatorSCL {
     // public because used by ui
     public static void displayLegal() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        Severity oldLevel = console.setLevel( Severity.INFO );
+        String oldFormat = console.setFormatString( INFO_FORMAT_STRING );
         
-        console.info( "Copyright (c) 2016-2021 CentraleSupélec & EDF." );
-        console.info( "All rights reserved. This program and the accompanying materials" );
-        console.info( "are made available under the terms of the Eclipse Public License v2.0" );
-        console.info( "which accompanies this distribution, and is available at" );
-        console.info( "https://www.eclipse.org/legal/epl-v20.html" );
-        console.info( "" );
-        console.info( "This tool is part of RiseClipse." );
-        console.info( "Contributors:" );
-        console.info( "    Computer Science Department, CentraleSupélec" );
-        console.info( "    EDF R&D" );
-        console.info( "Contacts:" );
-        console.info( "    dominique.marcadet@centralesupelec.fr" );
-        console.info( "    aurelie.dehouck-neveu@edf.fr" );
-        console.info( "Web site:" );
-        console.info( "    https://riseclipse.github.io/" );
-        console.info( "" );
-        console.info( "RiseClipseValidatorSCL version: 1.1.0 a24 (20 january 2022)" );
-        console.info( "" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Copyright (c) 2016-2022 CentraleSupélec & EDF." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "All rights reserved. This program and the accompanying materials" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "are made available under the terms of the Eclipse Public License v2.0" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "which accompanies this distribution, and is available at" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "https://www.eclipse.org/legal/epl-v20.html" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "This tool is part of RiseClipse." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Contributors:" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "    Computer Science Department, CentraleSupélec" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "    EDF R&D" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Contacts:" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "    dominique.marcadet@centralesupelec.fr" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "    aurelie.dehouck-neveu@edf.fr" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Web site:" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "    https://riseclipse.github.io/" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "RiseClipseValidatorSCL version: 1.1.0 a25 (20 january 2022)" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
+
+        console.setFormatString( oldFormat );
+        console.setLevel( oldLevel );
     }
 
     // public because used by ui
@@ -590,11 +614,11 @@ public class RiseClipseValidatorSCL {
         sclLoader.reset();
         Resource resource = sclLoader.loadWithoutValidation( sclFile );
         if( make_explicit_links ) {
-            console.info( "Making explicit links for file: " + sclFile );
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "Making explicit links for file: " + sclFile );
             sclLoader.finalizeLoad( console );
         }
         if( resource != null ) {
-            console.info( "Validating file: " + sclFile );
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "Validating file: " + sclFile );
             // Some attributes must be re-initalialized
             if( nsdValidator != null ) nsdValidator.reset();
             // Not needed for the OCL validator
@@ -649,6 +673,11 @@ public class RiseClipseValidatorSCL {
                 Diagnostic childDiagnostic = i.next();
                 
                 List< ? > data = childDiagnostic.getData();
+                if(( data.size() == 2 ) && ( data.get( 1 ) instanceof RiseClipseMessage )) {
+                    // Message from NSD validation added in diagnostic
+                    console.output( ( @NonNull RiseClipseMessage ) data.get( 1 ));
+                    continue;
+                }
                 EObject object = ( EObject ) data.get( 0 );
                 String message = childDiagnostic.getMessage();
                 if(( data.size() > 1 ) && ( data.get( 1 ) instanceof EAttribute ) && ( ! childDiagnostic.getChildren().isEmpty() )) {
@@ -675,13 +704,13 @@ public class RiseClipseValidatorSCL {
                 }
                 switch( severity ) {
                 case Diagnostic.INFO:
-                    console.info( message );
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, message );
                     break;
                 case Diagnostic.WARNING:
-                    console.warning( message );
+                    console.warning( VALIDATOR_SCL_CATEGORY, 0, message );
                     break;
                 case Diagnostic.ERROR:
-                    console.error( message );
+                    console.error( VALIDATOR_SCL_CATEGORY, 0, message );
                     break;
                 }
             }
