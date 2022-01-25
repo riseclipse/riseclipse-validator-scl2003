@@ -82,6 +82,7 @@ public class RiseClipseValidatorSCL {
     private static final String LEVEL_OPTION                           = VERBOSE_OPTION + " | " + INFO_OPTION + " | " + WARNING_OPTION + " | " + ERROR_OPTION;
     private static final String OUTPUT_OPTION                          = "--output";
     private static final String XSD_OPTION                             = "--xml-schema";
+    private static final String FORMAT_OPTION                          = "--format-string";
     
     private static final String MAKE_EXPLICIT_LINKS_OPTION             = "--make-explicit-links";
     private static final String USE_COLOR_OPTION                       = "--use-color";
@@ -98,6 +99,7 @@ public class RiseClipseValidatorSCL {
     private static final String DISPLAY_NSD_MESSAGES_VARIABLE_NAME            = RISECLIPSE_VARIABLE_PREFIX + "DISPLAY_NSD_MESSAGES";
     private static final String DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME        = RISECLIPSE_VARIABLE_PREFIX + "DO_NOT_DISPLAY_COPYRIGHT";
     private static final String USE_FILENAMES_STARTING_WITH_DOT_VARIABLE_NAME = RISECLIPSE_VARIABLE_PREFIX + "USE_FILENAMES_STARTING_WITH_DOT";
+    private static final String FORMAT_STRING_VARIABLE_NAME                   = RISECLIPSE_VARIABLE_PREFIX + "FORMAT_STRING";
 
     private static final String FALSE_VARIABLE_VALUE = "FALSE";
 
@@ -142,6 +144,7 @@ public class RiseClipseValidatorSCL {
     private static Severity consoleLevel = Severity.WARNING;
     private static String outputFile = null;
     private static String xsdFile = null;
+    private static String formatString = null;
     
     private static List< @NonNull String> oclFiles;
     private static List< @NonNull String > nsdFiles;
@@ -195,11 +198,15 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + ERROR_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tThe amount of messages displayed is chosen according to this option, default is " + WARNING_OPTION + "." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + OUTPUT_OPTION + " <file>" );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tmessages are outputed in the given file" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tmessages are outputed in the given file." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + XSD_OPTION + " <file>" );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tA preliminary XML validation is done against the given XML schema file" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tA preliminary XML validation is done against the given XML schema file." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + FORMAT_OPTION + " <format-string>" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tmessages are outputed with a java.util.Formatter using the given format string," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\t1$ is severity, 2$ is category, 3$ is line number, 4$ is message, 5$ is filename, 6$ is color start, 7$ is color end," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tdefault is '%6$s%1$-7s%7$s: [%2$s] %4$s (%5$s:%3$d)'." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_COLOR_OPTION );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tcolors (using ANSI escape sequences) are used on message prefixes." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tcolors (using ANSI escape sequences) are used when displaying messages." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + MAKE_EXPLICIT_LINKS_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, 
                   "\t\tImplicit links in SCL files are made explicit, this is usually needed for complete validation. "
@@ -235,7 +242,9 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0,
                       "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
         console.info( VALIDATOR_SCL_CATEGORY, 0,
-                      "\t" + XSD_FILE_VARIABLE_NAME + ": path to the SCL XML schema." );
+                      "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0,
+                      "\t" + FORMAT_STRING_VARIABLE_NAME + ": string used to format messages (see description of " + FORMAT_OPTION + " option)." );
         console.info( VALIDATOR_SCL_CATEGORY, 0,
                       "\t" + USE_COLOR_VARIABLE_NAME + ": if its value is not equal to FALSE "
                     + "(ignoring case), it is equivalent to the use of " + USE_COLOR_OPTION + " option." );
@@ -275,6 +284,8 @@ public class RiseClipseValidatorSCL {
         outputFile = System.getenv( OUTPUT_FILE_VARIABLE_NAME );
         
         xsdFile = System.getenv( XSD_FILE_VARIABLE_NAME );
+        
+        formatString = System.getenv( FORMAT_STRING_VARIABLE_NAME );
         
         s = System.getenv( USE_COLOR_VARIABLE_NAME );
         if( s != null ) {
@@ -359,6 +370,13 @@ public class RiseClipseValidatorSCL {
                 else if( MAKE_EXPLICIT_LINKS_OPTION.equals( args[i] )) {
                     makeExplicitLinks = true;
                 }
+                else if( FORMAT_OPTION.equals( args[i] )) {
+                    if( ++i < args.length ) {
+                        formatString = args[i];
+                        ++posFiles;
+                    }
+                    else usage();
+                }
                 else if( USE_COLOR_OPTION.equals( args[i] )) {
                     useColor = true;
                 }
@@ -382,6 +400,7 @@ public class RiseClipseValidatorSCL {
         }
         
         IRiseClipseConsole console = ( outputFile == null ) ? new TextRiseClipseConsole( useColor ) : new FileRiseClipseConsole( outputFile );
+        if( formatString != null ) console.setFormatString( formatString );
         AbstractRiseClipseConsole.changeConsole( console );
         console.setLevel( consoleLevel );
 
