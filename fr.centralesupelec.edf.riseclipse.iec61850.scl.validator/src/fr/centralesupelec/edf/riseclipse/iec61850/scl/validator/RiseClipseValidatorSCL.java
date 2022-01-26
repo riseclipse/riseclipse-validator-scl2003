@@ -697,8 +697,25 @@ public class RiseClipseValidatorSCL {
                     console.output( ( @NonNull RiseClipseMessage ) data.get( 1 ));
                     continue;
                 }
-                EObject object = ( EObject ) data.get( 0 );
                 String message = childDiagnostic.getMessage();
+                String[] parts = message.split( ";" );
+                if(( parts.length == 4 ) && ( parts[1].startsWith( "OCL" ))) {
+                    // This should be an OCL message with the new format
+                    Severity severity = Severity.ERROR;
+                    try {
+                        severity = Severity.valueOf( parts[0] );
+                    }
+                    catch( IllegalArgumentException ex ) {}
+                    int line = 0;
+                    try {
+                        line = Integer.valueOf( parts[2] );
+                    }
+                    catch( NumberFormatException ex ) {}
+                    console.output( new RiseClipseMessage( severity, parts[1], line, parts[3] ));
+                    continue;
+                    
+                }
+                EObject object = ( EObject ) data.get( 0 );
                 if(( data.size() > 1 ) && ( data.get( 1 ) instanceof EAttribute ) && ( ! childDiagnostic.getChildren().isEmpty() )) {
                     EAttribute attribute = ( EAttribute ) data.get( 1 );
                     if( attribute == null ) continue;
