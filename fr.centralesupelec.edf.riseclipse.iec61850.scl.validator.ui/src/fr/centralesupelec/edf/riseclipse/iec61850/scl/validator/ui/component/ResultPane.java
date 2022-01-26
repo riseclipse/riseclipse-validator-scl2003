@@ -244,14 +244,14 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
 
     @Override
     public String getFormatString() {
-        // TODO Auto-generated method stub
-        return null;
+        // Not taken into account for the moment
+        return "";
     }
 
     @Override
     public String setFormatString( String formatString ) {
-        // TODO Auto-generated method stub
-        return null;
+        // Not taken into account for the moment
+        return "";
     }
 
 }
