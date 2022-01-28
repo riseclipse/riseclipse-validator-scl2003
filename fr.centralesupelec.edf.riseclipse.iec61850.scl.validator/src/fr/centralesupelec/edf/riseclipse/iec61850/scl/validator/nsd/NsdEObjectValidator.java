@@ -28,6 +28,8 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
@@ -41,7 +43,12 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class NsdEObjectValidator implements EValidator {
 
+    private NsdResourceSetImpl nsdResourceSet;
+
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet, IRiseClipseConsole console ) {
+        // We keep it to improve some error messages
+        this.nsdResourceSet = nsdResourceSet;
+        
         // To avoid building several times the validators, we process the ordered list of NsIdentification (root first)
         for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList() ) {
             console.info( NsdValidator.SETUP_NSD_CATEGORY, 0, "Getting NSD rules for namespace \"", nsIdentification, "\"" );
@@ -116,7 +123,7 @@ public class NsdEObjectValidator implements EValidator {
     private boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                                                    "NsdEObjectValidator.validateLNodeType( ", lNodeType.getLnClass(), " )" );
+                         "NsdEObjectValidator.validateLNodeType( ", lNodeType.getLnClass(), " )" );
 
         boolean res = true;
         
@@ -132,9 +139,14 @@ public class NsdEObjectValidator implements EValidator {
         if( lNodeType.getReferredByAnyLN().size() == 0 ) {
             if( lNodeType.getNamespace() != null ) return res;
             
-            console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+            RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
                              "LNodeType ", lNodeType.getId(), " will not be validated, no LN with a namespace points to it." );
-
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    warning.getMessage(),
+                    new Object[] { lNodeType, warning } ));
             return false;
         }
         
@@ -150,10 +162,22 @@ public class NsdEObjectValidator implements EValidator {
     private boolean validateLNodeType( LNodeType lNodeType, String namespace, DiagnosticChain diagnostics ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                         "NsdEObjectValidator.validateLNodeType( " + lNodeType.getId(), " in namespace ", namespace );
+                         "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), " in namespace ", namespace );
 
-        // Check that LNodeType has valid LNClass
-        LNClassValidator lnClassValidator = LNClassValidator.get( new NsIdentification( namespace ), lNodeType.getLnClass() );
+        NsIdentification id = new NsIdentification( namespace );
+        if( nsdResourceSet.getRelaxedNS( id ) == null ) {
+            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
+                      "Cannot validate LNodeType ", lNodeType.getId(), " in namespace \"", namespace, "\" because it is unknown" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    error.getMessage(),
+                    new Object[] { lNodeType, error } ));
+            return false;
+        }
+        // Check that LNodeType has a known LNClass in the given namespace
+        LNClassValidator lnClassValidator = LNClassValidator.get( id, lNodeType.getLnClass() );
         if( lnClassValidator != null ) {
             console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
                              "LNClass ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + namespace + "\"" );
