@@ -85,8 +85,8 @@ public class LNClassValidator {
             for( DataObject do_ : lnClass.getDataObject() ) {
                 if( CDCValidator.get( do_.getType() ) != null ) {
                     dataObjectValidatorMap.put( do_.getName(), CDCValidator.get( do_.getType() ));
-                    console.verbose( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
-                                     "CDC for DataObject ", do_.getName(), " found with type ", do_.getType() );
+                    console.notice( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                                    "CDC for DataObject ", do_.getName(), " found with type ", do_.getType() );
                 }
                 else {
                     console.warning( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
@@ -104,8 +104,8 @@ public class LNClassValidator {
         if( validatedLNodeType.contains( lNodeType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                         "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                       "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " )" );
         validatedLNodeType.add( lNodeType.getId() );
 
         boolean res = true;

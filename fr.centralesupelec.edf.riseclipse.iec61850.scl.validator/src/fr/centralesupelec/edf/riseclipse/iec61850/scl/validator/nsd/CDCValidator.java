@@ -126,8 +126,8 @@ public class CDCValidator {
         if( validatedDOType.contains( doType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
-                         "CDCValidator.validateDOType( ", doType.getId(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
+                       "CDCValidator.validateDOType( ", doType.getId(), " )" );
         validatedDOType.add( doType.getId() );
         
         dataAttributePresenceConditionValidator.resetModelData();

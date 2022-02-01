@@ -76,8 +76,8 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseLNodeType( LNodeType lNodeType ) {
-                AbstractRiseClipseConsole.getConsole().verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                                                                "NsdEObjectValidator.validate( ", lNodeType.getId(), " )" );
+                AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                                                              "NsdEObjectValidator.validate( ", lNodeType.getId(), " )" );
                 return validateLNodeType( lNodeType, diagnostics );
             }
 
@@ -104,13 +104,13 @@ public class NsdEObjectValidator implements EValidator {
     protected Boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                                                        "NsdEObjectValidator.validateLNodeType( ", lNodeType.getLnClass(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                       "NsdEObjectValidator.validateLNodeType( ", lNodeType.getLnClass(), " )" );
 
         // Check that LNodeType has valid LNClass
         if( LNClassValidator.get( lNodeType.getLnClass() ) != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                             "LNClass ", lNodeType.getLnClass(), " found for LNodeType" );
+            console.info( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                          "LNClass ", lNodeType.getLnClass(), " found for LNodeType" );
 
             // LNClassValidator validates LNodeType content
             return LNClassValidator.get( lNodeType.getLnClass() ).validateLNodeType( lNodeType, diagnostics );

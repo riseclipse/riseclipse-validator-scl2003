@@ -56,7 +56,7 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
     private final static String newline = "\n";
     
     private ArrayList< RiseClipseMessage > messages;
-    private JCheckBox cbVerbose;
+    private JCheckBox cbNotice;
     private JCheckBox cbInfo;
     private JCheckBox cbWarning;
     private JCheckBox cbError;
@@ -78,15 +78,15 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
         JPanel cbPanel = new JPanel();
         add( cbPanel, BorderLayout.NORTH );
 
-        cbVerbose = new JCheckBox( "Verbose" );
-        cbVerbose.setSelected( false );
-        cbVerbose.addActionListener( this );
-        cbPanel.add( cbVerbose );
-
         cbInfo = new JCheckBox( "Info" );
         cbInfo.setSelected( true );
         cbInfo.addActionListener( this );
         cbPanel.add( cbInfo );
+
+        cbNotice = new JCheckBox( "Notice" );
+        cbNotice.setSelected( false );
+        cbNotice.addActionListener( this );
+        cbPanel.add( cbNotice );
 
         cbWarning = new JCheckBox( "Warning" );
         cbWarning.setSelected( true );
@@ -129,20 +129,19 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
         StringBuffer buf = new StringBuffer();
         
         for( int i = 0; i < messages.size(); ++i ) {
-            boolean display = cbVerbose.isSelected();
+            boolean display = cbNotice.isSelected();
             switch( messages.get( i ).getSeverity()) {
-            case VERBOSE:
-                break;
             case INFO:
                 display = cbInfo.isSelected();
+                break;
+            case NOTICE:
+                display = cbNotice.isSelected();
                 break;
             case WARNING:
                 display = cbWarning.isSelected();
                 break;
             case ERROR:
                 display = cbError.isSelected();
-                break;
-            case FATAL:
                 break;
             default:
                 break;
@@ -165,8 +164,8 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
 
     @Override
     public Severity setLevel( Severity level ) {
-        // We keep all messages
-        return Severity.VERBOSE;
+        // We keep all messages except debug ones
+        return Severity.INFO;
     }
 
     @Override
@@ -178,7 +177,7 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
     public void actionPerformed( ActionEvent e ) {
         Object source = e.getSource();
         
-        if(( source == cbVerbose ) || ( source == cbInfo ) || ( source == cbWarning ) || ( source == cbError )) {
+        if(( source == cbNotice ) || ( source == cbInfo ) || ( source == cbWarning ) || ( source == cbError )) {
             // The state of the checkbox is directly tested, so just repaint
             repaint();
             return;
@@ -239,7 +238,7 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
 
     @Override
     public Severity getLevel() {
-        return Severity.VERBOSE;
+        return Severity.INFO;
     }
 
     @Override

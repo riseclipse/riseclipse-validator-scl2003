@@ -78,8 +78,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
     public boolean validateAbstractDataAttribute( AbstractDataAttribute da, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
-                         "ConstructedAttributeValidator.validateAbstractDataAttribute( ", da.getName(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
+                       "ConstructedAttributeValidator.validateAbstractDataAttribute( ", da.getName(), " )" );
         boolean res = true;
         
         if( da.getRefersToDAType() != null ) {
@@ -92,8 +92,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
         if( validatedDAType.contains( daType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, daType.getLineNumber(),
-                         "ConstructedAttributeValidator.validateDAType( ", daType.getId(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, daType.getLineNumber(),
+                       "ConstructedAttributeValidator.validateDAType( ", daType.getId(), " )" );
         validatedDAType.add( daType.getId() );
         
         subDataAttributePresenceConditionValidator.resetModelData();
