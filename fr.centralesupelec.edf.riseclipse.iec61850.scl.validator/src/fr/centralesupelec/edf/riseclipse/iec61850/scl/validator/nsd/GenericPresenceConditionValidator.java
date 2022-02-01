@@ -672,7 +672,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     public boolean validate( @NonNull SclModel sclModel, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                          "PresenceConditionValidator.validate()" );
 
         boolean res = true;
@@ -681,7 +681,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Element is mandatory
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( mandatory != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"M\" on ", getSclModelClassName() );
             for( String name : this.mandatory ) {
                 if( presentSclComponent.get( name ) == null ) {
@@ -702,7 +702,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Element is optional
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( optional != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"O\" on ", getSclModelClassName() );
             for( String name : this.optional ) {
                 if( presentSclComponent.get( name ) == null ) {
@@ -715,7 +715,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Element is forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( forbidden != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"F\" on ", getSclModelClassName() );
             for( String name : this.forbidden ) {
                 if( presentSclComponent.get( name ) != null ) {
@@ -792,7 +792,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // At least one of marked elements of a group n shall be present
         // Usage in standard NSD files (version 2007B): DataObject and SubDataObject and DataAttribute and SubDataAttribute
         if( atLeastOne != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"AtLeastOne\" on ", getSclModelClassName() );
             for( Entry< Integer, HashSet< String > > e1 : atLeastOne.entrySet() ) {
                 boolean groupOK = false;
@@ -820,7 +820,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // At most one of marked elements shall be present
         // Usage in standard NSD files (version 2007B): DataObject
         if( atMostOne != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"AtMostOne\" on ", getSclModelClassName() );
             int count = 0;
             for( String s : atMostOne ) {
@@ -846,7 +846,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // All or none of the elements of a group n shall be present
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( allOrNonePerGroup != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"AllOrNonePerGroup\" on ", getSclModelClassName() );
             for( Entry< Integer, HashSet< String > > e1 : allOrNonePerGroup.entrySet() ) {
                 int groupCount = 0;
@@ -874,7 +874,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // All elements of only one group n shall be present
         // Usage in standard NSD files (version 2007B): DataObject and SubDataAttribute
         if( allOnlyOneGroup != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"AllOnlyOneGroup\" on ", getSclModelClassName() );
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allOnlyOneGroup.entrySet() ) {
@@ -930,7 +930,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // All elements of at least one group n shall be present
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( allAtLeastOneGroup != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"AllAtLeastOneGroup\" on ", getSclModelClassName() );
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allAtLeastOneGroup.entrySet() ) {
@@ -962,7 +962,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Mandatory if sibling element is present, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfSiblingPresentElseForbidden != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"MF\" on ", getSclModelClassName() );
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
                 if( presentSclComponent.get( entry.getValue() ) != null ) {
@@ -1001,7 +1001,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Mandatory if sibling element is present, otherwise optional
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryIfSiblingPresentElseOptional != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"MO\" on ", getSclModelClassName() );
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
                 if( presentSclComponent.get( entry.getValue() ) != null ) {
@@ -1026,7 +1026,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Optional if sibling element is present, otherwise mandatory
         // Usage in standard NSD files (version 2007B): None
         if( optionalIfSiblingPresentElseMandatory != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"OM\" on ", getSclModelClassName() );
             for( Entry< String, String > entry : optionalIfSiblingPresentElseMandatory.entrySet() ) {
                 if( presentSclComponent.get( entry.getValue() ) == null ) {
@@ -1051,7 +1051,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Forbidden if sibling element is present, otherwise mandatory
         // Usage in standard NSD files (version 2007B): None
         if( forbiddenIfSiblingPresentElseMandatory != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"FM\" on ", getSclModelClassName() );
             for( Entry< String, String > entry : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
                 if( presentSclComponent.get( entry.getValue() ) != null ) {
@@ -1091,7 +1091,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // If satisfied, the element is mandatory, otherwise optional
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseOptional != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"MOcond\" on ", getSclModelClassName() );
             for( Entry< String, String > entry : mandatoryIfTextConditionElseOptional.entrySet() ) {
                 String doc = mandatoryIfTextConditionElseOptionalDoc.get( entry.getKey() );
@@ -1115,7 +1115,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // If satisfied, the element is mandatory, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseForbidden != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"MFcond\" on ", getSclModelClassName() );
             for( Entry< String, String > entry : mandatoryIfTextConditionElseForbidden.entrySet() ) {
                 String doc = mandatoryIfTextConditionElseForbiddenDoc.get( entry.getKey() );
@@ -1139,7 +1139,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // If satisfied, the element is optional, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalIfTextConditionElseForbidden != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"OFcond\" on ", getSclModelClassName() );
             for( Entry< String, String > entry : optionalIfTextConditionElseForbidden.entrySet() ) {
                 String doc = optionalIfTextConditionElseForbiddenDoc.get( entry.getKey() );
@@ -1218,7 +1218,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Element is mandatory in the context of LLN0; otherwise optional
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryInLLN0ElseOptional != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"MOln0\" on ", getSclModelClassName() );
             res = validateMOln0( sclModel, diagnostics ) && res;
         }
@@ -1227,7 +1227,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Element is mandatory in the context of LLN0; otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryInLLN0ElseForbidden != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"MFln0\" on ", getSclModelClassName() );
             res = validateMFln0( sclModel, diagnostics ) && res;
         }
@@ -1493,7 +1493,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Optional if sibling element is present, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute
         if( optionalIfSiblingPresentElseForbidden != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"OF\" on ", getSclModelClassName() );
             for( Entry< String, String > entry : optionalIfSiblingPresentElseForbidden.entrySet() ) {
                 if( presentSclComponent.get( entry.getValue() ) == null ) {
@@ -1538,7 +1538,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): SubDataObject
         // TODO
         if( optionalIfPhsRefIsSynchrophasorElseMandatory != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
+            console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(),
                              "validation of presence condition \"OMSynPh\" on ", getSclModelClassName() );
             res = validateOMSynPh( sclModel, diagnostics ) && res;
         }

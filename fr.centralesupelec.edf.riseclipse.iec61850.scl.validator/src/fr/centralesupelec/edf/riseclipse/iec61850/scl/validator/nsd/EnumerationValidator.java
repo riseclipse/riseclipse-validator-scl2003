@@ -96,8 +96,8 @@ public class EnumerationValidator extends TypeValidator {
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
-                         "EnumerationValidator.validateAbstractDataAttribute( ", ada.getName(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
+                       "EnumerationValidator.validateAbstractDataAttribute( ", ada.getName(), " )" );
         
         boolean res = true;
         if( ! "Enum".equals(  ada.getBType() )) {
@@ -175,8 +175,8 @@ public class EnumerationValidator extends TypeValidator {
         if( validatedEnumType.contains( enumType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, enumType.getLineNumber(),
-                         "EnumerationValidator.validateEnumType( ", enumType.getId(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, enumType.getLineNumber(),
+                       "EnumerationValidator.validateEnumType( ", enumType.getId(), " )" );
         validatedEnumType.add( enumType.getId() );
         
         boolean res = true;

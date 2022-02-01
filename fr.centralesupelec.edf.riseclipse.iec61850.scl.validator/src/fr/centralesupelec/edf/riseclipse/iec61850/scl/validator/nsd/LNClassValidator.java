@@ -93,8 +93,8 @@ public class LNClassValidator {
     private HashMap< String, CDCValidator > dataObjectValidatorMap = new HashMap<>();
 
     private LNClassValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass, IRiseClipseConsole console ) {
-        console.verbose( NsdValidator.SETUP_NSD_CATEGORY, anyLNClass.getFilename(), anyLNClass.getLineNumber(),
-                         "build LNClassValidator for ", anyLNClass.getName(), " in namespace \"", nsIdentification, "\"" );
+        console.debug( NsdValidator.SETUP_NSD_CATEGORY, anyLNClass.getFilename(), anyLNClass.getLineNumber(),
+                       "build LNClassValidator for ", anyLNClass.getName(), " in namespace \"", nsIdentification, "\"" );
         
         this.nsIdentification = nsIdentification;
         dataObjectPresenceConditionValidator = DataObjectPresenceConditionValidator.get( nsIdentification, anyLNClass );
@@ -120,8 +120,8 @@ public class LNClassValidator {
                 }
                 if( cdcValidator != null ) {
                     dataObjectValidatorMap.put( do_.getName(), cdcValidator );
-                    console.verbose( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
-                                     "CDC for DataObject ", do_.getName(), " found with type ", do_.getType() );
+                    console.notice( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                                    "CDC for DataObject ", do_.getName(), " found with type ", do_.getType() );
                 }
                 else {
                     console.warning( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
@@ -139,8 +139,8 @@ public class LNClassValidator {
         if( validatedLNodeType.contains( lNodeType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                         "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " in namespace \"", this.nsIdentification, "\"" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                       "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " in namespace \"", this.nsIdentification, "\"" );
         validatedLNodeType.add( lNodeType.getId() );
 
         boolean res = true;

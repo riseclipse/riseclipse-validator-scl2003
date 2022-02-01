@@ -36,8 +36,8 @@ public class UndefinedTypeValidator extends TypeValidator {
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
-                         "UndefinedTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
+                       "UndefinedTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " )" );
 
         if( "Enum".equals( ada.getBType() )) {
             return new EnumeratedTypeValidator().validateAbstractDataAttribute( ada, diagnostics );

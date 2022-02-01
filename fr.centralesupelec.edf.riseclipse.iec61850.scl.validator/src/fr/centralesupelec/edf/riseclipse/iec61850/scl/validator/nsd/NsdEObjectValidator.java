@@ -28,10 +28,8 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
-
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
@@ -97,6 +95,8 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseLNodeType( LNodeType lNodeType ) {
+                AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                                                              "NsdEObjectValidator.validate( ", lNodeType.getId(), " )" );
                 return validateLNodeType( lNodeType, diagnostics );
             }
 
@@ -122,8 +122,8 @@ public class NsdEObjectValidator implements EValidator {
 
     private boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                         "NsdEObjectValidator.validateLNodeType( ", lNodeType.getLnClass(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                       "NsdEObjectValidator.validateLNodeType( ", lNodeType.getLnClass(), " )" );
 
         boolean res = true;
         
@@ -161,8 +161,8 @@ public class NsdEObjectValidator implements EValidator {
 
     private boolean validateLNodeType( LNodeType lNodeType, String namespace, DiagnosticChain diagnostics ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                         "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), " in namespace ", namespace );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                       "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), " in namespace ", namespace );
 
         NsIdentification id = new NsIdentification( namespace );
         if( nsdResourceSet.getRelaxedNS( id ) == null ) {
@@ -179,8 +179,8 @@ public class NsdEObjectValidator implements EValidator {
         // Check that LNodeType has a known LNClass in the given namespace
         LNClassValidator lnClassValidator = LNClassValidator.get( id, lNodeType.getLnClass() );
         if( lnClassValidator != null ) {
-            console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                             "LNClass ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + namespace + "\"" );
+            console.notice( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                           "LNClass ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + namespace + "\"" );
 
             return lnClassValidator.validateLNodeType( lNodeType, diagnostics );
         }

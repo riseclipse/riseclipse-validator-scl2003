@@ -47,7 +47,6 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd.NsdValidator
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.FileRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
-import fr.centralesupelec.edf.riseclipse.util.RiseClipseFatalException;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 import fr.centralesupelec.edf.riseclipse.util.Severity;
 import fr.centralesupelec.edf.riseclipse.util.TextRiseClipseConsole;
@@ -56,7 +55,6 @@ import fr.centralesupelec.edf.riseclipse.validation.ocl.OCLValidator;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -80,11 +78,17 @@ public class RiseClipseValidatorSCL {
     private static final String HELP_OPTION                            = "--help";
     private static final String HELP_ENVIRONMENT_OPTION                = "--help-environment";
     
-    private static final String VERBOSE_OPTION                         = "--verbose";
-    private static final String INFO_OPTION                            = "--info";
-    private static final String WARNING_OPTION                         = "--warning";
+
+//    private static final String EMERGENCY_OPTION                     = "--emergency";
+//    private static final String ALERT_OPTION                         = "--alert";
+//    private static final String CRITICAL_OPTION                      = "--critical";
     private static final String ERROR_OPTION                           = "--error";
-    private static final String LEVEL_OPTION                           = VERBOSE_OPTION + " | " + INFO_OPTION + " | " + WARNING_OPTION + " | " + ERROR_OPTION;
+    private static final String WARNING_OPTION                         = "--warning";
+    private static final String NOTICE_OPTION                          = "--notice";
+    private static final String INFO_OPTION                            = "--info";
+    private static final String DEBUG_OPTION                           = "--debug";
+    private static final String LEVEL_OPTION                           =           ERROR_OPTION + " | " + WARNING_OPTION + " | " + NOTICE_OPTION
+                                                                         + " | " + INFO_OPTION     + " | " + DEBUG_OPTION ;
     private static final String OUTPUT_OPTION                          = "--output";
     private static final String XSD_OPTION                             = "--xml-schema";
     private static final String FORMAT_OPTION                          = "--format-string";
@@ -108,15 +112,14 @@ public class RiseClipseValidatorSCL {
 
     private static final String FALSE_VARIABLE_VALUE = "FALSE";
 
-    private static final String VERBOSE_KEYWORD = "VERBOSE";
-    private static final String INFO_KEYWORD    = "INFO";
-    private static final String WARNING_KEYWORD = "WARNING";
-    private static final String ERROR_KEYWORD   = "ERROR";
-
-    //private static final String VERBOSE_PREFIX = VERBOSE_KEYWORD + ":";
-    private static final String WARNING_PREFIX = WARNING_KEYWORD + ":";
-    private static final String INFO_PREFIX = INFO_KEYWORD + ":";
-    private static final String ERROR_PREFIX = ERROR_KEYWORD + ":";
+//    private static final String EMERGENCY_KEYWORD = "EMERGENCY";
+//    private static final String ALERT_KEYWORD     = "ALERT";
+//    private static final String CRITICAL_KEYWORD  = "CRITICAL";
+    private static final String ERROR_KEYWORD       = "ERROR";
+    private static final String WARNING_KEYWORD     = "WARNING";
+    private static final String NOTICE_KEYWORD      = "NOTICE";
+    private static final String INFO_KEYWORD        = "INFO";
+    private static final String DEBUG_KEYWORD       = "DEBUG";
 
     public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
     
@@ -133,7 +136,7 @@ public class RiseClipseValidatorSCL {
     );
     
     private static final String VALIDATOR_SCL_CATEGORY = "SCL/Validator";
-    private static final String INFO_FORMAT_STRING = "%1$-7s: %4$s";
+    private static final String INFO_FORMAT_STRING = "%6$s%1$-8s%7$s: %4$s";
     
     private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
@@ -197,10 +200,11 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\tall others are considered SCL files." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "The following options are recognized:" );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + VERBOSE_OPTION );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + INFO_OPTION );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + WARNING_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + ERROR_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + WARNING_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + NOTICE_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + INFO_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + DEBUG_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tThe amount of messages displayed is chosen according to this option, default is " + WARNING_OPTION + "." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + OUTPUT_OPTION + " <file>" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tmessages are outputed in the given file." );
@@ -242,7 +246,7 @@ public class RiseClipseValidatorSCL {
                     + "however, the latter have precedence." );
         console.info( VALIDATOR_SCL_CATEGORY, 0,
                       "\t" + CONSOLE_LEVEL_VARIABLE_NAME + ": if its value is one of (ignoring case) "
-                    + VERBOSE_KEYWORD + ", " + INFO_KEYWORD + ", " + WARNING_KEYWORD + " or " + ERROR_KEYWORD
+                    + ERROR_KEYWORD + ", " + WARNING_KEYWORD + ", " + NOTICE_KEYWORD + ", " + INFO_KEYWORD + " or " + DEBUG_KEYWORD
                     + ", then the corresponding level is set, otherwise the variable is ignored." );
         console.info( VALIDATOR_SCL_CATEGORY, 0,
                       "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
@@ -267,17 +271,20 @@ public class RiseClipseValidatorSCL {
     private static void setOptionsFromEnvironmentVariables() {
         String s = System.getenv( CONSOLE_LEVEL_VARIABLE_NAME );
         if( s != null ) {
-            if( s.equalsIgnoreCase( VERBOSE_KEYWORD )) {
-                consoleLevel = Severity.VERBOSE;
-            }
-            else if( s.equalsIgnoreCase( INFO_KEYWORD )) {
-                consoleLevel = Severity.INFO;
+                 if( s.equalsIgnoreCase( ERROR_KEYWORD )) {
+                consoleLevel  = Severity.ERROR;
             }
             else if( s.equalsIgnoreCase( WARNING_KEYWORD )) {
-                consoleLevel = Severity.WARNING;
+                consoleLevel  = Severity.WARNING;
             }
-            else if( s.equalsIgnoreCase( ERROR_KEYWORD )) {
-                consoleLevel = Severity.ERROR;
+            else if( s.equalsIgnoreCase( NOTICE_KEYWORD )) {
+                consoleLevel  = Severity.NOTICE;
+            }
+            else if( s.equalsIgnoreCase( INFO_KEYWORD )) {
+                consoleLevel  = Severity.INFO;
+            }
+            else if( s.equalsIgnoreCase( DEBUG_KEYWORD )) {
+                consoleLevel  = Severity.DEBUG;
             }
             else {
                 AbstractRiseClipseConsole.getConsole().warning(
@@ -346,17 +353,20 @@ public class RiseClipseValidatorSCL {
                 else if( HELP_ENVIRONMENT_OPTION.equals( args[i] )) {
                     helpEnvironment();
                 }
-                else if( VERBOSE_OPTION.equals( args[i] )) {
-                    consoleLevel = Severity.VERBOSE;
-                }
-                else if( INFO_OPTION.equals( args[i] )) {
-                    consoleLevel = Severity.INFO;
+                else if( ERROR_OPTION.equals( args[i] )) {
+                    consoleLevel = Severity.ERROR;
                 }
                 else if( WARNING_OPTION.equals( args[i] )) {
                     consoleLevel = Severity.WARNING;
                 }
-                else if( ERROR_OPTION.equals( args[i] )) {
-                    consoleLevel = Severity.ERROR;
+                else if( NOTICE_OPTION.equals( args[i] )) {
+                    consoleLevel = Severity.NOTICE;
+                }
+                else if( INFO_OPTION.equals( args[i] )) {
+                    consoleLevel = Severity.INFO;
+                }
+                else if( DEBUG_OPTION.equals( args[i] )) {
+                    consoleLevel = Severity.DEBUG;
                 }
                 else if( OUTPUT_OPTION.equals( args[i] )) {
                     if( ++i < args.length ) {
@@ -584,6 +594,7 @@ public class RiseClipseValidatorSCL {
         System.exit( 0 );
     }
     
+    @SuppressWarnings( "unused" )
     private static void doHiddenDoor_4() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.setLevel( Severity.INFO );
@@ -656,7 +667,7 @@ public class RiseClipseValidatorSCL {
         
         SclPackage sclPg = SclPackage.eINSTANCE;
         if( sclPg == null ) {
-            throw new RiseClipseFatalException( "SCL package not found", null );
+            console.emergency( VALIDATOR_SCL_CATEGORY, 0, "SCL package not found" );
         }
 
         ComposedEValidator validator = ComposedEValidator.install( sclPg );
@@ -776,9 +787,14 @@ public class RiseClipseValidatorSCL {
                     }
                     catch( NumberFormatException ex ) {}
                     console.output( new RiseClipseMessage( severity, parts[1], line, parts[3] ));
-                    continue;
-                    
                 }
+                else {
+                    console.error( VALIDATOR_SCL_CATEGORY, 0, message );
+                }
+                
+                // The following was used before, therefore it was considered useful.
+                // It is kept in case the need arises again.
+                /*
                 EObject object = ( EObject ) data.get( 0 );
                 if(( data.size() > 1 ) && ( data.get( 1 ) instanceof EAttribute ) && ( ! childDiagnostic.getChildren().isEmpty() )) {
                     EAttribute attribute = ( EAttribute ) data.get( 1 );
@@ -787,32 +803,7 @@ public class RiseClipseValidatorSCL {
                                 + substitutionLabelProvider.getObjectLabel( object ) + " : "
                                 + childDiagnostic.getChildren().get( 0 ).getMessage();
                 }
-
-                // use severity given by OCL message if available
-                int severity = childDiagnostic.getSeverity();
-                if( message.startsWith( INFO_PREFIX )) {
-                    severity = Diagnostic.INFO;
-                    message = message.substring( INFO_PREFIX.length() );
-                }
-                else if( message.startsWith( WARNING_PREFIX )) {
-                    severity = Diagnostic.WARNING;
-                    message = message.substring( WARNING_PREFIX.length() );
-                }
-                else if( message.startsWith( ERROR_PREFIX )) {
-                    severity = Diagnostic.ERROR;
-                    message = message.substring( ERROR_PREFIX.length() );
-                }
-                switch( severity ) {
-                case Diagnostic.INFO:
-                    console.info( VALIDATOR_SCL_CATEGORY, 0, message );
-                    break;
-                case Diagnostic.WARNING:
-                    console.warning( VALIDATOR_SCL_CATEGORY, 0, message );
-                    break;
-                case Diagnostic.ERROR:
-                    console.error( VALIDATOR_SCL_CATEGORY, 0, message );
-                    break;
-                }
+                */
             }
         }
     }

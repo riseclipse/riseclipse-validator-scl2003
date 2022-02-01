@@ -100,7 +100,7 @@ public class CDCValidator {
     private HashMap< String, CDCValidator > subDataObjectValidatorMap = new HashMap<>();
 
     private CDCValidator( NsIdentification nsIdentification, CDC cdc, IRiseClipseConsole console ) {
-        console.verbose( NsdValidator.SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
+        console.debug( NsdValidator.SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
                 "build CDCValidator for ", cdc.getName(), " in namespace \"", nsIdentification, "\"" );
 
         this.name = cdc.getName();
@@ -128,9 +128,9 @@ public class CDCValidator {
                 }
                 if( typeValidator != null ) {
                     dataAttributeTypeValidatorMap.put( da.getName(), typeValidator );
-                    console.verbose( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
-                                     "type validator for DataAttribute ", da.getName(), " found with type ", da.getType(),
-                                     " in namespace \"", this.nsIdentification, "\"" );
+                    console.info( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                                  "type validator for DataAttribute ", da.getName(), " found with type ", da.getType(),
+                                  " in namespace \"", this.nsIdentification, "\"" );
                 }
                 else {
                     console.warning( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
@@ -159,9 +159,9 @@ public class CDCValidator {
             FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( FCEnum.getByName( da.getFc() ));
             if( fcValidator != null ) {
                 dataAttributeFunctionalConstraintValidatorMap.put( da.getName(), fcValidator );
-                console.verbose( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
-                                 "Functional constraint validator for DataAttribute " + da.getName() + " found with fc " + da.getFc(),
-                                 " in namespace \"", this.nsIdentification, "\"" );
+                console.info( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                              "Functional constraint validator for DataAttribute " + da.getName() + " found with fc " + da.getFc(),
+                              " in namespace \"", this.nsIdentification, "\"" );
             }
             else {
                 console.warning( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
@@ -188,8 +188,8 @@ public class CDCValidator {
             }
             if( cdcValidator != null ) {
                 subDataObjectValidatorMap.put( sdo.getName(), cdcValidator );
-                console.verbose( NsdValidator.SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
-                                 "CDC validator for SubDataObject ", sdo.getName(), " found with type ", sdo.getType() );
+                console.info( NsdValidator.SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
+                              "CDC validator for SubDataObject ", sdo.getName(), " found with type ", sdo.getType() );
             }
             else {
                 console.warning( NsdValidator.SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
@@ -208,8 +208,8 @@ public class CDCValidator {
         if( validatedDOType.contains( doType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
-                         "CDCValidator.validateDOType( ", doType.getId(), " ) in namespace \"", nsIdentification, "\"" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
+                       "CDCValidator.validateDOType( ", doType.getId(), " ) in namespace \"", nsIdentification, "\"" );
         validatedDOType.add( doType.getId() );
         
         dataAttributePresenceConditionValidator.resetModelData();
@@ -289,8 +289,8 @@ public class CDCValidator {
     public boolean validateDO( DO do_, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
-                         "CDCValidator.validateDO( ", do_.getName(), " ) in namespace \"", nsIdentification, "\"" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                       "CDCValidator.validateDO( ", do_.getName(), " ) in namespace \"", nsIdentification, "\"" );
         
         DOType doType = do_.getRefersToDOType();
         if( doType == null ) {

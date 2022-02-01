@@ -73,9 +73,9 @@ public class ConstructedAttributeValidator extends TypeValidator {
             }
             // The type of the SubDataAttribute may be a ConstructedAttribute whose validator is not yet built
             if(( typeValidator == null ) && ( sda.getRefersToConstructedAttribute() != null )) {
-                console.verbose( NsdValidator.SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
-                                 "Validator for ConstructedAttribute ", constructedAttribute.getName(),
-                                 " needs validator for SubDataAttribute ", sda.getName(), " of type ", sda.getType(), " which is not yet built" );
+                console.info( NsdValidator.SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
+                              "Validator for ConstructedAttribute ", constructedAttribute.getName(),
+                              " needs validator for SubDataAttribute ", sda.getName(), " of type ", sda.getType(), " which is not yet built" );
                 typeValidator = TypeValidator.buildConstructedAttributeValidator( this.nsIdentification, sda.getRefersToConstructedAttribute(), console );
             }
             if( typeValidator != null ) {
@@ -104,8 +104,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
     public boolean validateAbstractDataAttribute( AbstractDataAttribute da, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
-                         "ConstructedAttributeValidator.validateAbstractDataAttribute( ", da.getName(), " ) in namespace \"", nsIdentification, "\"" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
+                       "ConstructedAttributeValidator.validateAbstractDataAttribute( ", da.getName(), " ) in namespace \"", nsIdentification, "\"" );
         boolean res = true;
         
         if( da.getRefersToDAType() != null ) {
@@ -118,8 +118,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
         if( validatedDAType.contains( daType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, daType.getLineNumber(),
-                         "ConstructedAttributeValidator.validateDAType( ", daType.getId(), " ) in namespace \"", nsIdentification, "\"" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, daType.getLineNumber(),
+                       "ConstructedAttributeValidator.validateDAType( ", daType.getId(), " ) in namespace \"", nsIdentification, "\"" );
         validatedDAType.add( daType.getId() );
         
         subDataAttributePresenceConditionValidator.resetModelData();

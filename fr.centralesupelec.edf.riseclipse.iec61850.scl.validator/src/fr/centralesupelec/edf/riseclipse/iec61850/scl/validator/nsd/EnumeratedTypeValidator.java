@@ -42,8 +42,8 @@ public class EnumeratedTypeValidator extends TypeValidator {
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.verbose( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
-                         "EnumeratedTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " ) in namespace ", "TODO" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
+                       "EnumeratedTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " ) in namespace ", "TODO" );
         
         if( ! "Enum".equals( ada.getBType() )) {
             diagnostics.add( new BasicDiagnostic(
