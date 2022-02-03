@@ -33,6 +33,8 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class FunctionalConstraintValidator {
 
+    private static final String FC_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/FunctionalConstraint";
+
     private static HashMap< FCEnum, FunctionalConstraintValidator > validators = new HashMap<>();
     
     public static FunctionalConstraintValidator get( @NonNull FCEnum fc ) {
@@ -54,7 +56,7 @@ public class FunctionalConstraintValidator {
 
     public void validateAbstractDataAttribute( DA da, DiagnosticChain diagnostics ) {
         if( ! code.equals( da.getFc() )) {
-            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(), 
+            RiseClipseMessage error = RiseClipseMessage.error( FC_VALIDATION_NSD_CATEGORY, da.getLineNumber(), 
                                       "functional contraint \"", da.getFc(), "\" of DA \"", da.getName(), "\" is wrong, it should be \"", code + "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,

@@ -36,6 +36,9 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class ConstructedAttributeValidator extends TypeValidator {
 
+    private static final String CA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/ConstructedAttribute";
+    private static final String CA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/ConstructedAttribute";
+
     public static void initialize() {
         SubDataAttributePresenceConditionValidator.initialize();
     }
@@ -56,7 +59,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
             else {
                 @NonNull
                 IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-                console.warning( NsdValidator.SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
+                console.warning( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
                                  ") Type not found for DataAttribute ", sda.getName() );
             }
         }
@@ -78,7 +81,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
     public boolean validateAbstractDataAttribute( AbstractDataAttribute da, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
+        console.debug( CA_VALIDATION_NSD_CATEGORY, da.getLineNumber(),
                        "ConstructedAttributeValidator.validateAbstractDataAttribute( ", da.getName(), " )" );
         boolean res = true;
         
@@ -92,7 +95,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
         if( validatedDAType.contains( daType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, daType.getLineNumber(),
+        console.debug( CA_VALIDATION_NSD_CATEGORY, daType.getLineNumber(),
                        "ConstructedAttributeValidator.validateDAType( ", daType.getId(), " )" );
         validatedDAType.add( daType.getId() );
         

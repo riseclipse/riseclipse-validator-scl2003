@@ -38,6 +38,9 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class LNClassValidator {
     
+    private static final String LNCLASS_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/LNClass";
+    private static final String LNCLASS_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/LNClass";
+
     private static HashMap< String, LNClassValidator > validators;
     
     public static void initialize() {
@@ -85,11 +88,11 @@ public class LNClassValidator {
             for( DataObject do_ : lnClass.getDataObject() ) {
                 if( CDCValidator.get( do_.getType() ) != null ) {
                     dataObjectValidatorMap.put( do_.getName(), CDCValidator.get( do_.getType() ));
-                    console.notice( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                    console.notice( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
                                     "CDC for DataObject ", do_.getName(), " found with type ", do_.getType() );
                 }
                 else {
-                    console.warning( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                    console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
                                      "CDC not found for DataObject ", do_.getName() );
                 }
             }
@@ -104,7 +107,7 @@ public class LNClassValidator {
         if( validatedLNodeType.contains( lNodeType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+        console.debug( LNCLASS_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
                        "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " )" );
         validatedLNodeType.add( lNodeType.getId() );
 
@@ -143,7 +146,7 @@ public class LNClassValidator {
                 }
             }
             else {
-                console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                console.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                                  "DOType for DO " + do_.getName() + " not found" );
             }
         }
