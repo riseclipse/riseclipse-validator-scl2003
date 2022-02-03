@@ -48,7 +48,7 @@ public class NsdEObjectValidator implements EValidator {
         this.nsdResourceSet = nsdResourceSet;
         
         // To avoid building several times the validators, we process the ordered list of NsIdentification (root first)
-        for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList() ) {
+        for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList( console )) {
             console.info( NsdValidator.SETUP_NSD_CATEGORY, 0, "Getting NSD rules for namespace \"", nsIdentification, "\"" );
             // Order is important !
             TypeValidator.buildBasicTypeValidators(
@@ -165,7 +165,7 @@ public class NsdEObjectValidator implements EValidator {
                        "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), " in namespace ", namespace );
 
         NsIdentification id = new NsIdentification( namespace );
-        if( nsdResourceSet.getRelaxedNS( id ) == null ) {
+        if( nsdResourceSet.getNS( id ) == null ) {
             RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
                       "Cannot validate LNodeType ", lNodeType.getId(), " in namespace \"", namespace, "\" because it is unknown" );
             diagnostics.add( new BasicDiagnostic(

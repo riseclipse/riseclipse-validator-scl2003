@@ -495,11 +495,12 @@ public class RiseClipseValidatorSCL {
 
     @SuppressWarnings( "unused" )
     private static void doHiddenDoor_1() {
+            
+        prepare( false );
+    
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.setLevel( Severity.INFO );
         console.setFormatString( INFO_FORMAT_STRING );
-        
-        prepare( false );
 
         Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION, true );
         pc.forEach( c -> console.info( VALIDATOR_SCL_CATEGORY, 0, "PresenceCondition ", c.getName() ));
@@ -512,17 +513,20 @@ public class RiseClipseValidatorSCL {
         
 //    @SuppressWarnings( "unused" )
     private static void doHiddenDoor() {
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.setLevel( Severity.INFO );
-        console.setFormatString( INFO_FORMAT_STRING );
             
         prepare( false );
-            
+    
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.setFormatString( INFO_FORMAT_STRING );
+    
         for( int i = 0; i < sclFiles.size(); ++i ) {
+            console.setLevel( Severity.WARNING );
             sclLoader.reset();
             Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
             sclLoader.finalizeLoad( console );
             if( resource.getContents().size() == 0 ) continue;
+            console.setLevel( Severity.INFO );
+
             SCL scl = ( SCL ) resource.getContents().get( 0 );
             scl
             .getIED()
@@ -572,16 +576,18 @@ public class RiseClipseValidatorSCL {
 
     @SuppressWarnings( "unused" )
     private static void doHiddenDoor_3() {
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.setLevel( Severity.INFO );
-        console.setFormatString( INFO_FORMAT_STRING );
-            
+        
         prepare( false );
-            
+
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.setFormatString( INFO_FORMAT_STRING );
+
         for( int i = 0; i < sclFiles.size(); ++i ) {
+            console.setLevel( Severity.WARNING );
             sclLoader.reset();
             Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
             sclLoader.finalizeLoad( console );
+            console.setLevel( Severity.INFO );
             SCL scl = ( SCL ) resource.getContents().get( 0 );
             
             for( TreeIterator< ? extends EObject > t = EcoreUtil.getAllContents( Collections.singleton( scl ) ); t.hasNext(); ) {
@@ -596,12 +602,13 @@ public class RiseClipseValidatorSCL {
     
     @SuppressWarnings( "unused" )
     private static void doHiddenDoor_4() {
+            
+        prepare( false );
+
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.setLevel( Severity.INFO );
         console.setFormatString( INFO_FORMAT_STRING );
-            
-        prepare( false );
-            
+
         for( int i = 0; i < nsdValidator.getNsdLoader().getResourceSet().getResources().size(); ++i ) {
             Resource resource = nsdValidator.getNsdLoader().getResourceSet().getResources().get( i );
             DocumentRoot root = (DocumentRoot) resource.getContents().get( 0 );
