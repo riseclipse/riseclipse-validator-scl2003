@@ -207,7 +207,8 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tA preliminary XML validation is done against the given XML schema file." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + FORMAT_OPTION + " <format-string>" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tmessages are outputed with a java.util.Formatter using the given format string," );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\t1$ is severity, 2$ is category, 3$ is line number, 4$ is message, 5$ is filename, 6$ is color start, 7$ is color end," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\t1$ is severity, 2$ is category, 3$ is line number, 4$ is message, 5$ is filename," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\t6$ is color start, 7$ is color end (these last two are only used if the " + USE_COLOR_OPTION + " option is active)," );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tdefault is '%6$s%1$-7s%7$s: [%2$s] %4$s (%5$s:%3$d)'." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_COLOR_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tcolors (using ANSI escape sequences) are used when displaying messages." );
