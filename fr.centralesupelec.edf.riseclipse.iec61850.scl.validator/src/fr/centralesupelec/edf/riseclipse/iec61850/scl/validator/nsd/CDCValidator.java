@@ -80,7 +80,15 @@ public class CDCValidator {
     private HashMap< String, CDCValidator > subDataObjectValidatorMap = new HashMap<>();
     private HashMap< String, FunctionalConstraintValidator > dataAttributeFunctionalConstraintValidatorMap = new HashMap<>();
 
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
     private CDCValidator( CDC cdc ) {
+        name = cdc.getName();
+        
         dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( cdc );
         subDataObjectPresenceConditionValidator = SubDataObjectPresenceConditionValidator.get( cdc );
         
