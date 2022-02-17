@@ -45,6 +45,21 @@
     <tag>HEAD</tag>
   </scm>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </distributionManagement>  
+
   <repositories>
     <repository>
       <id>p2_to_m2</id>
