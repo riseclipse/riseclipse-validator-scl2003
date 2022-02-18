@@ -184,7 +184,7 @@ public class LNClassValidator {
                 if( cdcValidator != null ) {
                     if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
                         console.error( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
-                                       "DOType ", " at line ", do_.getRefersToDOType().getLineNumber(),
+                                       "DOType id = ", do_.getRefersToDOType().getId(), " at line ", do_.getRefersToDOType().getLineNumber(),
                                        " used by DO ", do_.getName(), " has wrong CDC ", do_.getRefersToDOType().getCdc(),
                                        ", it should be ", cdcValidator.getName(), " in namespace \"", nsIdentification + "\"" );
                     }
