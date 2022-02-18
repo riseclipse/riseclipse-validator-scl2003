@@ -166,14 +166,14 @@ public class NsdEObjectValidator implements EValidator {
 
         NsIdentification id = new NsIdentification( namespace );
         if( nsdResourceSet.getNS( id ) == null ) {
-            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                      "Cannot validate LNodeType ", lNodeType.getId(), " in namespace \"", namespace, "\" because it is unknown" );
+            RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
+                      "Cannot validate LNodeType ", lNodeType.getId(), " in namespace \"", namespace, "\" because this namespace is unknown" );
             diagnostics.add( new BasicDiagnostic(
-                    Diagnostic.ERROR,
+                    Diagnostic.WARNING,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    error.getMessage(),
-                    new Object[] { lNodeType, error } ));
+                    warning.getMessage(),
+                    new Object[] { lNodeType, warning } ));
             return false;
         }
         // Check that LNodeType has a known LNClass in the given namespace
