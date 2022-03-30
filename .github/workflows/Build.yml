@@ -19,11 +19,12 @@
 
 name: Build
 
+# This workflow is triggered on every push to verify that the project builds correctly
+
 on: 
   push:
-  pull_request: [opened, reoponed]
-
-# This workflow is triggered on every push to verify that the project builds correctly
+  pull_request:
+    types: [opened, reopened]
 
 jobs:
   call-build-workflow:
