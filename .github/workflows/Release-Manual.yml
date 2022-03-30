@@ -1,0 +1,52 @@
+name: Release manual
+
+# This workflow calls every others workflow in a specific order to release a new version
+# It automatically cancels the release if any of the workflow fails
+
+on: workflow_dispatch  # Manual trigger only for master/main
+
+jobs:
+  build-test:
+    name: Build & Test
+    uses: ./.github/workflows/Build-Test.yml
+    secrets:
+      RISECLIPSE_PGP_KEY_PRIVATE:  ${{ secrets.RISECLIPSE_PGP_KEY_PRIVATE }}
+      RISECLIPSE_PGP_KEY_PASSWORD: ${{ secrets.RISECLIPSE_PGP_KEY_PASSWORD }}
+      RISECLIPSE_OSSRH_USERNAME:   ${{ secrets.RISECLIPSE_OSSRH_USERNAME }}
+      RISECLIPSE_OSSRH_PASSWORD:   ${{ secrets.RISECLIPSE_OSSRH_PASSWORD }}
+  
+  release-mvn:
+    name: Deploy OSSRH & MVN Central
+    needs: [build-test]
+    uses: ./.github/workflows/Release-Maven.yml
+    secrets:
+      RISECLIPSE_PGP_KEY_PRIVATE:  ${{ secrets.RISECLIPSE_PGP_KEY_PRIVATE }}
+      RISECLIPSE_PGP_KEY_PASSWORD: ${{ secrets.RISECLIPSE_PGP_KEY_PASSWORD }}
+      RISECLIPSE_OSSRH_USERNAME:   ${{ secrets.RISECLIPSE_OSSRH_USERNAME }}
+      RISECLIPSE_OSSRH_PASSWORD:   ${{ secrets.RISECLIPSE_OSSRH_PASSWORD }}
+
+  release-github:
+    name: Release on GitHub
+    needs: [build-test]
+    uses: ./.github/workflows/Release-GitHub.yml
+
+  release-github-io:
+    name: Release on RiseClipse.io
+    needs: [build-test]
+    uses: ./.github/workflows/Release-GitHub-IO.yml
+    secrets:
+      io_token: ${{ secrets.IO_TOKEN }}
+
+  release-dockerhub:
+    name: Release on DockerHub
+    needs: [build-test]
+    uses: ./.github/workflows/Release-DockerHub.yml
+    secrets:
+      docker_user: ${{ secrets.DOCKER_USERNAME }}
+      docker_pswd: ${{ secrets.DOCKER_PASSWORD }}
+
+  rollback-if-failure:
+    name: Rollback if failed
+    if: always() && (needs.build-test.result == 'failure' || needs.release-mvn.result == 'failure' || needs.release-github.result == 'failure' || needs.release-github-io.result == 'failure'  || needs.release-dockerhub.result == 'failure')
+    needs: [build-test, release-mvn, release-github, release-github-io, release-dockerhub]
+    uses: ./.github/workflows/Release-Failure-Rollback.yml

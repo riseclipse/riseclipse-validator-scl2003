@@ -1,0 +1,67 @@
+name: Release on GitHub IO site
+
+# This CD workflow releases packages to GitHub IO website
+# It only runs on MASTER branch AFTER Build and Test Workflow is completed if it was triggered by Release Workflow
+
+on: 
+  workflow_call:
+    secrets:
+      io_token:
+        required: true
+
+jobs:
+  publish_github_io:
+    runs-on: ubuntu-latest
+
+    steps: 
+    # Get artefacts and version
+    - name: Download artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: Build-Test.yml
+        workflow_conclusion: success
+        path: ${{ github.workspace }}
+
+    - name: Checkout riseclipse github.io
+      uses: actions/checkout@v2
+      with:
+        path: riseclipse.github.io
+        repository: RiseClipse/riseclipse.github.io
+        ref: dev-ci # A CHANGER POUR MASTER UNE FOIS VALIDE
+        token: ${{ secrets.io_token }}
+
+    - name: Checkout ${{ github.event.repository.name }}
+      uses: actions/checkout@v2
+      with:
+        path: ${{ github.event.repository.name }}
+        ref: ${{ github.ref_name }}
+
+    - name: Extract Maven project version
+      run: |
+        cd ${{ github.event.repository.name }}
+        echo ::set-output name=project_version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+      id: get_version
+
+    # Update templates on GitHub.io
+    - name: Update downloads file with newer versions
+      run: |
+        cp ${{ github.workspace }}/RiseClipseValidatorSCL-${{ steps.get_version.outputs.project_version }}.jar/RiseClipseValidatorSCL-${{ steps.get_version.outputs.project_version }}.jar ${{ github.workspace }}/riseclipse.github.io/downloads/RiseClipseValidatorSCL-${{ steps.get_version.outputs.project_version }}.jar
+        ls ${{ github.workspace }}
+
+    - name: Apply variables to template
+      run: |
+        export RiseClipseCLI="RiseClipseValidatorSCL-${{ steps.get_version.outputs.project_version }}.jar"
+        cd ${{ github.workspace }}/riseclipse.github.io
+        rm downloads.md
+        cp templates/downloads-tp.md  downloads.md
+        envsubst < downloads.md
+
+    - name: Commit and push changes made to riseclipse.github.io
+      run: |
+        cd riseclipse.github.io
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions"
+        git add --all
+        git commit -m "[AUTO] Updating available versions" -a
+        git push

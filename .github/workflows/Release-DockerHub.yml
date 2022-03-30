@@ -1,0 +1,70 @@
+name: Release DockerHub
+
+# This CD workflow releases packages to Docker Hub
+# It only runs on MASTER branch AFTER Build and Test Workflow is completed if it was triggered by Release Workflow
+
+on: 
+  workflow_call:
+    secrets:
+      docker_user:
+        required: true
+      docker_pswd:
+        required: true
+
+jobs:
+  publish_dockerhub:
+    runs-on: ubuntu-latest
+
+    steps: 
+    # Get artefacts and version
+    - name: Download artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: Build-Test.yml
+        workflow_conclusion: success
+        path: ${{ github.workspace }}
+
+    - name: Checkout ${{ github.event.repository.name }}
+      uses: actions/checkout@v2
+      with:
+        path: ${{ github.event.repository.name }}
+        ref: ${{ github.ref_name }}
+
+    - name: Extract Maven project version
+      run: |
+        cd ${{ github.event.repository.name }}
+        echo ::set-output name=project_version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+      id: get_version
+
+    # Login to Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.docker_user }}
+        password: ${{ secrets.docker_pswd }}
+    
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: alsoares59/riseclipse
+
+    # Get Dockerfiles from checkout
+    - name: Checkout riseclipse-validator-scl2003
+      uses: actions/checkout@v2
+      with:
+        path: riseclipse-validator-scl2003
+        repository: RiseClipse/riseclipse-validator-scl2003
+        ref: ${{ github.ref_name }}
+
+    # Build and push images for each validator
+    - name: Build and push Docker image Validator SCL CLI
+      uses: docker/build-push-action@v2
+      with:
+        context: ${{ github.workspace }}
+        file: ${{ github.workspace }}/riseclipse-validator-scl2003/Dockerfile
+        push: true
+        tags: alsoares59/riseclipse:validator-scl-${{ steps.get_version.outputs.project_version }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: GH_WS=${{ github.workspace }}
