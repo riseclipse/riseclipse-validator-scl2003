@@ -19,11 +19,13 @@
 
 name: Build
 
-on: push
+on: 
+  push:
+  pull_request: [opened, reoponed]
 
-# This workflow is triggered on every push to build and verify that the project builds correctly
+# This workflow is triggered on every push to verify that the project builds correctly
 
 jobs:
   call-build-workflow:
     name: Build Project
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Build-SCL-Validator.yml@workflows/build
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Build-SCL-Validator.yml@workflows/build # CHANGE REFERENCE TO MASTER ONCE MERGED
