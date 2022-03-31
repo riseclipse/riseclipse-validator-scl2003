@@ -17,9 +17,9 @@
 # **      https://riseclipse.github.io
 # *************************************************************************
 
-name: Build
+name: Verify
 
-# This workflow is triggered on every push to verify that the project builds correctly
+# This workflow is triggered on every push to verify that the project builds correctly and runs Sonar + Unit tests
 
 on: 
   push:
@@ -28,7 +28,7 @@ on:
 
 jobs:
   call-build-workflow:
-    name: Build Project
+    name: Verify Project
     uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Verify-Tools.yml@workflows/build # CHANGE REFERENCE TO MASTER ONCE MERGED
     with:
       jarPath1: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL.jar
