@@ -29,7 +29,7 @@ on:
 jobs:
   call-build-workflow:
     name: Build Project
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Build-Tools.yml@workflows/build # CHANGE REFERENCE TO MASTER ONCE MERGED
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Verify-Tools.yml@workflows/build # CHANGE REFERENCE TO MASTER ONCE MERGED
     with:
       jarPath1: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL.jar
       jarPath2: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui/target/RiseClipseValidatorSCLApplication.jar
