@@ -102,7 +102,7 @@ jobs:
           gpg-private-key: ${{ secrets.RISECLIPSE_PGP_KEY_PRIVATE }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Build with Maven
+      - name: Run analysis with Sonarqube
         run: |
           cd ${{ github.event.repository.name }}/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
           mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=riseclipse\
