@@ -19,6 +19,8 @@ on:
         required: true
       RISECLIPSE_OSSRH_PASSWORD:
         required: true
+      SONAR_TOKEN:
+        required: true
 
 jobs:
   build:
@@ -76,6 +78,36 @@ jobs:
       with:
         name: RiseClipseValidatorSCLApplication-${{ steps.get_version.outputs.project_version }}.jar
         path: ${{ github.workspace }}/RiseClipseValidatorSCLApplication-${{ steps.get_version.outputs.project_version }}.jar
+
+  quality:
+    name: Analyse code with SonarqubeProject
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ${{ github.event.repository.name }}
+        uses: actions/checkout@v2
+        with:
+          path: ${{ github.event.repository.name }}
+          ref: ${{ github.ref_name }}
+
+      - name: Setup Environment
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'maven'
+          server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.RISECLIPSE_PGP_KEY_PRIVATE }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Build with Maven
+        run: |
+          cd ${{ github.event.repository.name }}/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
+          mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=riseclipse\
+          -Dsonar.host.url=http://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}\
+          -Dsonar.projectKey=riseclipse_riseclipse-validator-scl2003
 
   test:
     runs-on: ubuntu-latest
