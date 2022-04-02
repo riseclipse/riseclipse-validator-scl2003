@@ -30,7 +30,7 @@ on:
 jobs:
   call-prepare-next-dev-workflow:
     name: Prepare next development version
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-prepare-next-dev.yml@prepare-next-dev # REF TO BE CHANGED
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Prepare-Next-Dev-Tools.yml@prepare-next-dev # REF TO BE CHANGED
     with:
       jarPath1: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL.jar
       jarPath2: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui/target/RiseClipseValidatorSCLApplication.jar
