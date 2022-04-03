@@ -25,7 +25,6 @@ on:
   push:
     branches:
       - master
-      - prepare-next-dev # TEMPORARLY FOR TESTING
 
 jobs:
   call-prepare-next-dev-workflow:
