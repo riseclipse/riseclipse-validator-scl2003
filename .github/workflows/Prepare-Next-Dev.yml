@@ -35,3 +35,4 @@ jobs:
       jarPath1: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL.jar
       jarPath2: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui/target/RiseClipseValidatorSCLApplication.jar
       toolVersionPath: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/src/fr/centralesupelec/edf/riseclipse/iec61850/scl/validator/RiseClipseValidatorSCL.java
+      
