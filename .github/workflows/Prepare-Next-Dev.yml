@@ -19,12 +19,9 @@
 
 name: Prepare next development version
 
-# This workflow is triggered whenever there is a push on master (which only happens when merging because the branch is protected)
+# This workflow is triggered manually to release current version and prepare for next one
 
-on: 
-  push:
-    branches:
-      - master
+on: workflow_dispatch
 
 jobs:
   call-prepare-next-dev-workflow:
