@@ -28,4 +28,4 @@ on: push # TEMPORARY
 jobs:
   call-validate-release-workflow:
     name: Validate Release
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Verify-Tools.yml@workflows/validate-release
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Validate-Release.yml@workflows/validate-release
