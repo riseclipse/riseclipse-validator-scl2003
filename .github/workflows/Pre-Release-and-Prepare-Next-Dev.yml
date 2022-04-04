@@ -17,9 +17,10 @@
 # **      https://riseclipse.github.io
 # *************************************************************************
 
-name: Prepare next development version
+name: Pre-release and Prepare next development version
 
 # This workflow is triggered manually to release current version and prepare for next one
+# It also creates a Pre-Release on GitHub
 
 on: workflow_dispatch
 
@@ -31,3 +32,10 @@ jobs:
       jarPath1: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL.jar
       jarPath2: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui/target/RiseClipseValidatorSCLApplication.jar
       toolSourcePath: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/src/fr/centralesupelec/edf/riseclipse/iec61850/scl/validator/RiseClipseValidatorSCL.java
+
+  call-create-pre-release-workflow:
+    needs: [call-prepare-next-dev-workflow]
+    name: Create Pre-Release on GitHub
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Pre-Release-GH.yml@master
+    with:
+      release_version: ${{ needs.call-prepare-next-dev-workflow.outputs.release_version }}
