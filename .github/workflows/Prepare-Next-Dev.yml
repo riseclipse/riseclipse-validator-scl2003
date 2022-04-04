@@ -39,5 +39,4 @@ jobs:
     name: Create Pre-Release on GitHub
     uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Pre-Release-GH.yml@workflows/gh-pre-release
     with:
-      isTool: true
       release_version: ${{ needs.call-prepare-next-dev-workflow.outputs.release_version }}
