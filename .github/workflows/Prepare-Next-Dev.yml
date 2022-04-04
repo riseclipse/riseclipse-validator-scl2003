@@ -41,3 +41,4 @@ jobs:
     with:
       isTool: true
       release_version: ${{ needs.call-prepare-next-dev-workflow.outputs.release_version }}
+
