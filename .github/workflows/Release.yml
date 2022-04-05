@@ -19,13 +19,12 @@
 
 name: Release on GitHub
 
-# This CD workflow switch from pre-release to release on GitHub
+# This CD workflow switches pre-release to release on GitHub
 # It aslo uploads artifacts without the rc
 
-# on: workflow_call
-on: push # TEMPORARY
+on: workflow_call
 
 jobs:
   call-validate-release-workflow:
     name: Validate Release
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Validate-Release.yml@workflows/validate-release
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Validate-Release.yml@master
