@@ -21,10 +21,7 @@ name: Verify
 
 # This workflow is triggered on every push to verify that the project builds correctly and runs Sonar + Unit tests
 
-on: 
-  push:
-  pull_request:
-    types: [opened, reopened]
+on: push
 
 jobs:
   call-verify-workflow:
