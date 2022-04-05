@@ -22,9 +22,13 @@ name: Release on GitHub
 # This CD workflow switches pre-release to release on GitHub
 # It aslo uploads artifacts without the rc
 
-on: workflow_call
+# on: workflow_dispatch
+on: push # TEMPORARY
 
 jobs:
-  call-validate-release-workflow:
-    name: Validate Release
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Validate-Release.yml@master
+  call-release-dockerhub-workflow:
+    name: Release on DockerHub
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-DockerHub.yml@workflows/release-dockerhub
+    secrets:
+      DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
