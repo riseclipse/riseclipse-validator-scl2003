@@ -38,3 +38,4 @@ jobs:
       DOCKER_USER: ${{ secrets.RISECLIPSE_DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.RISECLIPSE_DOCKER_PASSWORD }}
       DOCKER_REPOSITORY: riseclipse-validator-scl-test
+
