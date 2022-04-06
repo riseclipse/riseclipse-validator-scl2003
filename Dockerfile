@@ -1,13 +1,8 @@
-FROM openjdk:11.0.13-jre-slim
+FROM adoptopenjdk:11.0.11_9-jre-hotspot
 
-# Download artifact places jars in nested folder with the same name for some reason
-COPY RiseClipseValidatorSCL-*.jar/RiseClipseValidatorSCL-*.jar /home
+# "Download artifact" action creates subdirectory named from the artifact's name
+COPY artifacts/RiseClipseValidatorSCL-*.jar/RiseClipseValidatorSCL-*.jar /usr/riseclipse/bin/RiseClipseValidatorSCL.jar
 
-# Create environment variable
-RUN SCLValidator="/home/RiseClipseValidatorSCL-*.jar"
+WORKDIR /usr/riseclipse
 
-# Execute CLI
-ENTRYPOINT java -jar ./home/RiseClipseValidatorSCL-*.jar
-
-#Default command (version)
-CMD -version
+CMD java -jar bin/RiseClipseValidatorSCL.jar data/*

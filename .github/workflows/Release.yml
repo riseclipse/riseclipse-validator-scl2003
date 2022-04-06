@@ -17,18 +17,22 @@
 # **      https://riseclipse.github.io
 # *************************************************************************
 
-name: Release on GitHub
+name: Release on GitHub and DockerHub
 
-# This CD workflow switches pre-release to release on GitHub
-# It aslo uploads artifacts without the rc
+# This CD workflow switches pre-release to release on GitHub (without rc flag)
+# It also builds and push a docker image of the RiseClipse Validator SCL CLI tool
 
-# on: workflow_dispatch
-on: push # TEMPORARY
+on: workflow_dispatch
 
 jobs:
+  call-validate-release-workflow:
+    name: Validate Release
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Validate-Release.yml@master
+
   call-release-dockerhub-workflow:
     name: Release on DockerHub
     uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-DockerHub.yml@workflows/release-dockerhub
     secrets:
-      DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_USER: ${{ secrets.RISECLIPSE_DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.RISECLIPSE_DOCKER_PASSWORD }}
+      DOCKER_REPOSITORY: riseclipse-validator-scl-test
