@@ -22,8 +22,7 @@ name: Release on GitHub and DockerHub
 # This CD workflow switches pre-release to release on GitHub (without rc flag)
 # It also builds and push a docker image of the RiseClipse Validator SCL CLI tool
 
-# on: workflow_dispatch
-on: push # TEMPORARY
+on: workflow_dispatch
 
 jobs:
   call-validate-release-workflow:
@@ -40,4 +39,3 @@ jobs:
     secrets:
       DOCKER_USER: ${{ secrets.RISECLIPSE_DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.RISECLIPSE_DOCKER_ACCESS_TOKEN }}
-
