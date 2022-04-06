@@ -29,7 +29,7 @@ on:
     types: [closed]
     branches:    
       - 'do_release'
-  push: temporarly
+  push: # TEMPORARY
 
 jobs:
   call-validate-release-workflow:
