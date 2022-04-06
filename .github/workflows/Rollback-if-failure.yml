@@ -29,10 +29,9 @@ on:
     types: [closed]
     branches:    
       - 'do_release'
-  push: # TEMPORARY 
 
 jobs:
-  call-validate-release-workflow:
+  call-rollback-if-failure-workflow:
     if: github.event.pull_request.merged == false
-    name: Validate Release
+    name: Rollback if failure
     uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Rollback-If-Failure.yml@workflows/rollback-if-failure
