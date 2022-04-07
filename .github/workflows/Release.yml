@@ -28,3 +28,12 @@ jobs:
   call-validate-release-workflow:
     name: Validate Release
     uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Validate-Release.yml@master
+
+  call-release-github-io-workflow:
+    name: Release on GitHub.io
+    needs: [call-validate-release-workflow]
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-GitHub-IO.yml@workflows/release-gh-io
+    with:
+      release_version: ${{ needs.call-validate-release-workflow.outputs.release_version }}
+    secrets: ${{ secrets.github_io_token }}
+  
