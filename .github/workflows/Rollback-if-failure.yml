@@ -20,7 +20,7 @@
 name: Rollback if failure
 
 # This CD workflow rollbacks the Pre-Release and Prepare next development version
-# When a PR is closed (based on do_release) or if the prepare-next-dev workflow fails
+# When a PR is closed (based on do_release and targeting master) or if the prepare-next-dev workflow fails
 # Proceeds to delete do_release branch, delete the pre-release and delete the tag
 
 on: 
@@ -28,10 +28,10 @@ on:
   pull_request:
     types: [closed]
     branches:    
-      - 'do_release'
+      - master
 
 jobs:
   call-rollback-if-failure-workflow:
-    if: github.event.pull_request.merged == false
+    if: github.event.pull_request.merged == false && startsWith(github.head_ref, 'do_release')
     name: Rollback if failure
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Rollback-If-Failure.yml@workflows/rollback-if-failure
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Rollback-If-Failure.yml@master
