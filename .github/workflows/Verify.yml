@@ -41,19 +41,19 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Checkout riseclipse-validator-scl2003-test
-        uses: actions/checkout@v3
-        with:
-          repository: riseclipse/riseclipse-validator-scl2003-test
-          path: riseclipse-validator-scl2003-test
-
       - name: Download SCL validator jar
         uses: actions/download-artifact@v3
         with:
           name: ${{ needs.call-verify-workflow.outputs.artifact1Name }}
-          path: riseclipse-validator-scl2003-test/SCLValidator.jar
+          path: ${{ github.workspace }}/SCLValidator.jar
+
+      - name: Checkout riseclipse-validator-scl2003-test
+        uses: actions/checkout@v3
+        with:
+          repository: riseclipse/riseclipse-validator-scl2003-test
+          path: ${{ github.workspace }}/riseclipse-validator-scl2003-test
 
       - name: Run SCL validator snapshot tests
         run: |
-          cd riseclipse-validator-scl2003-test
-          python run_tests.py --jar-path SCLValidator.jar
+          cd ${{ github.workspace }}/riseclipse-validator-scl2003-test
+          python run_tests.py --jar-path ${{ github.workspace }}/SCLValidator.jar
