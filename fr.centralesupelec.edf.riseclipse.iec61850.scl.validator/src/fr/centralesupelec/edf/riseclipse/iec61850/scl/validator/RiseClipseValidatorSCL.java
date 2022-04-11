@@ -64,6 +64,8 @@ import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
 public class RiseClipseValidatorSCL {
     
+    private static final String TOOL_VERSION = "1.1.0 a25 (20 january 2022)";
+
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
     private static final String SNSD_FILE_EXTENSION = ".snsd";
@@ -581,7 +583,7 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0, "Web site:" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "    https://riseclipse.github.io/" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "RiseClipseValidatorSCL version: 1.1.0 a25 (20 january 2022)" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "RiseClipseValidatorSCL version: " + TOOL_VERSION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
 
         console.setFormatString( oldFormat );
