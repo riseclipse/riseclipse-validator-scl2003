@@ -1,4 +1,8 @@
 
+## 1.2.0 (2022/04/11)
+- setup workflows on GitHub for automatic build and deployment
+- use RiseClipse components on Maven Central to build validators
+
 ## 1.1.0a24 (2022/01/20)
 - use JavaSE-11 and lastest Eclipse components
 - correct some deprecated calls
