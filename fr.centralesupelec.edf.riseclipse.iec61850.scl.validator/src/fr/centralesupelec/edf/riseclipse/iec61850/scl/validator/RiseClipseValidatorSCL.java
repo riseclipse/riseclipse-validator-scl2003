@@ -516,7 +516,7 @@ public class RiseClipseValidatorSCL {
     public static void displayLegal() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
-        console.info( "Copyright (c) 2016-2021 CentraleSupélec & EDF." );
+        console.info( "Copyright (c) 2016-2022 CentraleSupélec & EDF." );
         console.info( "All rights reserved. This program and the accompanying materials" );
         console.info( "are made available under the terms of the Eclipse Public License v2.0" );
         console.info( "which accompanies this distribution, and is available at" );
