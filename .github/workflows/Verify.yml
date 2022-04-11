@@ -32,6 +32,7 @@ jobs:
       jarPath2: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui/target/RiseClipseValidatorSCLApplication.jar
 
   snapshot-tests:
+    name: SCL Validator Snapshot Tests
     runs-on: ubuntu-latest
     needs: call-verify-workflow
 
