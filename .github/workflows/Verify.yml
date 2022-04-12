@@ -28,8 +28,8 @@ jobs:
     name: Verify Project
     uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Verify-Tools.yml@snapshot-tests-workflow
     with:
-      jarPath1: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL.jar
-      jarPath2: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui/target/RiseClipseValidatorSCLApplication.jar
+      jar_path_1: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL.jar
+      jar_path_2: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui/target/RiseClipseValidatorSCLApplication.jar
 
   snapshot-tests:
     name: SCL Validator Snapshot Tests
@@ -45,7 +45,7 @@ jobs:
       - name: Download SCL validator jar
         uses: actions/download-artifact@v3
         with:
-          name: ${{ needs.call-verify-workflow.outputs.artifact1Name }}
+          name: ${{ needs.call-verify-workflow.outputs.artifact_1_name }}
           path: scl-validator
 
       - name: Checkout riseclipse-validator-scl2003-test
@@ -57,4 +57,4 @@ jobs:
       - name: Run SCL validator snapshot tests
         run: |
           cd riseclipse-validator-scl2003-test
-          python run_tests.py --jar-path ${{ github.workspace }}/scl-validator/${{ needs.call-verify-workflow.outputs.artifact1Name }}
+          python run_tests.py --jar-path ${{ github.workspace }}/scl-validator/${{ needs.call-verify-workflow.outputs.artifact_1_name }}
