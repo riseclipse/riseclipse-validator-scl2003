@@ -26,7 +26,7 @@ on: push
 jobs:
   call-verify-workflow:
     name: Verify Project
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Verify-Tools.yml@snapshot-tests-workflow
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Verify-Tools.yml@master
     with:
       jar_path_1: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL.jar
       jar_path_2: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui/target/RiseClipseValidatorSCLApplication.jar
