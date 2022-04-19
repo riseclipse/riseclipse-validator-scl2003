@@ -138,6 +138,13 @@ public class LNClassValidator {
                 }
                 CDCValidator validator = dataObjectValidatorMap.get( names[0] );
                 if( validator != null ) {
+                    if( ! validator.getName().equals( doType.getCdc() )) {
+                        console.error( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                                "The type of DO ", do_.getName(), " (DOType defined at line ",
+                                doType.getLineNumber(), ") has an incorrect cdc ", doType.getCdc(),
+                                ", it should be ", validator.getName() );
+                        continue;
+                    }
                     res = validator.validateDOType( doType, diagnostics ) && res;
                 }
                 else {
