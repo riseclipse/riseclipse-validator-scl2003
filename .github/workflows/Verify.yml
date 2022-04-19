@@ -17,7 +17,7 @@
 # **      https://riseclipse.github.io
 # *************************************************************************
 
-name: Verify
+name: Build
 
 # This workflow is triggered on every push to verify that the project builds correctly and runs Sonar + Unit tests
 
@@ -30,6 +30,8 @@ jobs:
     with:
       jar_path_1: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL.jar
       jar_path_2: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui/target/RiseClipseValidatorSCLApplication.jar
+    secrets:
+      SONAR_TOKEN: ${{ secrets.RISECLIPSE_SONAR_TOKEN }}
 
   snapshot-tests:
     name: SCL Validator Snapshot Tests
