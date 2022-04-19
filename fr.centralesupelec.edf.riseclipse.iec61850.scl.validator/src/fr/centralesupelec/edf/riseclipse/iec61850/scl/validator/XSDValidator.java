@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2021 CentraleSupélec & EDF.
+**  Copyright (c) 2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -46,6 +46,8 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class XSDValidator {
 
+    private static final String VALIDATION_XSD_CATEGORY = "XSD/Validation";
+    
     private static Validator xsdValidator;
 
     public static void prepare( String xsdFile ) {
@@ -61,7 +63,7 @@ public class XSDValidator {
             xsdValidator = schema.newValidator();
         }
         catch( SAXException e ) {
-            console.error( "[XSD validation] SAXException: " + e.getMessage() );
+            console.error( VALIDATION_XSD_CATEGORY, 0, "SAXException: ", e.getMessage() );
             return;
         }
         
@@ -69,21 +71,21 @@ public class XSDValidator {
 
             @Override
             public void warning( SAXParseException exception ) {
-                console.warning( "[XSD validation] (line: " + exception.getLineNumber() + ", column: "
-                        + exception.getColumnNumber() + "): " + exception.getMessage() );
+                console.warning( VALIDATION_XSD_CATEGORY, exception.getLineNumber(), exception.getMessage(),
+                                 "(column: ", exception.getColumnNumber(), ")" );
             }
 
             @Override
             public void error( SAXParseException exception ) {
-                console.error( "[XSD validation] (line: " + exception.getLineNumber() + ", column: "
-                        + exception.getColumnNumber() + "): " + exception.getMessage() );
+                console.error( VALIDATION_XSD_CATEGORY, exception.getLineNumber(), exception.getMessage(),
+                               "(column: ", exception.getColumnNumber(), ")" );
             }
 
             @Override
             public void fatalError( SAXParseException exception ) {
-                console.error( "[XSD validation] (line: " + exception.getLineNumber() + ", column: "
-                        + exception.getColumnNumber() + "): " + exception.getMessage() );
-                console.error( "[XSD validation] fatal error for schema validation, stopping" );
+                console.error( VALIDATION_XSD_CATEGORY, exception.getLineNumber(), exception.getMessage(),
+                               "(column: ", exception.getColumnNumber(), ")" );
+                console.error( VALIDATION_XSD_CATEGORY, 0, "fatal error for schema validation, stopping" );
                 return;
             }
         } );
@@ -104,10 +106,10 @@ public class XSDValidator {
             reader.close();        
         }
         catch( IOException e ) {
-            console.error( "[XSD validation] IOException: " + e.getMessage() );
+            console.error( VALIDATION_XSD_CATEGORY, 0, "IOException: " + e.getMessage() );
         }
         catch( SAXException e ) {
-            console.error( "[XSD validation] SAXException: " + e.getMessage() );
+            console.error( VALIDATION_XSD_CATEGORY, 0, "SAXException: " + e.getMessage() );
         }
     }
     

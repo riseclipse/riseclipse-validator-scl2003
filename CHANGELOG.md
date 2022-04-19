@@ -1,4 +1,9 @@
 
+## 1.2.1 (2022/04/19)
+- the output of the tool can be customized with a command line option
+- add sonar analysis of code
+- trigger functional tests
+
 ## 1.2.0 (2022/04/11)
 - setup workflows on GitHub for automatic build and deployment
 - use RiseClipse components on Maven Central to build validators

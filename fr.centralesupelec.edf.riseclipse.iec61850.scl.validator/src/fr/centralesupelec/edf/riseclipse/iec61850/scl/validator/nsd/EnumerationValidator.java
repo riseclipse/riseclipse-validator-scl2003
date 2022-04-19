@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -27,6 +27,7 @@ import java.util.Optional;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
+import org.eclipse.jdt.annotation.NonNull;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Enumeration;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
@@ -37,9 +38,14 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.UnNaming;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class EnumerationValidator extends TypeValidator {
     
+    private static final String ENUMERATION_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/Enumeration";
+    private static final String ENUMERATION_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/Enumaration";
+
     public static void initialize() {
         // Nothing here
     }
@@ -62,7 +68,10 @@ public class EnumerationValidator extends TypeValidator {
                 literals.putAll( inheritedFrom.literals );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().error( "[NSD setup] validator for inherited enumeration \"" + inheritedFromName + "\" not found" );
+                @NonNull
+                IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+                console.error( ENUMERATION_SETUP_NSD_CATEGORY, 0,
+                               "validator for inherited enumeration \"", inheritedFromName, "\" not found" );
             }
         }
         
@@ -93,16 +102,21 @@ public class EnumerationValidator extends TypeValidator {
 
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] EnumerationValidator.validateAbstractDataAttribute( " + ada.getName() + " ) at line " + ada.getLineNumber() );
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.debug( ENUMERATION_VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
+                       "EnumerationValidator.validateAbstractDataAttribute( ", ada.getName(), " )" );
         
         boolean res = true;
         if( ! "Enum".equals(  ada.getBType() )) {
+            RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, ada.getLineNumber(), 
+                                      "bType of DA/BDA \"", ada.getName(), "\" is not Enum" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] bType of DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is not Enum",
-                    new Object[] { ada } ));
+                    error.getMessage(),
+                    new Object[] { ada, error } ));
             res = false;
         }
 
@@ -150,14 +164,15 @@ public class EnumerationValidator extends TypeValidator {
             String name = "";
             if( daOrDai instanceof AbstractDataAttribute ) name = (( AbstractDataAttribute ) daOrDai ).getName();
             if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
+            RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, daOrDai.getLineNumber(), 
+                                      "value \"", value, "\" of DA/BDA/DAI \"", name, "\" is not valid for EnumType \"",
+                                      enumType.getId(), "\" (line = ", enumType.getLineNumber(), ")" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] value \"" + value + "\" of DA/BDA/DAI \"" + name + "\" (line = "
-                            + daOrDai.getLineNumber() + ") is not valid for EnumType \""
-                            + enumType.getId() + "\" (line = " + enumType.getLineNumber() + ")",
-                    new Object[] { daOrDai } ));
+                    error.getMessage(),
+                    new Object[] { daOrDai, error } ));
             res = false;
         }
         
@@ -166,7 +181,10 @@ public class EnumerationValidator extends TypeValidator {
 
     public boolean validateEnumType( EnumType enumType, DiagnosticChain diagnostics ) {
         if( validatedEnumType.contains( enumType.getId() )) return true;
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] EnumerationValidator.validateEnumType( " + enumType.getId() + " ) at line " + enumType.getLineNumber() );
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.debug( ENUMERATION_VALIDATION_NSD_CATEGORY, enumType.getLineNumber(),
+                       "EnumerationValidator.validateEnumType( ", enumType.getId(), " )" );
         validatedEnumType.add( enumType.getId() );
         
         boolean res = true;
@@ -180,26 +198,29 @@ public class EnumerationValidator extends TypeValidator {
             if(( enumVal.getOrd() < 0 ) && ( ! isMultiplierKind )) continue;
             
             if( ! literals.containsKey( enumVal.getOrd() )) {
+                RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getLineNumber(), 
+                                          "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType (id = ", enumType.getId(),
+                                          ") is not defined as LiteralVal in standard Enumeration ", getName() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] EnumVal with ord \"" + enumVal.getOrd() + "\" in EnumType (id = " + enumType.getId()
-                                + ") at line " + enumVal.getLineNumber() + " is no defined as LiteralVal in standard Enumeration " + getName(),
-                        new Object[] { enumVal } ));
+                        error.getMessage(),
+                        new Object[] { enumVal, error } ));
                 res = false;
             }
             else {
                 // while the supported positive value of the enumeration items shall be used by the implementation.
                 if( ! literals.get( enumVal.getOrd() ).equals( enumVal.getValue() )) {
+                    RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getLineNumber(), 
+                                              "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType (id = " , enumType.getId(),
+                                              ") has incorrect name (\"", enumVal.getValue(), "\" instead of \"", literals.get( enumVal.getOrd() ), "\")" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] EnumVal with ord \"" + enumVal.getOrd() + "\" in EnumType (id = " + enumType.getId()
-                                    + ") at line " + enumVal.getLineNumber() + " has incorrect name (\"" + enumVal.getValue()
-                                    + "\" instead of \"" + literals.get( enumVal.getOrd() ) + "\")",
-                            new Object[] { enumVal } ));
+                            error.getMessage(),
+                            new Object[] { enumVal, error } ));
                     res = false;
                 }
             }

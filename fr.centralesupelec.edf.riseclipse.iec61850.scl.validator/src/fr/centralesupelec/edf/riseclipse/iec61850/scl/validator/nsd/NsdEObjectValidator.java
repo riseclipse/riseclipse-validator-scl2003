@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,29 +15,25 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import java.util.Map;
-import java.util.Optional;
-
-import org.eclipse.emf.common.util.BasicDiagnostic;
-import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.jdt.annotation.NonNull;
+
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
-import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.util.SclSwitch;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class NsdEObjectValidator implements EValidator {
 
@@ -80,7 +76,8 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseLNodeType( LNodeType lNodeType ) {
-                AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validate( " + lNodeType.getId() + " ) at line " + lNodeType.getLineNumber() );
+                AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                                                              "NsdEObjectValidator.validate( ", lNodeType.getId(), " )" );
                 return validateLNodeType( lNodeType, diagnostics );
             }
 
@@ -105,12 +102,15 @@ public class NsdEObjectValidator implements EValidator {
     }
 
     protected Boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] NsdEObjectValidator.validateLNodeType( " + lNodeType.getLnClass() + " )" );
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                       "NsdEObjectValidator.validateLNodeType( ", lNodeType.getLnClass(), " )" );
 
         // Check that LNodeType has valid LNClass
         if( LNClassValidator.get( lNodeType.getLnClass() ) != null ) {
-            AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] LNClass " + lNodeType.getLnClass()
-                + " found for LNodeType at line " + lNodeType.getLineNumber() );
+            console.info( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                          "LNClass ", lNodeType.getLnClass(), " found for LNodeType" );
 
             // LNClassValidator validates LNodeType content
             return LNClassValidator.get( lNodeType.getLnClass() ).validateLNodeType( lNodeType, diagnostics );
@@ -119,54 +119,56 @@ public class NsdEObjectValidator implements EValidator {
         // A specific LNodeType:
         // - must have a DO with name "NamPlt"
         // - its DOType must have a DA with name "lnNs"
-        Optional< DOType > doType =
-                lNodeType
-                .getDO()
-                .stream()
-                .filter( d -> "NamPlt".equals( d.getName() ))
-                .findAny()
-                .map( d -> d.getRefersToDOType() );
-        if( doType.isPresent() ) {
-            Optional< DA > da =
-                    doType
-                    .get()
-                    .getDA()
-                    .stream()
-                    .filter( d -> "lnNs".equals( d.getName() ))
-                    .findAny();
-            if( da.isPresent() ) {
-                if( da.get().getVal().size() > 0 ) {
-                    String value = "";
-                    for( Val v : da.get().getVal() ) {
-                        value += " " + v.getValue();
-                    }
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.INFO,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            "[NSD validation] LNodeType at line " + lNodeType.getLineNumber() + " with lnClass " + lNodeType.getLnClass()
-                                + " is specific because it has DA \"lnNs\" in DO \"NamPlt\" with value [" + value + " ]",
-                            new Object[] { lNodeType } ));
-                    return true;
-                }
-                diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.ERROR,
-                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                        0,
-                        "[NSD validation] LNodeType at line " + lNodeType.getLineNumber() + " with lnClass " + lNodeType.getLnClass()
-                            + " is specific because it has DA \"lnNs\" in DO \"NamPlt\" but value is missing",
-                        new Object[] { lNodeType } ));
-                return false;
-            }  
-        }
+//        Optional< DOType > doType =
+//                lNodeType
+//                .getDO()
+//                .stream()
+//                .filter( d -> "NamPlt".equals( d.getName() ))
+//                .findAny()
+//                .map( d -> d.getRefersToDOType() );
+//        if( doType.isPresent() ) {
+//            Optional< DA > da =
+//                    doType
+//                    .get()
+//                    .getDA()
+//                    .stream()
+//                    .filter( d -> "lnNs".equals( d.getName() ))
+//                    .findAny();
+//            if( da.isPresent() ) {
+//                if( da.get().getVal().size() > 0 ) {
+//                    String value = "";
+//                    for( Val v : da.get().getVal() ) {
+//                        value += " " + v.getValue();
+//                    }
+//                    diagnostics.add( new BasicDiagnostic(
+//                            Diagnostic.INFO,
+//                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+//                            0,
+//                            "[NSD validation] LNodeType at line " + lNodeType.getLineNumber() + " with lnClass " + lNodeType.getLnClass()
+//                                + " is specific because it has DA \"lnNs\" in DO \"NamPlt\" with value [" + value + " ]",
+//                            new Object[] { lNodeType } ));
+//                    return true;
+//                }
+//                diagnostics.add( new BasicDiagnostic(
+//                        Diagnostic.ERROR,
+//                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+//                        0,
+//                        "[NSD validation] LNodeType at line " + lNodeType.getLineNumber() + " with lnClass " + lNodeType.getLnClass()
+//                            + " is specific because it has DA \"lnNs\" in DO \"NamPlt\" but value is missing",
+//                        new Object[] { lNodeType } ));
+//                return false;
+//            }  
+//        }
 
-        diagnostics.add( new BasicDiagnostic(
-                Diagnostic.ERROR,
-                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                0,
-                "[NSD validation] LNClass " + lNodeType.getLnClass() + " not found for LNodeType at line " + lNodeType.getLineNumber()
-                        + " and DA \"lnNs\" in DO \"NamPlt\" not found",
-                new Object[] { lNodeType } ));
+//        diagnostics.add( new BasicDiagnostic(
+//                Diagnostic.ERROR,
+//                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+//                0,
+//                "[NSD validation] LNClass " + lNodeType.getLnClass() + " not found for LNodeType at line " + lNodeType.getLineNumber()
+//                        + " and DA \"lnNs\" in DO \"NamPlt\" not found",
+//                new Object[] { lNodeType } ));
+        console.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                       "LNClass ", lNodeType.getLnClass(), " not found for LNodeType" );
         return false;
     }
 

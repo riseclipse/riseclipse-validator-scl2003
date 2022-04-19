@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2021 CentraleSupélec & EDF.
+**  Copyright (c) 2021-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      https://riseclipse.github.io
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -29,8 +29,11 @@ import org.eclipse.jdt.annotation.NonNull;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.FCEnum;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
+import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class FunctionalConstraintValidator {
+
+    private static final String FC_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/FunctionalConstraint";
 
     private static HashMap< FCEnum, FunctionalConstraintValidator > validators = new HashMap<>();
     
@@ -53,13 +56,14 @@ public class FunctionalConstraintValidator {
 
     public void validateAbstractDataAttribute( DA da, DiagnosticChain diagnostics ) {
         if( ! code.equals( da.getFc() )) {
+            RiseClipseMessage error = RiseClipseMessage.error( FC_VALIDATION_NSD_CATEGORY, da.getLineNumber(), 
+                                      "functional contraint \"", da.getFc(), "\" of DA \"", da.getName(), "\" is wrong, it should be \"", code + "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] functional contraint \"" + da.getFc() + "\" of DA \"" + da.getName() + "\" (line = "
-                            + da.getLineNumber() + ") is wrong, it should be \"" + code + "\"",
-                    new Object[] { da } ));
+                    error.getMessage(),
+                    new Object[] { da, error } ));
         }
     }
 
