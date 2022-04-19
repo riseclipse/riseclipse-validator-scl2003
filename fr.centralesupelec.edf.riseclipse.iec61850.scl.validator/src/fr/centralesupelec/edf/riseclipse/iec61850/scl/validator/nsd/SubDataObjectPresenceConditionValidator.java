@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -35,8 +35,12 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
+import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class SubDataObjectPresenceConditionValidator extends GenericPresenceConditionValidator< CDC, DOType, @Nullable SDO >{
+
+    private static final String SDO_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/SubDataObject";
+    private static final String SDO_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/SubDataObject";
 
     private static HashMap< String, SubDataObjectPresenceConditionValidator > validators;
     
@@ -57,6 +61,16 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
         super( cdc );
         
         this.cdc = cdc;
+    }
+
+    @Override
+    protected String getSetupMessageCategory() {
+        return SDO_SETUP_NSD_CATEGORY;
+    }
+
+    @Override
+    protected String getValidationMessageCategory() {
+        return SDO_VALIDATION_NSD_CATEGORY;
     }
 
     @Override
@@ -106,12 +120,14 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     protected boolean validateMFln0( DOType sclModel, DiagnosticChain diagnostics ) {
         for( String name : mandatoryInLLN0ElseForbidden ) {
             if( presentSclComponent.get( name ) != null ) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                                            "verification of PresenceCondition \"MFln0\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] verification of PresenceCondition \"MFln0\" for " + getSclComponentClassName() + " " + name + " is not implemented in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with " + getNsdModelClassName() + " " + getNsdModelName(),
-                        new Object[] { sclModel } ));
+                        warning.getMessage(),
+                        new Object[] { sclModel, warning } ));
             }
         }
         return true;
@@ -121,12 +137,14 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     protected boolean validateMOln0( DOType sclModel, DiagnosticChain diagnostics ) {
         for( String name : mandatoryInLLN0ElseOptional ) {
             if( presentSclComponent.get( name ) != null ) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                                            "verification of PresenceCondition \"MOln0\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] verification of PresenceCondition \"MOln0\" for " + getSclComponentClassName() + " " + name + " is not implemented in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with " + getNsdModelClassName() + " " + getNsdModelName(),
-                        new Object[] { sclModel } ));
+                        warning.getMessage(),
+                        new Object[] { sclModel, warning } ));
             }
         }
         return true;
@@ -146,42 +164,50 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
         if( phsRef.isPresent() ) {
             EList< Val > vals = phsRef.get().getVal();
             if( vals.size() == 0 ) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
+                                            "verification of PresenceCondition \"OMSynPh\" for SDO ", sdoName, " for DOType: no value for phsRef" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] verification of PresenceCondition \"OMSynPh\" for SDO " + sdoName + " for DOType (line " + doType.getLineNumber() + "): no value for phsRef",
-                        new Object[] { doType } ));
+                        warning.getMessage(),
+                        new Object[] { doType, warning } ));
             }
             else if( vals.size() == 1 ) {
                 phsRefIsSynchrophasor = "Synchrophasor".equals( vals.get( 0 ).getValue() );
             }
             else {
+                RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
+                                            "verification of PresenceCondition \"OMSynPh\" for SDO ", sdoName, " for DOType: multiple values for phsRef" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] verification of PresenceCondition \"OMSynPh\" for SDO " + sdoName + " for DOType (line " + doType.getLineNumber() + "): multiple values for phsRef",
-                        new Object[] { doType } ));
+                        warning.getMessage(),
+                        new Object[] { doType, warning } ));
             }
         }
         else {
+            RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
+                                        "verification of PresenceCondition \"OMSynPh\" for SDO ", sdoName, " for DOType: DA phsRef not found" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.WARNING,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] verification of PresenceCondition \"OMSynPh\" for SDO " + sdoName + " for DOType (line " + doType.getLineNumber() + "): DA phsRef not found",
-                    new Object[] { doType } ));
+                    warning.getMessage(),
+                    new Object[] { doType, warning } ));
         }
         if( ! phsRefIsSynchrophasor ) {
             for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
                 if( presentSclComponent.get( name ) == null ) {
+                    RiseClipseMessage error = RiseClipseMessage.error( SDO_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
+                                              "SDO ", sdoName, " is mandatory in DOType because phsRef is not Synchrophasor" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            "[NSD validation] SDO " + name + " is mandatory in DOType (line " + doType.getLineNumber() + ") because phsRef is not Synchrophasor",
-                            new Object[] { doType } ));
+                            error.getMessage(),
+                            new Object[] { doType, error } ));
                     res = false;
                 }
             }

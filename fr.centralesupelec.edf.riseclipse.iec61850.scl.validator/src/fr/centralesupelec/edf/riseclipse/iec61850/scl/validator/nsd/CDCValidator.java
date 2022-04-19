@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.DiagnosticChain;
+import org.eclipse.jdt.annotation.NonNull;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataAttribute;
@@ -34,8 +35,12 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.FCEnum;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class CDCValidator {
+
+    private static final String CDC_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/CDC";
+    private static final String CDC_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/CDC";
 
     private static HashMap< String, CDCValidator > validators;
     
@@ -92,13 +97,16 @@ public class CDCValidator {
         dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( cdc );
         subDataObjectPresenceConditionValidator = SubDataObjectPresenceConditionValidator.get( cdc );
         
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         for( DataAttribute da : cdc.getDataAttribute() ) {
             TypeValidator typeValidator = TypeValidator.get( da.getType() );
             if( typeValidator != null ) {
                 dataAttributeTypeValidatorMap.put( da.getName(), typeValidator );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + da.getFilename() + ":" + da.getLineNumber() + ") Type not found for DataAttribute " + da.getName() );
+                console.warning( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                                 "Type not found for DataAttribute ", da.getName() );
             }
             
             FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( FCEnum.getByName( da.getFc() ));
@@ -106,7 +114,8 @@ public class CDCValidator {
                 dataAttributeFunctionalConstraintValidatorMap.put( da.getName(), fcValidator );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + da.getFilename() + ":" + da.getLineNumber() + ") Functional Constraint unknown for DataAttribute " + da.getName() );
+                console.warning( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                                 "Functional Constraint unknown for DataAttribute ", da.getName() );
             }
         }
         
@@ -116,7 +125,8 @@ public class CDCValidator {
                 subDataObjectValidatorMap.put( sdo.getName(), validator );
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD setup] (" + sdo.getFilename() + ":" + sdo.getLineNumber() + ") CDC not found for SubDataObject " + sdo.getName() );
+                console.warning( CDC_SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
+                                 "CDC not found for SubDataObject ", sdo.getName() );
             }
         }
         
@@ -125,7 +135,10 @@ public class CDCValidator {
 
     public boolean validateDOType( DOType doType, DiagnosticChain diagnostics ) {
         if( validatedDOType.contains( doType.getId() )) return true;
-        AbstractRiseClipseConsole.getConsole().verbose( "[NSD validation] CDCValidator.validateDOType( " + doType.getId() + " ) at line " + doType.getLineNumber() );
+        @NonNull
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.debug( CDC_VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
+                       "CDCValidator.validateDOType( ", doType.getId(), " )" );
         validatedDOType.add( doType.getId() );
         
         dataAttributePresenceConditionValidator.resetModelData();
@@ -153,7 +166,7 @@ public class CDCValidator {
             }
             else {
                 // DA not allowed, error will be reported by PresenceConditionValidator
-                //AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): type validator for DA " + da.getName() + " not found" );
+                //console.warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): type validator for DA " + da.getName() + " not found" );
             }
 
             FunctionalConstraintValidator fcValidator = dataAttributeFunctionalConstraintValidatorMap.get( da.getName() );
@@ -162,7 +175,7 @@ public class CDCValidator {
             }
             else {
                 // DA not allowed, error will be reported by PresenceConditionValidator
-                //AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): functional constraint validator for DA " + da.getName() + " not found" );
+                //console.warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): functional constraint validator for DA " + da.getName() + " not found" );
             }
         }
       
@@ -173,11 +186,13 @@ public class CDCValidator {
                     res = validator.validateDOType( sdo.getRefersToDOType(), diagnostics ) && res;
                 }
                 else {
-                    AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): DOType for SDO " + sdo.getName() + " not found" );
+                    console.warning( CDC_VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
+                                     "while validating DOType: DOType for SDO ", sdo.getName(), " not found" );
                 }
             }
             else {
-                AbstractRiseClipseConsole.getConsole().warning( "[NSD validation] while validating DOType (line " + doType.getLineNumber() + "): validator for SDO " + sdo.getType() + " not found" );
+                console.warning( CDC_VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
+                                 "while validating DOType: validator for SDO ", sdo.getType(), " not found" );
             }
         }
 

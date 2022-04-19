@@ -22,28 +22,42 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
  
-  <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+  <groupId>io.github.riseclipse</groupId>
   <artifactId>riseclipse-validator-scl2003</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   
   <parent>
-    <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+    <groupId>io.github.riseclipse</groupId>
     <artifactId>fr.centralesupelec.edf.riseclipse.developer.maven</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
-    <relativePath>../riseclipse-developer/fr.centralesupelec.edf.riseclipse.developer.maven/pom.xml</relativePath>
+    <version>1.2.2</version>
   </parent>
   
   <scm>
     <connection>scm:git:git@github.com:riseclipse/riseclipse-validator-scl2003.git</connection>
     <developerConnection>scm:git:git@github.com:riseclipse/riseclipse-validator-scl2003.git</developerConnection>
+    <url>https://github.com/riseclipse/riseclipse-validator-scl2003</url>
     <tag>HEAD</tag>
   </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </distributionManagement>  
 
   <repositories>
     <repository>
@@ -125,44 +139,44 @@
     
     <!-- RiseClipse needed plugins -->
     <dependency>
-      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.main</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
-      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.validation.ocl</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
-      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
-      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.edit</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
-      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
-      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.nsd</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
-      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.nsd.edit</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
-      <groupId>fr.centralesupelec.edf.riseclipse</groupId>
+      <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.nsd.utilities</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
   </dependencies>
 
