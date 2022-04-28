@@ -35,6 +35,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class EnumeratedTypeValidator extends TypeValidator {
 
@@ -46,12 +47,14 @@ public class EnumeratedTypeValidator extends TypeValidator {
                        "EnumeratedTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " ) in namespace ", "TODO" );
         
         if( ! "Enum".equals( ada.getBType() )) {
+            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(), 
+                    "bType of DA/BDA \"", ada.getName(), "\" is not Enum" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] bType of DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is not Enum",
-                    new Object[] { ada } ));
+                    error.getMessage(),
+                    new Object[] { ada, error } ));
             return false;
         }
         
@@ -81,14 +84,15 @@ public class EnumeratedTypeValidator extends TypeValidator {
                 .findAny();
         
         if( ! found.isPresent() ) {
+            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, dai.getLineNumber(), 
+                    "value \"", value, "\" of DAI \"", dai.getName(), "\" is not valid for EnumType \"",
+                            enumType.getId(), "\" (line = ", enumType.getLineNumber(), ")" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
-                    "[NSD validation] value \"" + value + "\" of DAI \"" + dai.getName() + "\" (line = "
-                            + dai.getLineNumber() + ") is not valid for EnumType \""
-                            + enumType.getId() + "\" (line = " + enumType.getLineNumber() + ")",
-                    new Object[] { dai } ));
+                    error.getMessage(),
+                    new Object[] { dai, error } ));
             res = false;
         }
         
