@@ -653,7 +653,7 @@ public class DataObjectPresenceConditionValidator {
             for( Entry< String, String > e : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
                     console.warning( DO_SETUP_NSD_CATEGORY, 0,
-                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace ", nsIdentification );
+                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace \"", nsIdentification, "\"" );
                 }
             }
         }
@@ -661,7 +661,7 @@ public class DataObjectPresenceConditionValidator {
             for( Entry< String, String > e : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
                     console.warning( DO_SETUP_NSD_CATEGORY, 0,
-                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace ", nsIdentification );
+                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace \"", nsIdentification, "\"" );
                 }
             }
         }
@@ -669,7 +669,7 @@ public class DataObjectPresenceConditionValidator {
             for( Entry< String, String > e : optionalIfSiblingPresentElseMandatory.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
                     console.warning( DO_SETUP_NSD_CATEGORY, 0,
-                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace ", nsIdentification );
+                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace \"", nsIdentification, "\"" );
                 }
             }
         }
@@ -677,7 +677,7 @@ public class DataObjectPresenceConditionValidator {
             for( Entry< String, String > e : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
                     console.warning( DO_SETUP_NSD_CATEGORY, 0,
-                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace ", nsIdentification );
+                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace \"", nsIdentification, "\"" );
                 }
             }
         }
@@ -685,7 +685,7 @@ public class DataObjectPresenceConditionValidator {
             for( Entry< String, String > e : oneOrMoreIfSiblingPresentElseForbidden.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
                     console.warning( DO_SETUP_NSD_CATEGORY, 0,
-                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace ", nsIdentification );
+                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace \"", nsIdentification, "\"" );
                 }
             }
         }
@@ -693,7 +693,7 @@ public class DataObjectPresenceConditionValidator {
             for( Entry< String, String > e : optionalIfSiblingPresentElseForbidden.entrySet() ) {
                 if( ! presentDO.containsKey( e.getValue() )) {
                     console.warning( DO_SETUP_NSD_CATEGORY, 0,
-                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace ", nsIdentification );
+                                     "the sibling of ", e.getKey(), " in PresenceCondition of DataObject ", e.getKey(), " is unknown in namespace \"", nsIdentification, "\"" );
                 }
             }
         }
@@ -714,7 +714,7 @@ public class DataObjectPresenceConditionValidator {
                 names = do_.getName().split( "(?=\\d)", 2 );
                 if( names.length != 2 ) {
                     console.error( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getLineNumber(),
-                                     "Unexpected DO name ", do_.getName(), " in LNodeType in namespace ", nsIdentification );
+                                     "Unexpected DO name ", do_.getName(), " in LNodeType in namespace \"", nsIdentification, "\"" );
                     return false;
                 }
             }
@@ -724,7 +724,7 @@ public class DataObjectPresenceConditionValidator {
                 return base.addDO( do_, anyLNClassName, diagnostics );
             }
             RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getLineNumber(), 
-                                      "DO ", do_.getName(), " in LNodeType not found in LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                      "DO ", do_.getName(), " in LNodeType not found in LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -737,7 +737,7 @@ public class DataObjectPresenceConditionValidator {
         if( names.length == 1 ) {
             if( presentDO.get( do_.getName() ) != null ) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getLineNumber(), 
-                                          "DO ", do_.getName(), " in LNodeType already present in LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                          "DO ", do_.getName(), " in LNodeType already present in LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -755,7 +755,7 @@ public class DataObjectPresenceConditionValidator {
             }
             else if( presentDO.get( names[0] ) instanceof SingleDO ) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getLineNumber(), 
-                                          "DO ", do_.getName(), " in LNodeType already present without instance number in LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                          "DO ", do_.getName(), " in LNodeType already present without instance number in LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -770,7 +770,7 @@ public class DataObjectPresenceConditionValidator {
                 
             if( m.numberedDOs.containsKey( number )) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getLineNumber(), 
-                                          "DO ", do_.getName(), " in LNodeType already present with same instance number in LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                          "DO ", do_.getName(), " in LNodeType already present with same instance number in LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -783,7 +783,7 @@ public class DataObjectPresenceConditionValidator {
             return true;
         }
         console.warning( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getLineNumber(), 
-                         "DO ", do_.getName(), " in LNodeType has an unrecognized name in namespace ", nsIdentification );
+                         "DO ", do_.getName(), " in LNodeType has an unrecognized name in namespace \"", nsIdentification, "\"" );
         return false;
     }
     
@@ -791,7 +791,7 @@ public class DataObjectPresenceConditionValidator {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                       "DataObjectPresenceConditionValidator.validate( ", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                       "DataObjectPresenceConditionValidator.validate( ", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
         return validate( lNodeType, anyLNClass.getName(), false, diagnostics );
     }
     
@@ -814,11 +814,11 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( mandatory != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"M\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"M\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : this.mandatory ) {
                 if( presentDO.get( name ) == null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "DO ", name, " is mandatory in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "DO ", name, " is mandatory in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -829,7 +829,7 @@ public class DataObjectPresenceConditionValidator {
                 }
                 else if( presentDO.get( name ) instanceof MultiDO ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "DO ", name, " should not have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "DO ", name, " should not have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -846,13 +846,13 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( optional != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"O\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"O\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : this.optional ) {
                 if( presentDO.get( name ) == null ) {
                 }
                 else if( presentDO.get( name ) instanceof MultiDO ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "DO ", name, " should not have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "DO ", name, " should not have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -869,11 +869,11 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( forbidden != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"F\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"F\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : this.forbidden ) {
                 if( presentDO.get( name ) != null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "DO ", name, " is forbidden in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "DO ", name, " is forbidden in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -884,7 +884,7 @@ public class DataObjectPresenceConditionValidator {
                 }
                 else if( presentDO.get( name ) instanceof MultiDO ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "DO ", name, " should not have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "DO ", name, " should not have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -904,7 +904,7 @@ public class DataObjectPresenceConditionValidator {
             for( String name : notApplicable ) {
                 if( presentDO.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                                "verification of PresenceCondition \"na\" for DO ", name, " is not implemented in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                                "verification of PresenceCondition \"na\" for DO ", name, " is not implemented in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -920,11 +920,11 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryMulti != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"Mmulti\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"Mmulti\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : this.mandatoryMulti ) {
                 if( presentDO.get( name ) == null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "At least one DO ", name, " is mandatory in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "At least one DO ", name, " is mandatory in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -935,7 +935,7 @@ public class DataObjectPresenceConditionValidator {
                 }
                 else if( presentDO.get( name ) instanceof SingleDO ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "DO ", name, " should have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "DO ", name, " should have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -952,13 +952,13 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalMulti != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"Omulti\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"Omulti\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : this.optionalMulti ) {
                 if( presentDO.get( name ) == null ) {
                 }
                 else if( presentDO.get( name ) instanceof SingleDO ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "DO ", name, " should have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "DO ", name, " should have an instance number in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -977,7 +977,7 @@ public class DataObjectPresenceConditionValidator {
         //if( atLeastOne != null ) {
         if( ! asSuperclass ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"AtLeastOne\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"AtLeastOne\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< Integer, HashSet< String > > e1 : atLeastOne.entrySet() ) {
                 boolean groupOK = false;
                 for( String member : e1.getValue() ) {
@@ -988,7 +988,7 @@ public class DataObjectPresenceConditionValidator {
                 }
                 if( ! groupOK ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "group ", e1.getKey(), " has no elements in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "group ", e1.getKey(), " has no elements in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1006,7 +1006,7 @@ public class DataObjectPresenceConditionValidator {
         //if( atMostOne != null ) {
         if( ! asSuperclass ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                             "validation of presence condition \"AtMostOne\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                             "validation of presence condition \"AtMostOne\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             int count = 0;
             for( String s : atMostOne ) {
                 if( presentDO.get( s ) != null ) {
@@ -1015,7 +1015,7 @@ public class DataObjectPresenceConditionValidator {
             }
             if( count > 1 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                          "LNodeType with LNClass ", anyLNClassName, " has more than one element marked AtMostOne in namespace ", nsIdentification );
+                                          "LNodeType with LNClass ", anyLNClassName, " has more than one element marked AtMostOne in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1033,7 +1033,7 @@ public class DataObjectPresenceConditionValidator {
         //if( allOrNonePerGroup != null ) {
         if( ! asSuperclass ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"AllOrNonePerGroup\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"AllOrNonePerGroup\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< Integer, HashSet< String > > e1 : allOrNonePerGroup.entrySet() ) {
                 int groupCount = 0;
                 for( String member : e1.getValue() ) {
@@ -1043,7 +1043,7 @@ public class DataObjectPresenceConditionValidator {
                 }
                 if(( groupCount > 0 ) && (groupCount < e1.getValue().size() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "group ", e1.getKey(), " has neither none nor all elements in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "group ", e1.getKey(), " has neither none nor all elements in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1062,7 +1062,7 @@ public class DataObjectPresenceConditionValidator {
         //if( allOnlyOneGroup != null ) {
         if(( ! asSuperclass ) && ( allOnlyOneGroup.size() != 0 )) {         // groupNumber == 0 not an error if empty
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"AllOnlyOneGroup\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"AllOnlyOneGroup\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allOnlyOneGroup.entrySet() ) {
                 int groupCount = 0;
@@ -1073,7 +1073,7 @@ public class DataObjectPresenceConditionValidator {
                 }
                 if(( groupCount > 0 ) && (groupCount < e1.getValue().size() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "group ", e1.getKey(), " has neither none nor all elements in LNodeType with LNClass ", anyLNClassName, " in namespace ", nsIdentification );
+                                              "group ", e1.getKey(), " has neither none nor all elements in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1088,7 +1088,7 @@ public class DataObjectPresenceConditionValidator {
                     }
                     else {
                         RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                                  "LNodeType with LNClass ", anyLNClassName, " has several groups with all elements in namespace ", nsIdentification );
+                                                  "LNodeType with LNClass ", anyLNClassName, " has several groups with all elements in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1101,7 +1101,7 @@ public class DataObjectPresenceConditionValidator {
             }
             if( groupNumber == 0 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                          "no group in LNodeType with LNClass ", anyLNClassName, " has all elements in namespace ", nsIdentification );
+                                          "no group in LNodeType with LNClass ", anyLNClassName, " has all elements in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1119,7 +1119,7 @@ public class DataObjectPresenceConditionValidator {
         //if( allAtLeastOneGroup != null ) {
         if(( ! asSuperclass ) && ( allAtLeastOneGroup.size() != 0 )) {         // groupNumber == 0 not an error if empty
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"AllAtLeastOneGroup\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"AllAtLeastOneGroup\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allAtLeastOneGroup.entrySet() ) {
                 int groupCount = 0;
@@ -1134,7 +1134,7 @@ public class DataObjectPresenceConditionValidator {
             }
             if( groupNumber == 0 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                          "no group in LNodeType with LNClass ", anyLNClassName, " has all elements in namespace ", nsIdentification );
+                                          "no group in LNodeType with LNClass ", anyLNClassName, " has all elements in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1151,12 +1151,12 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfSiblingPresentElseForbidden != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"MF\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"MF\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
                 if( presentDO.get( entry.getValue() ) != null ) {
                     if( presentDO.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                                  "DO ", entry.getKey(), " is mandatory in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is present in namespace ", nsIdentification );
+                                                  "DO ", entry.getKey(), " is mandatory in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is present in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1169,7 +1169,7 @@ public class DataObjectPresenceConditionValidator {
                 else {
                     if( presentDO.get( entry.getKey() ) != null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                                  "DO ", entry.getKey(), " is forbidden in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is not present in namespace ", nsIdentification );
+                                                  "DO ", entry.getKey(), " is forbidden in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is not present in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1188,12 +1188,12 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryIfSiblingPresentElseOptional != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"MO\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"MO\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
                 if( presentDO.get( entry.getValue() ) != null ) {
                     if( presentDO.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                                  "DO ", entry.getKey(), " is mandatory in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is present in namespace ", nsIdentification );
+                                                  "DO ", entry.getKey(), " is mandatory in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is present in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1212,12 +1212,12 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): None
         if( optionalIfSiblingPresentElseMandatory != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                             "validation of presence condition \"OM\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                             "validation of presence condition \"OM\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : optionalIfSiblingPresentElseMandatory.entrySet() ) {
                 if( presentDO.get( entry.getValue() ) == null ) {
                     if( presentDO.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                                  "DO ", entry.getKey(), " is mandatory in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is not present in namespace ", nsIdentification );
+                                                  "DO ", entry.getKey(), " is mandatory in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is not present in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1236,12 +1236,12 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): None
         if( forbiddenIfSiblingPresentElseMandatory != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"FM\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"FM\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
                 if( presentDO.get( entry.getValue() ) != null ) {
                     if( presentDO.get( entry.getKey() ) != null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                                  "DO ", entry.getKey(), " is forbidden in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is present in namespace ", nsIdentification );
+                                                  "DO ", entry.getKey(), " is forbidden in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is present in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1254,7 +1254,7 @@ public class DataObjectPresenceConditionValidator {
                 else {
                     if( presentDO.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                                  "DO ", entry.getKey(), " is mandatory in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is not present in namespace ", nsIdentification );
+                                                  "DO ", entry.getKey(), " is mandatory in LNodeType with LNClass ", anyLNClassName, " because sibling ", entry.getValue(), " is not present in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1274,7 +1274,7 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseOptional != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"MOcond\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"MOcond\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : mandatoryIfTextConditionElseOptional.entrySet() ) {
                 String doc = anyLNClass
                         .getDataObject()
@@ -1309,7 +1309,7 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseForbidden != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"MFcond\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"MFcond\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : mandatoryIfTextConditionElseForbidden.entrySet() ) {
                 String doc = anyLNClass
                         .getDataObject()
@@ -1344,7 +1344,7 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalIfTextConditionElseForbidden != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"OFcond\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"OFcond\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : optionalIfTextConditionElseForbidden.entrySet() ) {
                 String doc = anyLNClass
                         .getDataObject()
@@ -1378,7 +1378,7 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): None
         if( mandatoryMultiRange != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"MmultiRange\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"MmultiRange\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : this.mandatoryMultiRange.keySet() ) {
                 if( presentDO.get( name ) == null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
@@ -1429,7 +1429,7 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalMultiRange != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"OmultiRange\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"OmultiRange\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : this.optionalMultiRange.keySet() ) {
                 if( presentDO.get( name ) == null ) {
                 }
@@ -1489,7 +1489,7 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryInLLN0ElseOptional != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"MOln0\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"MOln0\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : mandatoryInLLN0ElseOptional ) {
                 if( presentDO.get( name ) == null ) {
                     for( AnyLN anyLN : lNodeType.getReferredByAnyLN() ) {
@@ -1514,7 +1514,7 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryInLLN0ElseForbidden != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"MFln0\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"MFln0\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : mandatoryInLLN0ElseForbidden ) {
                 for( AnyLN anyLN : lNodeType.getReferredByAnyLN() ) {
                     if( presentDO.get( name ) == null ) {
@@ -1673,7 +1673,7 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryInRootLogicalDeviceElseOptional != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"MOrootLD\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"MOrootLD\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( String name : mandatoryInRootLogicalDeviceElseOptional ) {
                 for( AnyLN anyLN : lNodeType.getReferredByAnyLN() ) {
                     Optional< DOI > grRef =
@@ -1787,7 +1787,7 @@ public class DataObjectPresenceConditionValidator {
         // TODO: same as "MOlnNs" ?
         if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"MONamPlt\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"MONamPlt\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             
             for( AnyLN ln : lNodeType.getReferredByAnyLN() ) {
                 String lnNs = ln.getNamespace();
@@ -1827,7 +1827,7 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute
         if( optionalIfSiblingPresentElseForbidden != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                           "validation of presence condition \"OF\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace ", nsIdentification );
+                           "validation of presence condition \"OF\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : optionalIfSiblingPresentElseForbidden.entrySet() ) {
                 if( presentDO.get( entry.getValue() ) == null ) {
                     if( presentDO.get( entry.getKey() ) != null ) {
