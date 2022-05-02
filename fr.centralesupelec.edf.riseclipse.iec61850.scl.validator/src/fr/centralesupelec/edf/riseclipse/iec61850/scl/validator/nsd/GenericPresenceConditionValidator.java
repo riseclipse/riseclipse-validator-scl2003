@@ -434,7 +434,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             // Seen in IEC_61850-7-2_2007A2 and IEC_61850-7-2_2007A3, its significance is based on MOlnNs and MOdataNs
             // Element is mandatory if the name space of its data class deviates from the name space of its logical node,
             // otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( getSetupMessageCategory(), filename, lineNumber,
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOcdcNs\" in PresenceCondition" );
 //            if( mandatoryIfNameSpaceOfDataClassDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataClassDeviatesElseOptional = new HashSet<>();
 //            mandatoryIfNameSpaceOfDataClassDeviatesElseOptional.add( name );
@@ -552,28 +552,28 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             // Parameter n: group number (> 0).
             // Element is mandatory if declared control model supports 'direct-with-enhanced- security'
             // or 'sbo-with-enhanced-security', otherwise all or none of the elements of a group n shall be present.
-            console.warning( getSetupMessageCategory(), filename, lineNumber,
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MAllOrNonePerGroup\" in PresenceCondition" );
 //            if( mAllOrNonePerGroup == null ) mAllOrNonePerGroup = new HashSet<>();
 //            mAllOrNonePerGroup.add( name );
             break;
         case "MOctrl" :
             // Seen in IEC_61850-8-1_2003A2.snsd
-            console.warning( getSetupMessageCategory(), filename, lineNumber,
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOctrl\" in PresenceCondition" );
 //            if( mOctrl == null ) mOctrl = new HashSet<>();
 //            mOctrl.add( name );
             break;
         case "MOsboNormal" :
             // Seen in IEC_61850-8-1_2003A2.snsd
-            console.warning( getSetupMessageCategory(), filename, lineNumber,
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOsboNormal\" in PresenceCondition" );
 //            if( mOsboNormal == null ) mOsboNormal = new HashSet<>();
 //            mOsboNormal.add( name );
             break;
         case "MOsboEnhanced" :
             // Seen in IEC_61850-8-1_2003A2.snsd
-            console.warning( getSetupMessageCategory(), filename, lineNumber,
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOsboEnhanced\" in PresenceCondition" );
 //            if( mOsboEnhanced == null ) mOsboEnhanced = new HashSet<>();
 //            mOsboEnhanced.add( name );

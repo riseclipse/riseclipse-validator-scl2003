@@ -44,8 +44,8 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class EnumerationValidator extends TypeValidator {
     
-    private static final String ENUMERATION_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/Enumeration";
-    private static final String ENUMERATION_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/Enumaration";
+    static final String ENUMERATION_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/Enumeration";
+    static final String ENUMERATION_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/Enumeration";
 
     private HashSet< String > validatedEnumType;
 

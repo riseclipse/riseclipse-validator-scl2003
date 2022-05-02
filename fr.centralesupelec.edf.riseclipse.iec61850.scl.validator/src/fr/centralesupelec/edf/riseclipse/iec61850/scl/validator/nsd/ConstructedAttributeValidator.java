@@ -39,8 +39,8 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class ConstructedAttributeValidator extends TypeValidator {
 
-    private static final String CA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/ConstructedAttribute";
-    private static final String CA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/ConstructedAttribute";
+    static final String CA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/ConstructedAttribute";
+    static final String CA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/ConstructedAttribute";
 
     private HashSet< String > validatedDAType; 
 

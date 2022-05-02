@@ -39,7 +39,8 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public abstract class BasicTypeValidator extends TypeValidator {
 
-    private static final String BASIC_TYPE_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/BasicType";
+    static final String BASIC_TYPE_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY + "/BasicType";
+    static final String BASIC_TYPE_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/BasicType";
 
     private static HashMap< String, BasicTypeValidator > validators = new HashMap<>();
 

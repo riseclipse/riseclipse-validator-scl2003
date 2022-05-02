@@ -47,12 +47,12 @@ public abstract class TypeValidator {
         .forEach( basicType -> {
             NsIdentificationName nsId = new NsIdentificationName( nsIdentification, basicType.getName() );
             if( validators.get( nsId ) != null ) {
-                console.warning( NsdValidator.SETUP_NSD_CATEGORY, basicType.getFilename(), basicType.getLineNumber(),
+                console.warning( BasicTypeValidator.BASIC_TYPE_SETUP_NSD_CATEGORY, basicType.getFilename(), basicType.getLineNumber(),
                                  "BasicType ", basicType.getName(), " has already a validator in namespace \"",
                                  nsIdentification, "\", it will be overwritten" );
             }
             else {
-                console.notice( NsdValidator.SETUP_NSD_CATEGORY, basicType.getFilename(), basicType.getLineNumber(),
+                console.notice( BasicTypeValidator.BASIC_TYPE_SETUP_NSD_CATEGORY, basicType.getFilename(), basicType.getLineNumber(),
                                 "Adding validator for BasicType ", basicType.getName(), " in namespace \"",
                                 nsIdentification, "\"" );
             }
@@ -66,12 +66,12 @@ public abstract class TypeValidator {
         .forEach( enumeration -> {
             NsIdentificationName nsId = new NsIdentificationName( nsIdentification, enumeration.getName() );
             if( validators.get( nsId ) != null ) {
-                console.warning( NsdValidator.SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
+                console.warning( EnumerationValidator.ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
                                  "Enumeration ", enumeration.getName(), " has already a validator in namespace \"",
                                  nsIdentification, "\", it will be overwritten" );
             }
             else {
-                console.notice( NsdValidator.SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
+                console.notice( EnumerationValidator.ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
                                 "Adding validator for Enumeration ", enumeration.getName(), " in namespace \"",
                                 nsIdentification, "\"" );
             }
@@ -88,12 +88,12 @@ public abstract class TypeValidator {
     public static TypeValidator buildConstructedAttributeValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute, IRiseClipseConsole console ) {
         NsIdentificationName nsId = new NsIdentificationName( nsIdentification, constructedAttribute.getName() );
         if( validators.get( nsId ) != null ) {
-            console.warning( NsdValidator.SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
+            console.warning( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
                              "ConstructedAttribute ", constructedAttribute.getName(), " has already a validator in namespace \"",
                              nsIdentification, "\", it will be overwritten" );
         }
         else {
-            console.notice( NsdValidator.SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
+            console.notice( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
                             "Adding validator for ConstructedAttribute ", constructedAttribute.getName(), " in namespace \"",
                             nsIdentification, "\"" );
         }
