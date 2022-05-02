@@ -43,7 +43,10 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class CDCValidator {
 
-    private static HashMap< NsIdentificationName, CDCValidator > validators = new HashMap<>();
+    private static final String CDC_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/CDC";
+    private static final String CDC_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/CDC";
+
+    private static HashMap< String, CDCValidator > validators = new HashMap<>();
     
     public static CDCValidator get( NsIdentification nsIdentification, String doTypeName ) {
         if( validators == null ) return null;
@@ -100,7 +103,7 @@ public class CDCValidator {
     private HashMap< String, CDCValidator > subDataObjectValidatorMap = new HashMap<>();
 
     private CDCValidator( NsIdentification nsIdentification, CDC cdc, IRiseClipseConsole console ) {
-        console.debug( NsdValidator.SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
+        console.debug( CDC_SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
                 "build CDCValidator for ", cdc.getName(), " in namespace \"", nsIdentification, "\"" );
 
         this.name = cdc.getName();
@@ -128,12 +131,12 @@ public class CDCValidator {
                 }
                 if( typeValidator != null ) {
                     dataAttributeTypeValidatorMap.put( da.getName(), typeValidator );
-                    console.info( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                    console.info( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                                   "type validator for DataAttribute ", da.getName(), " found with type ", da.getType(),
                                   " in namespace \"", this.nsIdentification, "\"" );
                 }
                 else {
-                    console.warning( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                    console.warning( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                                      "type validator not found for DataAttribute ", da.getName(), " with type ", da.getType(),
                                      " in namespace \"", this.nsIdentification, "\"" );
                 }
@@ -151,7 +154,7 @@ public class CDCValidator {
                         continue;
                     }
                 }
-                console.warning( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                console.warning( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                                  "Type not found for DataAttribute ", da.getName(),
                                  " in namespace \"", this.nsIdentification, "\"" );
             }
@@ -159,12 +162,12 @@ public class CDCValidator {
             FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( FCEnum.getByName( da.getFc() ));
             if( fcValidator != null ) {
                 dataAttributeFunctionalConstraintValidatorMap.put( da.getName(), fcValidator );
-                console.info( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                console.info( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                               "Functional constraint validator for DataAttribute " + da.getName() + " found with fc " + da.getFc(),
                               " in namespace \"", this.nsIdentification, "\"" );
             }
             else {
-                console.warning( NsdValidator.SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                console.warning( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                                  "Functional Constraint unknown for DataAttribute ", da.getName(), " with fc ", da.getFc(),
                                  " in namespace \"", this.nsIdentification, "\"" );
             }
@@ -188,11 +191,11 @@ public class CDCValidator {
             }
             if( cdcValidator != null ) {
                 subDataObjectValidatorMap.put( sdo.getName(), cdcValidator );
-                console.info( NsdValidator.SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
+                console.info( CDC_SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
                               "CDC validator for SubDataObject ", sdo.getName(), " found with type ", sdo.getType() );
             }
             else {
-                console.warning( NsdValidator.SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
+                console.warning( CDC_SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
                                  "CDC not found for SubDataObject ", sdo.getName(), " in namespace \"", this.nsIdentification, "\"" );
             }
         }
@@ -208,7 +211,7 @@ public class CDCValidator {
         if( validatedDOType.contains( doType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
+        console.debug( CDC_SETUP_NSD_CATEGORY, doType.getLineNumber(),
                        "CDCValidator.validateDOType( ", doType.getId(), " ) in namespace \"", nsIdentification, "\"" );
         validatedDOType.add( doType.getId() );
         
@@ -231,7 +234,7 @@ public class CDCValidator {
                 subDataObjectPresenceConditionValidator.addModelData( sdo, sdo.getName(), diagnostics );
             }
             else {
-                console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, sdo.getLineNumber(),
+                console.warning( CDC_VALIDATION_NSD_CATEGORY, sdo.getLineNumber(),
                                  "Presence condition of SDO ", sdo.getName(),
                                  " is not checked because its namespace \"", sdo.getNamespace(),
                                  "\" is not the same as the namespace of its DOType \"", nsIdentification, "\"" );
@@ -246,7 +249,7 @@ public class CDCValidator {
                 typeValidator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                console.error( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
+                console.error( CDC_VALIDATION_NSD_CATEGORY, da.getLineNumber(),
                                "DA ", da.getName(), " of type " + da.getType(),
                                " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
             }
@@ -256,7 +259,7 @@ public class CDCValidator {
                 fcValidator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                console.error( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
+                console.error( CDC_VALIDATION_NSD_CATEGORY, da.getLineNumber(),
                                "FunctionalConstraint ", da.getFc(), " of DA " + da.getName(),
                                " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
             }
@@ -273,12 +276,12 @@ public class CDCValidator {
                     res = cdcValidator.validateDOType( sdo.getRefersToDOType(), diagnostics ) && res;
                 }
                 else {
-                    console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
+                    console.warning( CDC_SETUP_NSD_CATEGORY, doType.getLineNumber(),
                                      "while validating DOType: DOType for SDO ", sdo.getName(), " not found in namespace \"", nsId, "\"" );
                 }
             }
             else {
-                console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, doType.getLineNumber(),
+                console.warning( CDC_SETUP_NSD_CATEGORY, doType.getLineNumber(),
                                  "while validating DOType: validator for SDO ", sdo.getType(), " not found in namespace \"", nsId, "\"" );
             }
         }
@@ -289,12 +292,12 @@ public class CDCValidator {
     public boolean validateDO( DO do_, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+        console.debug( CDC_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                        "CDCValidator.validateDO( ", do_.getName(), " ) in namespace \"", nsIdentification, "\"" );
         
         DOType doType = do_.getRefersToDOType();
         if( doType == null ) {
-            console.error( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+            console.error( CDC_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                            "DOType for DO \"", do_.getName(), " not found in namespace \"", nsIdentification, "\"" );
             return false;
         }

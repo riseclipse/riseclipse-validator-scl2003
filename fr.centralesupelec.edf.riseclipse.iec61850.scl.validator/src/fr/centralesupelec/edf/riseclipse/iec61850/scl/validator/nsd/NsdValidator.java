@@ -31,8 +31,9 @@ import fr.centralesupelec.edf.riseclipse.util.Severity;
 public class NsdValidator {
 
     // Package visibility
-    static final String      SETUP_NSD_CATEGORY = "NSD/Setup";
-    static final String VALIDATION_NSD_CATEGORY = "NSD/Validation";
+    static final String          SETUP_NSD_CATEGORY = "NSD/Setup";
+    static final String     VALIDATION_NSD_CATEGORY = "NSD/Validation";
+    static final String NOTIMPLEMENTED_NSD_CATEGORY = "NSD/NotImplemented";
     
     private @NonNull NsdModelLoader nsdLoader;
     private @NonNull NsdEObjectValidator nsdEObjectValidator;

@@ -39,6 +39,13 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class ConstructedAttributeValidator extends TypeValidator {
 
+    private static final String CA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/ConstructedAttribute";
+    private static final String CA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/ConstructedAttribute";
+
+    public static void initialize() {
+        SubDataAttributePresenceConditionValidator.initialize();
+    }
+    
     private HashSet< String > validatedDAType; 
 
     private SubDataAttributePresenceConditionValidator subDataAttributePresenceConditionValidator;
@@ -52,7 +59,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
         
         for( SubDataAttribute sda : constructedAttribute.getSubDataAttribute() ) {
             if( sda.getType() == null ) {
-                console.warning( NsdValidator.SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
+                console.warning( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
                                  "type not specified for SubDataAttribute ", sda.getName() );
                 continue;
             }
@@ -73,7 +80,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
             }
             // The type of the SubDataAttribute may be a ConstructedAttribute whose validator is not yet built
             if(( typeValidator == null ) && ( sda.getRefersToConstructedAttribute() != null )) {
-                console.info( NsdValidator.SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
+                console.info( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
                               "Validator for ConstructedAttribute ", constructedAttribute.getName(),
                               " needs validator for SubDataAttribute ", sda.getName(), " of type ", sda.getType(), " which is not yet built" );
                 typeValidator = TypeValidator.buildConstructedAttributeValidator( this.nsIdentification, sda.getRefersToConstructedAttribute(), console );
@@ -82,7 +89,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
                 subDataAttributeValidatorMap.put( new NsIdentificationName( this.nsIdentification, sda.getName() ), typeValidator );
             }
             else {
-                console.warning( NsdValidator.SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
+                console.warning( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
                                  "Type not found for SubDataAttribute ", sda.getName() );
             }
         }
@@ -104,7 +111,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
     public boolean validateAbstractDataAttribute( AbstractDataAttribute da, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, da.getLineNumber(),
+        console.debug( CA_VALIDATION_NSD_CATEGORY, da.getLineNumber(),
                        "ConstructedAttributeValidator.validateAbstractDataAttribute( ", da.getName(), " ) in namespace \"", nsIdentification, "\"" );
         boolean res = true;
         
@@ -118,7 +125,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
         if( validatedDAType.contains( daType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, daType.getLineNumber(),
+        console.debug( CA_VALIDATION_NSD_CATEGORY, daType.getLineNumber(),
                        "ConstructedAttributeValidator.validateDAType( ", daType.getId(), " ) in namespace \"", nsIdentification, "\"" );
         validatedDAType.add( daType.getId() );
         

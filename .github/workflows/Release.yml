@@ -1,0 +1,41 @@
+# *************************************************************************
+# **  Copyright (c) 2022 CentraleSupélec & EDF.
+# **  All rights reserved. This program and the accompanying materials
+# **  are made available under the terms of the Eclipse Public License v2.0
+# **  which accompanies this distribution, and is available at
+# **  https://www.eclipse.org/legal/epl-v20.html
+# ** 
+# **  This file is part of the RiseClipse tool
+# **  
+# **  Contributors:
+# **      Computer Science Department, CentraleSupélec
+# **      EDF R&D
+# **  Contacts:
+# **      dominique.marcadet@centralesupelec.fr
+# **      aurelie.dehouck-neveu@edf.fr
+# **  Web site:
+# **      https://riseclipse.github.io
+# *************************************************************************
+
+name: Release on GitHub and DockerHub
+
+# This CD workflow switches pre-release to release on GitHub (without rc flag)
+# It also builds and push a docker image of the RiseClipse Validator SCL CLI tool
+
+on: workflow_dispatch
+
+jobs:
+  call-validate-release-workflow:
+    name: Validate Release
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Validate-Release.yml@master
+
+  call-release-dockerhub-workflow:
+    name: Release on DockerHub
+    needs: [call-validate-release-workflow]
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-DockerHub.yml@master
+    with:
+      release_version: ${{ needs.call-validate-release-workflow.outputs.release_version }}  
+      docker_repository: riseclipse-validator-scl
+    secrets:
+      DOCKER_USER: ${{ secrets.RISECLIPSE_DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.RISECLIPSE_DOCKER_ACCESS_TOKEN }}

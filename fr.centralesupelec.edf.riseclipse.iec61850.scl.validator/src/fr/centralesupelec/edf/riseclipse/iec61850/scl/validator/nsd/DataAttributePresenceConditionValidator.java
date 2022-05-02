@@ -40,7 +40,10 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class DataAttributePresenceConditionValidator extends GenericPresenceConditionValidator< CDC, DOType, @Nullable DA >{
 
-    private static HashMap< NsIdentificationName, DataAttributePresenceConditionValidator > validators = new HashMap<>();
+    private static final String DA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/DataAttribute";
+    private static final String DA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/DataAttribute";
+
+    private static HashMap< String, DataAttributePresenceConditionValidator > validators = new HashMap<>();
     
     public static DataAttributePresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
         if( ! validators.containsKey( new NsIdentificationName( nsIdentification, cdc.getName() ))) {
@@ -55,6 +58,16 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
         super( nsIdentification, cdc );
         
         this.cdc = cdc;
+    }
+
+    @Override
+    protected String getSetupMessageCategory() {
+        return DA_SETUP_NSD_CATEGORY;
+    }
+
+    @Override
+    protected String getValidationMessageCategory() {
+        return DA_VALIDATION_NSD_CATEGORY;
     }
 
     @Override
@@ -111,7 +124,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                     for( String attribute : mandatoryInLLN0ElseOptional ) {
                         DA da = presentSclComponent.get( attribute );
                         if( da == null ) {
-                            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
+                            RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
                                                       getSclComponentClassName(), " ", attribute, " is mandatory in ", getSclModelClassName(), " with LNClass LLN0" );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
@@ -142,7 +155,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                     for( String attribute : mandatoryInLLN0ElseForbidden ) {
                         DA da = presentSclComponent.get( attribute );
                         if( da == null ) {
-                            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
+                            RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
                                                       getSclComponentClassName(), " ", attribute, " is mandatory in ", getSclModelClassName(), " with LNClass LLN0" );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
@@ -158,7 +171,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                     for( String attribute : mandatoryInLLN0ElseForbidden ) {
                         DA da = presentSclComponent.get( attribute );
                         if( da != null ) {
-                            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
+                            RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
                                                       getSclComponentClassName(), " ", attribute, " is forbidden in ", getSclModelClassName(), " with LNClass ", do_.getParentLNodeType().getLnClass() );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
@@ -182,7 +195,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     protected boolean validateOMSynPh( DOType sclModel, DiagnosticChain diagnostics ) {
         for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
             if( presentSclComponent.get( name ) != null ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"OMSynPh\" for", getSclComponentClassName(), " is not implemented in ", getSclModelClassName(), ") with ", getNsdModelClassName(), " ", getNsdModelName() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,

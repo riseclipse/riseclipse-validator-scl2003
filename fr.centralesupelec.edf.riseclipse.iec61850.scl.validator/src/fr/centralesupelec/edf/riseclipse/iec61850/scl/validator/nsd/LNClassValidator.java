@@ -40,6 +40,9 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public class LNClassValidator {
     
+    private static final String LNCLASS_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/LNClass";
+    private static final String LNCLASS_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/LNClass";
+
     private static HashMap< NsIdentificationName, LNClassValidator > validators = new HashMap<>();
     
     public static LNClassValidator get( NsIdentification nsIdentification, String lnClassName ) {
@@ -93,7 +96,7 @@ public class LNClassValidator {
     private HashMap< String, CDCValidator > dataObjectValidatorMap = new HashMap<>();
 
     private LNClassValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass, IRiseClipseConsole console ) {
-        console.debug( NsdValidator.SETUP_NSD_CATEGORY, anyLNClass.getFilename(), anyLNClass.getLineNumber(),
+        console.debug( LNCLASS_SETUP_NSD_CATEGORY, anyLNClass.getFilename(), anyLNClass.getLineNumber(),
                        "build LNClassValidator for ", anyLNClass.getName(), " in namespace \"", nsIdentification, "\"" );
         
         this.nsIdentification = nsIdentification;
@@ -120,11 +123,11 @@ public class LNClassValidator {
                 }
                 if( cdcValidator != null ) {
                     dataObjectValidatorMap.put( do_.getName(), cdcValidator );
-                    console.notice( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                    console.notice( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
                                     "CDC for DataObject ", do_.getName(), " found with type ", do_.getType() );
                 }
                 else {
-                    console.warning( NsdValidator.SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                    console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
                                      "CDC not found for DataObject ", do_.getName(), " in namespace \"", this.nsIdentification, "\"" );
                 }
             }
@@ -139,7 +142,7 @@ public class LNClassValidator {
         if( validatedLNodeType.contains( lNodeType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+        console.debug( LNCLASS_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
                        "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " in namespace \"", this.nsIdentification, "\"" );
         validatedLNodeType.add( lNodeType.getId() );
 
@@ -156,7 +159,7 @@ public class LNClassValidator {
                 dataObjectPresenceConditionValidator.addDO( do_, diagnostics );
             }
             else {
-                console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                console.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                                  "Presence condition of DO ", do_.getName(),
                                  " is not checked because its namespace \"", do_.getNamespace(),
                                  "\" is not the same as the namespace of its LNodeType \"", nsIdentification, "\"" );
@@ -183,7 +186,7 @@ public class LNClassValidator {
                 CDCValidator cdcValidator = dataObjectValidatorMap.get( names[0] );
                 if( cdcValidator != null ) {
                     if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
-                        console.error( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                        console.error( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                                        "DOType id = ", do_.getRefersToDOType().getId(), " at line ", do_.getRefersToDOType().getLineNumber(),
                                        " used by DO ", do_.getName(), " has wrong CDC ", do_.getRefersToDOType().getCdc(),
                                        ", it should be ", cdcValidator.getName(), " in namespace \"", nsIdentification + "\"" );
@@ -191,19 +194,19 @@ public class LNClassValidator {
                     res = cdcValidator.validateDO( do_, diagnostics ) && res;
                 }
                 else {
-                    console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                    console.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                                      "DO ", do_.getName(), " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
                 }
             }
             else {
                 if( do_.getRefersToDOType() == null ) {
-                    console.error( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                    console.error( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                                    "DO ", do_.getName(), " cannot be verified because its DOType is unknown" );
                     res = false;
                     continue;
                 }
 
-                console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                console.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                                  "DO ", do_.getName(), " cannot be checked against the CDC given by the LNClass of its AnyLN  because its namespace \"",
                                  do_.getNamespace(), "\" differs from current namespace \"", nsIdentification, "\". It will be checked using the CDC ",
                                  " of its DOType ", do_.getRefersToDOType().getCdc() );
@@ -212,7 +215,7 @@ public class LNClassValidator {
                     res = cdcValidator.validateDO( do_, diagnostics ) && res;
                 }
                 else {
-                    console.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
+                    console.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                                      "DO ", do_.getName(), " cannot be verified because there is no CDC validator for it in namespace \"" + do_.getNamespace() + "\"" );
                     
                 }
