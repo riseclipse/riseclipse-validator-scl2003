@@ -46,7 +46,7 @@ public class CDCValidator {
     private static final String CDC_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/CDC";
     private static final String CDC_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/CDC";
 
-    private static HashMap< String, CDCValidator > validators = new HashMap<>();
+    private static HashMap< NsIdentificationName, CDCValidator > validators = new HashMap<>();
     
     public static CDCValidator get( NsIdentification nsIdentification, String doTypeName ) {
         if( validators == null ) return null;

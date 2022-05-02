@@ -43,7 +43,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     private static final String DA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/DataAttribute";
     private static final String DA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/DataAttribute";
 
-    private static HashMap< String, DataAttributePresenceConditionValidator > validators = new HashMap<>();
+    private static HashMap< NsIdentificationName, DataAttributePresenceConditionValidator > validators = new HashMap<>();
     
     public static DataAttributePresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
         if( ! validators.containsKey( new NsIdentificationName( nsIdentification, cdc.getName() ))) {

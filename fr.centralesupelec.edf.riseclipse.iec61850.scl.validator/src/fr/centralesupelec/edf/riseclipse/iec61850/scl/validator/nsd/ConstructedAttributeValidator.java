@@ -42,10 +42,6 @@ public class ConstructedAttributeValidator extends TypeValidator {
     private static final String CA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/ConstructedAttribute";
     private static final String CA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/ConstructedAttribute";
 
-    public static void initialize() {
-        SubDataAttributePresenceConditionValidator.initialize();
-    }
-    
     private HashSet< String > validatedDAType; 
 
     private SubDataAttributePresenceConditionValidator subDataAttributePresenceConditionValidator;
