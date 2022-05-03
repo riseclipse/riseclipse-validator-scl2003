@@ -30,6 +30,7 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.jdt.annotation.NonNull;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Enumeration;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAI;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.EnumType;
@@ -43,13 +44,9 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class EnumerationValidator extends TypeValidator {
     
-    private static final String ENUMERATION_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/Enumeration";
-    private static final String ENUMERATION_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/Enumaration";
+    static final String ENUMERATION_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/Enumeration";
+    static final String ENUMERATION_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/Enumeration";
 
-    public static void initialize() {
-        // Nothing here
-    }
-    
     private HashSet< String > validatedEnumType;
 
     // Name of EnumVal may be empty, so we use LiteralVal as key
@@ -57,19 +54,17 @@ public class EnumerationValidator extends TypeValidator {
     private String name;
     private boolean isMultiplierKind;
 
-    public EnumerationValidator( Enumeration enumeration ) {
+    public EnumerationValidator( Enumeration enumeration, NsIdentification nsIdentification, IRiseClipseConsole console ) {
         this.name = enumeration.getName();
         String inheritedFromName = enumeration.getInheritedFrom();
         
         if(( inheritedFromName != null ) && ( ! inheritedFromName.isEmpty() )) {
-            TypeValidator inheritedValidator = TypeValidator.get( inheritedFromName );
+            TypeValidator inheritedValidator = TypeValidator.get( nsIdentification, inheritedFromName );
             if(( inheritedValidator != null ) && ( inheritedValidator instanceof EnumerationValidator )) {
                 EnumerationValidator inheritedFrom = ( EnumerationValidator ) inheritedValidator;
                 literals.putAll( inheritedFrom.literals );
             }
             else {
-                @NonNull
-                IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
                 console.error( ENUMERATION_SETUP_NSD_CATEGORY, 0,
                                "validator for inherited enumeration \"", inheritedFromName, "\" not found" );
             }

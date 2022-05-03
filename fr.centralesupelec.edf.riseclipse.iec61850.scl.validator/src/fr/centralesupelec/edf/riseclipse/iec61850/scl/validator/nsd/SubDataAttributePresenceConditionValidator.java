@@ -27,6 +27,8 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.jdt.annotation.Nullable;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.BDA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
@@ -37,23 +39,19 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     private static final String SDA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/SubDataAttribute";
     private static final String SDA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/SubDataAttribute";
 
-    private static HashMap< String, SubDataAttributePresenceConditionValidator > validators;
+    private static HashMap< NsIdentificationName, SubDataAttributePresenceConditionValidator > validators = new HashMap<>();
     
-    public static void initialize() {
-        validators = new HashMap<>();
-    }
-    
-    public static SubDataAttributePresenceConditionValidator get( ConstructedAttribute constructedAttribute ) {
-        if( ! validators.containsKey( constructedAttribute.getName() )) {
-            validators.put( constructedAttribute.getName(), new SubDataAttributePresenceConditionValidator( constructedAttribute ));
+    public static SubDataAttributePresenceConditionValidator get( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute ) {
+        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, constructedAttribute.getName() ))) {
+            validators.put( new NsIdentificationName( nsIdentification, constructedAttribute.getName() ), new SubDataAttributePresenceConditionValidator( nsIdentification, constructedAttribute ));
         }
-        return validators.get( constructedAttribute.getName() );
+        return validators.get( new NsIdentificationName( nsIdentification, constructedAttribute.getName() ) );
     }
     
     private ConstructedAttribute constructedAttribute;
     
-    public SubDataAttributePresenceConditionValidator( ConstructedAttribute constructedAttribute ) {
-        super( constructedAttribute );
+    public SubDataAttributePresenceConditionValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute ) {
+        super( nsIdentification, constructedAttribute );
 
         this.constructedAttribute = constructedAttribute;
     }

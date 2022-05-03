@@ -30,6 +30,8 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.annotation.Nullable;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
@@ -42,23 +44,19 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     private static final String SDO_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/SubDataObject";
     private static final String SDO_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/SubDataObject";
 
-    private static HashMap< String, SubDataObjectPresenceConditionValidator > validators;
+    private static HashMap< NsIdentificationName, SubDataObjectPresenceConditionValidator > validators = new HashMap<>();
     
-    public static void initialize() {
-        validators = new HashMap<>();
-    }
-    
-    public static SubDataObjectPresenceConditionValidator get( CDC cdc ) {
-        if( ! validators.containsKey( cdc.getName() )) {
-            validators.put( cdc.getName(), new SubDataObjectPresenceConditionValidator( cdc ));
+    public static SubDataObjectPresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
+        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, cdc.getName() ))) {
+            validators.put( new NsIdentificationName( nsIdentification, cdc.getName() ), new SubDataObjectPresenceConditionValidator( nsIdentification, cdc ));
         }
-        return validators.get( cdc.getName() );
+        return validators.get( new NsIdentificationName( nsIdentification, cdc.getName() ) );
     }
     
     private CDC cdc;
 
-    public SubDataObjectPresenceConditionValidator( CDC cdc ) {
-        super( cdc );
+    public SubDataObjectPresenceConditionValidator( NsIdentification nsIdentification, CDC cdc ) {
+        super( nsIdentification, cdc );
         
         this.cdc = cdc;
     }

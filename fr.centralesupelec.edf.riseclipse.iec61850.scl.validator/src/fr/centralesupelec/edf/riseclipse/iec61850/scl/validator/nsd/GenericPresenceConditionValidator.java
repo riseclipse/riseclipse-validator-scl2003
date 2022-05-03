@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Doc;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.NsdObject;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
@@ -71,6 +72,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     protected HashSet< String > mandatoryInLLN0ElseOptional;
     protected HashSet< String > mandatoryInLLN0ElseForbidden;
     protected HashSet< String > mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional;
+    protected HashSet< String > mandatoryIfNameSpaceOfDataClassDeviatesElseOptional;
     protected HashSet< String > mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional;
     protected HashSet< String > mandatoryIfAnalogValueIncludesIElseForbidden;
     protected HashSet< String > mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden;
@@ -85,10 +87,18 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     protected HashSet< String > mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2;
     protected HashSet< String > mandatoryIfMeasuredValueExposesRange;
     protected HashSet< String > optionalIfPhsRefIsSynchrophasorElseMandatory;
+    protected HashSet< String > mAllOrNonePerGroup;
+    protected HashSet< String > mOctrl;
+    protected HashSet< String > mOsboNormal;
+    protected HashSet< String > mOsboEnhanced;
     
     protected final IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+
+    protected NsIdentification nsIdentification;
     
-    public GenericPresenceConditionValidator( NsdModel nsdModel ) {
+    public GenericPresenceConditionValidator( NsIdentification nsIdentification, NsdModel nsdModel ) {
+        this.nsIdentification = nsIdentification;
+        
         createSpecifications( nsdModel );
         checkSpecification();
     }
@@ -137,24 +147,24 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             // -> TODO: what does it mean ? what do we have to check ?
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: ", getNsdComponentClassName(), " ", name, " declared as \"na\" in PresenceCondition" );
-            if( notApplicable == null ) notApplicable = new HashSet<>();
-            notApplicable.add( name );
+//            if( notApplicable == null ) notApplicable = new HashSet<>();
+//            notApplicable.add( name );
             break;
         case "Mmulti" :
             // At least one element shall be present; all instances have an instance number > 0
             // -> TODO: not sure what is the instance number, it is assumed to be the suffix of DO name
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: ", getNsdComponentClassName(), " ", name, " declared as \"Mmulti\" in PresenceCondition" );
-            if( mandatoryMulti == null ) mandatoryMulti = new HashSet<>();
-            mandatoryMulti.add( name );
+//            if( mandatoryMulti == null ) mandatoryMulti = new HashSet<>();
+//            mandatoryMulti.add( name );
             break;
         case "Omulti" :
             // Zero or more elements may be present; all instances have an instance number > 0
             // -> TODO: not sure what is the instance number, it is assumed to be the suffix of DO name
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: ", getNsdComponentClassName(), " ", name, " declared as \"Omulti\" in PresenceCondition" );
-            if( optionalMulti == null ) optionalMulti = new HashSet<>();
-            optionalMulti.add( name );
+//            if( optionalMulti == null ) optionalMulti = new HashSet<>();
+//            optionalMulti.add( name );
             break;
         case "AtLeastOne" :
             // Parameter n: group number (> 0).
@@ -399,8 +409,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             // TODO: how do we know if substitution is supported ?
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MFsubst\" in PresenceCondition" );
-            if( mandatoryIfSubstitutionElseForbidden == null ) mandatoryIfSubstitutionElseForbidden = new HashSet<>();
-            mandatoryIfSubstitutionElseForbidden.add( name );
+//            if( mandatoryIfSubstitutionElseForbidden == null ) mandatoryIfSubstitutionElseForbidden = new HashSet<>();
+//            mandatoryIfSubstitutionElseForbidden.add( name );
             break;
         case "MOln0" :
             // Element is mandatory in the context of LLN0; otherwise optional
@@ -417,16 +427,25 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOlnNs\" in PresenceCondition" );
-            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional = new HashSet<>();
-            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional.add( name );
+//            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional = new HashSet<>();
+//            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional.add( name );
+            break;
+        case "MOcdcNs" :
+            // Seen in IEC_61850-7-2_2007A2 and IEC_61850-7-2_2007A3, its significance is based on MOlnNs and MOdataNs
+            // Element is mandatory if the name space of its data class deviates from the name space of its logical node,
+            // otherwise optional. See IEC 61850-7-1 for use of name space
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+                             "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOcdcNs\" in PresenceCondition" );
+//            if( mandatoryIfNameSpaceOfDataClassDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataClassDeviatesElseOptional = new HashSet<>();
+//            mandatoryIfNameSpaceOfDataClassDeviatesElseOptional.add( name );
             break;
         case "MOdataNs" :
             // Element is mandatory if the name space of its data object deviates from the name space of its logical node,
             // otherwise optional. See IEC 61850-7-1 for use of name space
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOdataNs\" in PresenceCondition" );
-            if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional = new HashSet<>();
-            mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional.add( name );
+//            if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional = new HashSet<>();
+//            mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional.add( name );
             break;
         case "MFscaledAV" :
             // Element is mandatory* if any sibling elements of type AnalogueValue include 'i' as a child, otherwise forbidden.
@@ -434,70 +453,70 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             // the description of scaling remains mandatory for their (SCL) configuration
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MFscaledAV\" in PresenceCondition" );
-            if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
-            mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
+//            if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
+//            mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
             break;
         case "MFscaledMagV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'mag' attribute, otherwise forbidden.
             // *See MFscaledAV
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MFscaledMagV\" in PresenceCondition" );
-            if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
-            mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
+//            if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
+//            mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
             break;
         case "MFscaledAngV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'ang' attribute, otherwise forbidden.
             // *See MFscaledAV
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MFscaledAngV\" in PresenceCondition" );
-            if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
-            mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
+//            if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
+//            mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
             break;
         case "MOrms" :
             // Element is mandatory if the harmonic values in the context are calculated as a ratio to RMS value
             // (value of data attribute 'hvRef' is 'rms'), optional otherwise
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOrms\" in PresenceCondition" );
-            if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional == null ) mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional = new HashSet<>();
-            mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional.add( name );
+//            if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional == null ) mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional = new HashSet<>();
+//            mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional.add( name );
             break;
         case "MOrootLD" :
             // Element is mandatory in the context of a root logical device; otherwise it is optional
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOrootLD\" in PresenceCondition" );
-            if( mandatoryInRootLogicalDeviceElseOptional == null ) mandatoryInRootLogicalDeviceElseOptional = new HashSet<>();
-            mandatoryInRootLogicalDeviceElseOptional.add( name );
+//            if( mandatoryInRootLogicalDeviceElseOptional == null ) mandatoryInRootLogicalDeviceElseOptional = new HashSet<>();
+//            mandatoryInRootLogicalDeviceElseOptional.add( name );
             break;
         case "MOoperTm" :
             // Element is mandatory if at least one controlled object on the IED supports time activation service; otherwise it is optional
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOoperTm\" in PresenceCondition" );
-            if( mandatoryIfControlSupportsTimeElseOptional == null ) mandatoryIfControlSupportsTimeElseOptional = new HashSet<>();
-            mandatoryIfControlSupportsTimeElseOptional.add( name );
+//            if( mandatoryIfControlSupportsTimeElseOptional == null ) mandatoryIfControlSupportsTimeElseOptional = new HashSet<>();
+//            mandatoryIfControlSupportsTimeElseOptional.add( name );
             break;
         case "MmultiF" :
             // Parameter sibling: sibling element name.
             // One or more elements must be present if sibling element is present, otherwise forbidden
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOoperTm\" in PresenceCondition" );
-            if( oneOrMoreIfSiblingPresentElseForbidden == null ) oneOrMoreIfSiblingPresentElseForbidden = new HashMap<>();
-            oneOrMoreIfSiblingPresentElseForbidden.put( name, presCondArgs );
+//            if( oneOrMoreIfSiblingPresentElseForbidden == null ) oneOrMoreIfSiblingPresentElseForbidden = new HashMap<>();
+//            oneOrMoreIfSiblingPresentElseForbidden.put( name, presCondArgs );
             break;
         case "MOsbo" :
             // Element is mandatory if declared control model supports 'sbo-with-normal-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOsbo\" in PresenceCondition" );
-            if( mandatoryIfControlSupportsSecurity1ElseOptional == null ) mandatoryIfControlSupportsSecurity1ElseOptional = new HashSet<>();
-            mandatoryIfControlSupportsSecurity1ElseOptional.add( name );
+//            if( mandatoryIfControlSupportsSecurity1ElseOptional == null ) mandatoryIfControlSupportsSecurity1ElseOptional = new HashSet<>();
+//            mandatoryIfControlSupportsSecurity1ElseOptional.add( name );
             break;
         case "MOenhanced" :
             // Element is mandatory if declared control model supports 'direct-with-enhanced-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOenhanced\" in PresenceCondition" );
-            if( mandatoryIfControlSupportsSecurity2ElseOptional == null ) mandatoryIfControlSupportsSecurity2ElseOptional = new HashSet<>();
-            mandatoryIfControlSupportsSecurity2ElseOptional.add( name );
+//            if( mandatoryIfControlSupportsSecurity2ElseOptional == null ) mandatoryIfControlSupportsSecurity2ElseOptional = new HashSet<>();
+//            mandatoryIfControlSupportsSecurity2ElseOptional.add( name );
             break;
         case "MONamPlt" :
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
@@ -505,8 +524,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             // TODO: same as "MOlnNs" ?
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MONamPlt\" in PresenceCondition" );
-            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 = new HashSet<>();
-            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2.add( name );
+//            if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 = new HashSet<>();
+//            mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2.add( name );
             break;
         case "OF" :
             // Parameter sibling: sibling element name.
@@ -519,19 +538,49 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             // (with the attribute range respectively rangeAng)
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MORange\" in PresenceCondition" );
-            if( mandatoryIfMeasuredValueExposesRange == null ) mandatoryIfMeasuredValueExposesRange = new HashSet<>();
-            mandatoryIfMeasuredValueExposesRange.add( name );
+//            if( mandatoryIfMeasuredValueExposesRange == null ) mandatoryIfMeasuredValueExposesRange = new HashSet<>();
+//            mandatoryIfMeasuredValueExposesRange.add( name );
             break;
         case "OMSynPh" :
             // This attribute is optional if value of 'phsRef'' is Synchrophasor otherwise Mandatory]]></Doc>
             console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"OMSynPh\" in PresenceCondition" );
-            if( optionalIfPhsRefIsSynchrophasorElseMandatory == null ) optionalIfPhsRefIsSynchrophasorElseMandatory = new HashSet<>();
-            optionalIfPhsRefIsSynchrophasorElseMandatory.add( name );
+//            if( optionalIfPhsRefIsSynchrophasorElseMandatory == null ) optionalIfPhsRefIsSynchrophasorElseMandatory = new HashSet<>();
+//            optionalIfPhsRefIsSynchrophasorElseMandatory.add( name );
             break;
-        default:
-            console.warning( getSetupMessageCategory(), filename, lineNumber,
-                             "the PresenceCondition ", presCond, " is unknown" );
+        case "MAllOrNonePerGroup" :
+            // Parameter n: group number (> 0).
+            // Element is mandatory if declared control model supports 'direct-with-enhanced- security'
+            // or 'sbo-with-enhanced-security', otherwise all or none of the elements of a group n shall be present.
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+                             "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MAllOrNonePerGroup\" in PresenceCondition" );
+//            if( mAllOrNonePerGroup == null ) mAllOrNonePerGroup = new HashSet<>();
+//            mAllOrNonePerGroup.add( name );
+            break;
+        case "MOctrl" :
+            // Seen in IEC_61850-8-1_2003A2.snsd
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+                             "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOctrl\" in PresenceCondition" );
+//            if( mOctrl == null ) mOctrl = new HashSet<>();
+//            mOctrl.add( name );
+            break;
+        case "MOsboNormal" :
+            // Seen in IEC_61850-8-1_2003A2.snsd
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+                             "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOsboNormal\" in PresenceCondition" );
+//            if( mOsboNormal == null ) mOsboNormal = new HashSet<>();
+//            mOsboNormal.add( name );
+            break;
+        case "MOsboEnhanced" :
+            // Seen in IEC_61850-8-1_2003A2.snsd
+            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+                             "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MOsboEnhanced\" in PresenceCondition" );
+//            if( mOsboEnhanced == null ) mOsboEnhanced = new HashSet<>();
+//            mOsboEnhanced.add( name );
+            break;
+       default:
+           console.warning( getSetupMessageCategory(), filename, lineNumber,
+                            "the PresenceCondition ", presCond, " of ", getNsdComponentClassName(), " ", name, " is unknown" );
             break;
         }
         
@@ -1206,6 +1255,24 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             }
         }
 
+        // presCond: "MOcdcNs" :
+        // Element is mandatory if the name space of its data class deviates from the name space of its logical node,
+        // otherwise optional. See IEC 61850-7-1 for use of name space
+        // Usage in standard NSD files (version 2007A2/A3): DataAttribute
+        // TODO: The meaning is not clear.
+        if( mandatoryIfNameSpaceOfDataClassDeviatesElseOptional != null ) {
+            for( String name : mandatoryIfNameSpaceOfDataClassDeviatesElseOptional ) {
+                if( presentSclComponent.get( name ) != null ) {
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] verification of PresenceCondition \"MOcdcNs\" for " + getSclComponentClassName() + " " + name + " is not implemented in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with " + getNsdModelClassName() + " " + getNsdModelName(),
+                            new Object[] { sclModel } ));
+                }
+            }
+        }
+
         // presCond: "MOdataNs" :
         // Element is mandatory if the name space of its data object deviates from the name space of its logical node,
         // otherwise optional. See IEC 61850-7-1 for use of name space
@@ -1477,6 +1544,66 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             console.debug( getValidationMessageCategory(), sclModel.getLineNumber(),
                              "validation of presence condition \"OMSynPh\" on ", getSclModelClassName() );
             res = validateOMSynPh( sclModel, diagnostics ) && res;
+        }
+
+        // presCond: "MAllOrNonePerGroup" :
+        // TODO
+        if( mAllOrNonePerGroup != null ) {
+            for( String name : mAllOrNonePerGroup ) {
+                if( presentSclComponent.get( name ) != null ) {
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] verification of PresenceCondition \"MAllOrNonePerGroup\" for " + getSclComponentClassName() + " " + name + " is not implemented in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with " + getNsdModelClassName() + " " + getNsdModelName(),
+                            new Object[] { sclModel } ));
+                }
+            }
+        }
+
+        // presCond: "MOctrl" :
+        // TODO
+        if( mOctrl != null ) {
+            for( String name : mOctrl ) {
+                if( presentSclComponent.get( name ) != null ) {
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] verification of PresenceCondition \"MOctrl\" for " + getSclComponentClassName() + " " + name + " is not implemented in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with " + getNsdModelClassName() + " " + getNsdModelName(),
+                            new Object[] { sclModel } ));
+                }
+            }
+        }
+
+        // presCond: "MOsboNormal" :
+        // TODO
+        if( mOsboNormal != null ) {
+            for( String name : mOsboNormal ) {
+                if( presentSclComponent.get( name ) != null ) {
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] verification of PresenceCondition \"MOsboNormal\" for " + getSclComponentClassName() + " " + name + " is not implemented in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with " + getNsdModelClassName() + " " + getNsdModelName(),
+                            new Object[] { sclModel } ));
+                }
+            }
+        }
+
+        // presCond: "MOsboEnhanced" :
+        // TODO
+        if( mOsboEnhanced != null ) {
+            for( String name : mOsboEnhanced ) {
+                if( presentSclComponent.get( name ) != null ) {
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            "[NSD validation] verification of PresenceCondition \"MOsboEnhanced\" for " + getSclComponentClassName() + " " + name + " is not implemented in " + getSclModelClassName() + " (line " + sclModel.getLineNumber() + ") with " + getNsdModelClassName() + " " + getNsdModelName(),
+                            new Object[] { sclModel } ));
+                }
+            }
         }
 
         return res;

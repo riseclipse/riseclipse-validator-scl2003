@@ -32,7 +32,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.stream.Stream;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DependsOn;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DocumentRoot;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.PresenceCondition;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SCL;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclPackage;
@@ -491,24 +496,40 @@ public class RiseClipseValidatorSCL {
         
     }
 
-    private static void doHiddenDoor() {
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        
+    @SuppressWarnings( "unused" )
+    private static void doHiddenDoor_1() {
+            
         prepare( false );
-        
-//        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION );
-//        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-//        pc.forEach( c -> console.info(  "PresenceCondition " + c.getName() ));
-        
-//        Stream< ConstructedAttribute > ca = nsdValidator.getNsdLoader().getResourceSet().getConstructedAttributeStream( DEFAULT_NS_IDENTIFICATION );
-//        console.setLevel( IRiseClipseConsole.INFO_LEVEL );
-//        ca.forEach( c -> console.info(  "ConstructedAttribute " + c.getName() ));
-        
+    
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.setLevel( Severity.INFO );
+        console.setFormatString( INFO_FORMAT_STRING );
+
+        Stream< PresenceCondition > pc = nsdValidator.getNsdLoader().getResourceSet().getPresenceConditionStream( DEFAULT_NS_IDENTIFICATION, true );
+        pc.forEach( c -> console.info( VALIDATOR_SCL_CATEGORY, 0, "PresenceCondition ", c.getName() ));
+        
+        Stream< ConstructedAttribute > ca = nsdValidator.getNsdLoader().getResourceSet().getConstructedAttributeStream( DEFAULT_NS_IDENTIFICATION, true );
+        ca.forEach( c -> console.info( VALIDATOR_SCL_CATEGORY, 0, "ConstructedAttribute ", c.getName() ));
+        
+        System.exit( 0 );
+    }
+        
+//    @SuppressWarnings( "unused" )
+    private static void doHiddenDoor() {
+            
+        prepare( false );
+    
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.setFormatString( INFO_FORMAT_STRING );
+    
         for( int i = 0; i < sclFiles.size(); ++i ) {
+            console.setLevel( Severity.WARNING );
             sclLoader.reset();
             Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
             sclLoader.finalizeLoad( console );
+            if( resource.getContents().size() == 0 ) continue;
+            console.setLevel( Severity.INFO );
+
             SCL scl = ( SCL ) resource.getContents().get( 0 );
             scl
             .getIED()
@@ -551,6 +572,27 @@ public class RiseClipseValidatorSCL {
                 });
             });
             
+        }
+        
+        System.exit( 0 );
+    }
+
+    @SuppressWarnings( "unused" )
+    private static void doHiddenDoor_3() {
+        
+        prepare( false );
+
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.setFormatString( INFO_FORMAT_STRING );
+
+        for( int i = 0; i < sclFiles.size(); ++i ) {
+            console.setLevel( Severity.WARNING );
+            sclLoader.reset();
+            Resource resource = sclLoader.loadWithoutValidation( sclFiles.get( i ));
+            sclLoader.finalizeLoad( console );
+            console.setLevel( Severity.INFO );
+            SCL scl = ( SCL ) resource.getContents().get( 0 );
+            
             for( TreeIterator< ? extends EObject > t = EcoreUtil.getAllContents( Collections.singleton( scl ) ); t.hasNext(); ) {
                 EObject child = t.next();
                 console.info( VALIDATOR_SCL_CATEGORY, 0, child.getClass().getName() );
@@ -560,7 +602,40 @@ public class RiseClipseValidatorSCL {
         
         System.exit( 0 );
     }
+    
+    @SuppressWarnings( "unused" )
+    private static void doHiddenDoor_4() {
+            
+        prepare( false );
 
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.setLevel( Severity.INFO );
+        console.setFormatString( INFO_FORMAT_STRING );
+
+        for( int i = 0; i < nsdValidator.getNsdLoader().getResourceSet().getResources().size(); ++i ) {
+            Resource resource = nsdValidator.getNsdLoader().getResourceSet().getResources().get( i );
+            DocumentRoot root = (DocumentRoot) resource.getContents().get( 0 );
+            if( root.getNS() != null ) {
+                console.info( VALIDATOR_SCL_CATEGORY, 0, "Id: " + root.getNS().getId() );
+                console.info( VALIDATOR_SCL_CATEGORY, 0, "Version: " + root.getNS().getVersion() + "-" + root.getNS().getRevision()  + root.getNS().getRelease() + "-" + root.getNS().getPublicationStage() );
+                DependsOn dependsOn = root.getNS().getDependsOn();
+                if( dependsOn != null ) {
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn Id: " + dependsOn.getId() );
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn Version: " + dependsOn.getVersion() + "-"  + dependsOn.getRevision()  + dependsOn.getRelease() + "-" + dependsOn.getPublicationStage() );
+                    if( dependsOn.getRefersToNS() != null ) {
+                        console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn.refersToNS found " );
+                    }
+                    else {
+                        console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn.refersToNS NOT FOUND " );                        
+                    }
+                }
+            }
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
+        }
+        
+        System.exit( 0 );
+    }
+    
     // public because used by ui
     public static void displayLegal() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
@@ -592,8 +667,8 @@ public class RiseClipseValidatorSCL {
 
     // public because used by ui
     public static void prepare( List< String > oclFileNames, List< String > nsdFileNames, boolean displayNsdMessages ) {
-        oclFiles = oclFileNames;
-        nsdFiles = nsdFileNames;
+        oclFiles = new ArrayList< String >( oclFileNames );
+        nsdFiles = new ArrayList< String >( nsdFileNames );
         prepare( displayNsdMessages );
     }
 
@@ -617,9 +692,6 @@ public class RiseClipseValidatorSCL {
         }
 
         if(( nsdFiles != null ) && ( ! nsdFiles.isEmpty() )) {
-            // There are some static attributes
-            NsdValidator.initialize();
-            
             nsdValidator = new NsdValidator( sclPg );
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );

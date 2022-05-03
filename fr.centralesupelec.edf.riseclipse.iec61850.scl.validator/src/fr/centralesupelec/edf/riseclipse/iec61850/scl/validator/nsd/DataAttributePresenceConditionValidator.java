@@ -29,6 +29,8 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.annotation.Nullable;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
@@ -41,23 +43,19 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     private static final String DA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/DataAttribute";
     private static final String DA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/DataAttribute";
 
-    private static HashMap< String, DataAttributePresenceConditionValidator > validators;
+    private static HashMap< NsIdentificationName, DataAttributePresenceConditionValidator > validators = new HashMap<>();
     
-    public static void initialize() {
-        validators = new HashMap<>();
-    }
-    
-    public static DataAttributePresenceConditionValidator get( CDC cdc ) {
-        if( ! validators.containsKey( cdc.getName() )) {
-            validators.put( cdc.getName(), new DataAttributePresenceConditionValidator( cdc ));
+    public static DataAttributePresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
+        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, cdc.getName() ))) {
+            validators.put( new NsIdentificationName( nsIdentification, cdc.getName() ), new DataAttributePresenceConditionValidator( nsIdentification, cdc ));
         }
-        return validators.get( cdc.getName() );
+        return validators.get( new NsIdentificationName( nsIdentification, cdc.getName() ));
     }
     
     private CDC cdc;
 
-    public DataAttributePresenceConditionValidator( CDC cdc ) {
-        super( cdc );
+    public DataAttributePresenceConditionValidator( NsIdentification nsIdentification, CDC cdc ) {
+        super( nsIdentification, cdc );
         
         this.cdc = cdc;
     }

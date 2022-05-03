@@ -35,10 +35,6 @@ public class NsdValidator {
     static final String     VALIDATION_NSD_CATEGORY = "NSD/Validation";
     static final String NOTIMPLEMENTED_NSD_CATEGORY = "NSD/NotImplemented";
     
-    public static void initialize() {
-        NsdEObjectValidator.initialize();
-    }
-
     private @NonNull NsdModelLoader nsdLoader;
     private @NonNull NsdEObjectValidator nsdEObjectValidator;
 
@@ -56,7 +52,7 @@ public class NsdValidator {
             level = console.setLevel( Severity.ERROR );            
         }
         nsdLoader.getResourceSet().finalizeLoad( console );
-        nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet() );
+        nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet(), console );
         validator.addChild( nsdEObjectValidator );
         if( ! displayNsdMessages ) {
             console.setLevel( level );            
