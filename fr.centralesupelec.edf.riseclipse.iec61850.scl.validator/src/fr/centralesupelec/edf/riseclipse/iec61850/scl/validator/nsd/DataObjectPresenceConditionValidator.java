@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.IntToDoubleFunction;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.BasicDiagnostic;
@@ -127,6 +129,7 @@ public class DataObjectPresenceConditionValidator {
     
     private final IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
     private NsIdentification nsIdentification;
+    private boolean isStatistics = false;
     
     @SuppressWarnings( "unchecked" )        // cast of HashMap.clone() result
     private DataObjectPresenceConditionValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass ) {
@@ -189,11 +192,29 @@ public class DataObjectPresenceConditionValidator {
                 }
             }
         }
+        
+        
+        isStatistics =
+                anyLNClass
+                .getDataObject()
+                .stream()
+                .anyMatch( d -> "ClcSrc".equals( d.getName() ))
+                ||
+                (( base != null ) && base.isStatistics );
+        console.info( DO_SETUP_NSD_CATEGORY, anyLNClass.getFilename(), anyLNClass.getLineNumber(),
+                "AnyLNClass ", anyLNClass.getName(), ( isStatistics ? " is statistic" : " is not statistic" ));
 
         anyLNClass
         .getDataObject()
         .stream()
-        .forEach( d -> addSpecification( d.getName(), d.getPresCond(), d.getPresCondArgs(), d.getLineNumber(), d.getFilename() ));
+        .forEach( d -> {
+            if( isStatistics ) {
+                addSpecification( d.getName(), d.getDsPresCond(), d.getDsPresCondArgs(), d.getLineNumber(), d.getFilename() );
+            }
+            else {
+                addSpecification( d.getName(), d.getPresCond(), d.getPresCondArgs(), d.getLineNumber(), d.getFilename() );
+            }
+        } );
         
         checkSpecification();
     }
