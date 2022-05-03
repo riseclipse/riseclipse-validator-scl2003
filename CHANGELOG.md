@@ -1,4 +1,8 @@
 
+## 1.2.2 (2022/05/03)
+- support for multiple NSD namespaces
+- take into account whether an AnyLNClass is statistic or not for presence conditions
+
 ## 1.2.1 (2022/04/19)
 - the output of the tool can be customized with a command line option
 - add sonar analysis of code
