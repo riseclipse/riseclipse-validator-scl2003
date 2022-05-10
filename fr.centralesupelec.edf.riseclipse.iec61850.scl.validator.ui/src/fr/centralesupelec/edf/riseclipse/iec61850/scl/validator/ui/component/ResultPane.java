@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -51,11 +51,11 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
     
     private static final String VALIDATOR_UI_CATEGORY = "SCL/ValidatorUI";
     
-    private final static String formatString = "%1$7s: [$2s] $4s at line $3d";
-    private final static Formatter formatter = new Formatter();
+    private String formatString = "%1$s: [%2$s] %4$s at line %3$d";
     private final static String newline = "\n";
     
-    private ArrayList< RiseClipseMessage > messages;
+    private ArrayList< String > messages = new ArrayList<>();
+    private ArrayList< Severity > levels = new ArrayList<>();
     private JCheckBox cbNotice;
     private JCheckBox cbInfo;
     private JCheckBox cbWarning;
@@ -71,15 +71,13 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
     public ResultPane( String filename, boolean withButtons ) {
         this.filename = filename;
         
-        messages = new ArrayList<>();
-
         setLayout( new BorderLayout( 0, 0 ));
         
         JPanel cbPanel = new JPanel();
         add( cbPanel, BorderLayout.NORTH );
 
         cbInfo = new JCheckBox( "Info" );
-        cbInfo.setSelected( true );
+        cbInfo.setSelected( false );
         cbInfo.addActionListener( this );
         cbPanel.add( cbInfo );
 
@@ -130,7 +128,7 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
         
         for( int i = 0; i < messages.size(); ++i ) {
             boolean display = cbNotice.isSelected();
-            switch( messages.get( i ).getSeverity()) {
+			switch( levels.get( i )) {
             case INFO:
                 display = cbInfo.isSelected();
                 break;
@@ -147,14 +145,7 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
                 break;
             }
             if( display ) {
-                String m = formatter.format(
-                         formatString,
-                         messages.get( i ).getSeverity(),
-                         messages.get( i ).getCategory(),
-                         messages.get( i ).getLineNumber(),
-                         messages.get( i ).getMessage()
-                ).toString();
-                buf.append( m );
+                buf.append( messages.get( i ));
                 buf.append( newline );
             }
         }
@@ -170,7 +161,20 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
 
     @Override
     public void output( RiseClipseMessage message ) {
-        messages.add( message );
+    	// We need to use the current formatString
+        Formatter formatter = new Formatter();
+        formatter.format(
+                formatString,
+                message.getSeverity(),
+                message.getCategory(),
+                message.getLineNumber(),
+                message.getMessage(),
+                "", "", ""
+        );
+        String m = formatter.toString();
+        formatter.close();
+        messages.add( m );
+        levels.add( message.getSeverity() );
     }
 
     @Override
@@ -243,14 +247,14 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
 
     @Override
     public String getFormatString() {
-        // Not taken into account for the moment
-        return "";
+        return formatString;
     }
 
     @Override
-    public String setFormatString( String formatString ) {
-        // Not taken into account for the moment
-        return "";
+    public String setFormatString( String newFormatString ) {
+        String previous = formatString;
+        formatString = newFormatString;
+        return previous;
     }
 
 }
