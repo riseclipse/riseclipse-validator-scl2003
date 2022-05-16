@@ -172,7 +172,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                         DA da = presentSclComponent.get( attribute );
                         if( da != null ) {
                             RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, sclModel.getLineNumber(), 
-                                                      getSclComponentClassName(), " ", attribute, " is forbidden in ", getSclModelClassName(), " with LNClass ", do_.getParentLNodeType().getLnClass() );
+                                                      getSclComponentClassName(), " ", attribute, " is forbidden in ", getSclModelClassName(), " with LNClass ", do_.getParentLNodeType().getLnClass(), " at line ", do_.getParentLNodeType().getLineNumber() );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
