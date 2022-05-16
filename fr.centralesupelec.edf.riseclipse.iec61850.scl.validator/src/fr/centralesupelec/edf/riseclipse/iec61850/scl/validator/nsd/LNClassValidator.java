@@ -90,6 +90,8 @@ public class LNClassValidator {
     // - validate its DOType using the CDC
     
     // This will check the presence condition
+    private DataObjectPresenceConditionValidator notStatisticalDataObjectPresenceConditionValidator;
+    private DataObjectPresenceConditionValidator statisticalDataObjectPresenceConditionValidator;
     private DataObjectPresenceConditionValidator dataObjectPresenceConditionValidator;
     // Key is DataObject name (the corresponding DO has the same name)
     // Value is the CDCValidator given by the DataObject type
@@ -100,7 +102,8 @@ public class LNClassValidator {
                        "build LNClassValidator for ", anyLNClass.getName(), " in namespace \"", nsIdentification, "\"" );
         
         this.nsIdentification = nsIdentification;
-        dataObjectPresenceConditionValidator = DataObjectPresenceConditionValidator.get( nsIdentification, anyLNClass );
+        notStatisticalDataObjectPresenceConditionValidator = DataObjectPresenceConditionValidator.get( nsIdentification, anyLNClass, false );
+        statisticalDataObjectPresenceConditionValidator = DataObjectPresenceConditionValidator.get( nsIdentification, anyLNClass, true );
         
         AnyLNClass lnClass = anyLNClass;
         while( lnClass != null ) {
@@ -146,6 +149,12 @@ public class LNClassValidator {
                        "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " in namespace \"", this.nsIdentification, "\"" );
         validatedLNodeType.add( lNodeType.getId() );
 
+        boolean isStatistic = lNodeType
+                .getDO()
+                .stream()
+                .anyMatch( d -> "ClcSrc".equals( d.getName() ));
+        dataObjectPresenceConditionValidator = isStatistic  ? statisticalDataObjectPresenceConditionValidator : notStatisticalDataObjectPresenceConditionValidator;
+        
         boolean res = true;
 
         // Each DO of an LNodeType must satisfy the presence condition of the corresponding DataObject (same name)

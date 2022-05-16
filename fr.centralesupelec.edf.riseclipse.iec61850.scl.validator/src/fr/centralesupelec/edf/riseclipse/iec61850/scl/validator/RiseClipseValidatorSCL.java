@@ -254,8 +254,6 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0,
                       "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
         console.info( VALIDATOR_SCL_CATEGORY, 0,
-                      "\t" + OUTPUT_FILE_VARIABLE_NAME + ": name of the output file for messages." );
-        console.info( VALIDATOR_SCL_CATEGORY, 0,
                       "\t" + FORMAT_STRING_VARIABLE_NAME + ": string used to format messages (see description of " + FORMAT_OPTION + " option)." );
         console.info( VALIDATOR_SCL_CATEGORY, 0,
                       "\t" + USE_COLOR_VARIABLE_NAME + ": if its value is not equal to FALSE "
