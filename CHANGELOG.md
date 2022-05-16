@@ -1,7 +1,8 @@
 
-## 1.2.2 (2022/05/03)
+## 1.2.2 (2022/05/16)
 - support for multiple NSD namespaces
 - take into account whether an AnyLNClass is statistic or not for presence conditions
+- compute missing link from LogControl to Log and remove useless link from LogControl to AnyLN
 
 ## 1.2.1 (2022/04/19)
 - the output of the tool can be customized with a command line option
