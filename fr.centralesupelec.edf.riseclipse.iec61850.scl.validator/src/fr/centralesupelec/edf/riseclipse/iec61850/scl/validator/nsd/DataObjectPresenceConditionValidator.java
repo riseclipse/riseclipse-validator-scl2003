@@ -24,9 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.IntToDoubleFunction;
-import java.util.function.Predicate;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
@@ -51,11 +48,13 @@ public class DataObjectPresenceConditionValidator {
     private static final String DO_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/DataObject";
     private static final String DO_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/DataObject";
 
-    private static HashMap< NsIdentificationName, DataObjectPresenceConditionValidator > validators = new HashMap<>();
+    private static HashMap< NsIdentificationName, DataObjectPresenceConditionValidator > notStatisticalValidators = new HashMap<>();
+    private static HashMap< NsIdentificationName, DataObjectPresenceConditionValidator > statisticalValidators = new HashMap<>();
     
-    public static DataObjectPresenceConditionValidator get( NsIdentification nsIdentification, AnyLNClass anyLNClass ) {
+    public static DataObjectPresenceConditionValidator get( NsIdentification nsIdentification, AnyLNClass anyLNClass, boolean isStatistic ) {
+        var validators = isStatistic ? statisticalValidators : notStatisticalValidators;
         if( ! validators.containsKey( new NsIdentificationName( nsIdentification, anyLNClass.getName() ))) {
-            validators.put( new NsIdentificationName( nsIdentification, anyLNClass.getName() ), new DataObjectPresenceConditionValidator( nsIdentification, anyLNClass ));
+            validators.put( new NsIdentificationName( nsIdentification, anyLNClass.getName() ), new DataObjectPresenceConditionValidator( nsIdentification, anyLNClass, isStatistic ));
         }
         return validators.get( new NsIdentificationName( nsIdentification, anyLNClass.getName() ));
     }
@@ -129,17 +128,16 @@ public class DataObjectPresenceConditionValidator {
     
     private final IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
     private NsIdentification nsIdentification;
-    private boolean isStatistics = false;
     
     @SuppressWarnings( "unchecked" )        // cast of HashMap.clone() result
-    private DataObjectPresenceConditionValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass ) {
+    private DataObjectPresenceConditionValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass, boolean isStatistic ) {
         this.nsIdentification = nsIdentification;
         this.anyLNClass = anyLNClass;
         
         // Build validator for parent first, because it is needed (atLeastOne for example)
         AnyLNClass parent = anyLNClass.getRefersToAbstractLNClass();
         if( parent != null ) {
-            base = get( nsIdentification, parent );
+            base = get( nsIdentification, parent, isStatistic );
         }
         
         // Some presence condition must be checked at the lowest LNClass (in the inheritance
@@ -194,21 +192,11 @@ public class DataObjectPresenceConditionValidator {
         }
         
         
-        isStatistics =
-                anyLNClass
-                .getDataObject()
-                .stream()
-                .anyMatch( d -> "ClcSrc".equals( d.getName() ))
-                ||
-                (( base != null ) && base.isStatistics );
-        console.info( DO_SETUP_NSD_CATEGORY, anyLNClass.getFilename(), anyLNClass.getLineNumber(),
-                "AnyLNClass ", anyLNClass.getName(), ( isStatistics ? " is statistic" : " is not statistic" ));
-
         anyLNClass
         .getDataObject()
         .stream()
         .forEach( d -> {
-            if( isStatistics ) {
+            if( isStatistic ) {
                 addSpecification( d.getName(), d.getDsPresCond(), d.getDsPresCondArgs(), d.getLineNumber(), d.getFilename() );
             }
             else {
