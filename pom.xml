@@ -28,7 +28,7 @@
  
   <groupId>io.github.riseclipse</groupId>
   <artifactId>riseclipse-validator-scl2003</artifactId>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.2.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   
   <parent>
