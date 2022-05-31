@@ -796,6 +796,20 @@ public class RiseClipseValidatorSCL {
                     catch( NumberFormatException ex ) {}
                     console.output( new RiseClipseMessage( severity, parts[1], line, parts[3] ));
                 }
+                else if(( parts.length == 5 ) && ( parts[1].startsWith( "OCL" ))) {
+                    // This should be an OCL message with the added filename
+                    Severity severity = Severity.ERROR;
+                    try {
+                        severity = Severity.valueOf( parts[0] );
+                    }
+                    catch( IllegalArgumentException ex ) {}
+                    int line = 0;
+                    try {
+                        line = Integer.valueOf( parts[3] );
+                    }
+                    catch( NumberFormatException ex ) {}
+                    console.output( new RiseClipseMessage( severity, parts[1], parts[2], line, parts[4] ));
+                }
                 else {
                     console.error( VALIDATOR_SCL_CATEGORY, 0, message );
                 }
