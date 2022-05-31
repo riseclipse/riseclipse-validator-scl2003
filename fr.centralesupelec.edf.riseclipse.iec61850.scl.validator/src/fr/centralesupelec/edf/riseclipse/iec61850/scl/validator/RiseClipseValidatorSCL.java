@@ -81,9 +81,9 @@ public class RiseClipseValidatorSCL {
     private static final String HELP_ENVIRONMENT_OPTION                = "--help-environment";
     
 
-//    private static final String EMERGENCY_OPTION                     = "--emergency";
-//    private static final String ALERT_OPTION                         = "--alert";
-//    private static final String CRITICAL_OPTION                      = "--critical";
+//    private static final String EMERGENCY_OPTION                     = "--emergency";  // NOSONAR
+//    private static final String ALERT_OPTION                         = "--alert";      // NOSONAR
+//    private static final String CRITICAL_OPTION                      = "--critical";   // NOSONAR
     private static final String ERROR_OPTION                           = "--error";
     private static final String WARNING_OPTION                         = "--warning";
     private static final String NOTICE_OPTION                          = "--notice";
@@ -114,9 +114,9 @@ public class RiseClipseValidatorSCL {
 
     private static final String FALSE_VARIABLE_VALUE = "FALSE";
 
-//    private static final String EMERGENCY_KEYWORD = "EMERGENCY";
-//    private static final String ALERT_KEYWORD     = "ALERT";
-//    private static final String CRITICAL_KEYWORD  = "CRITICAL";
+//    private static final String EMERGENCY_KEYWORD = "EMERGENCY";  // NOSONAR
+//    private static final String ALERT_KEYWORD     = "ALERT";      // NOSONAR
+//    private static final String CRITICAL_KEYWORD  = "CRITICAL";   // NOSONAR
     private static final String ERROR_KEYWORD       = "ERROR";
     private static final String WARNING_KEYWORD     = "WARNING";
     private static final String NOTICE_KEYWORD      = "NOTICE";
@@ -426,7 +426,7 @@ public class RiseClipseValidatorSCL {
             console.setLevel( level );
         }
         
-        //console.doNotDisplayIdenticalMessages();
+        //console.doNotDisplayIdenticalMessages();  // NOSONAR
 
         oclFiles = new ArrayList<>();
         nsdFiles = new ArrayList<>();
@@ -665,8 +665,8 @@ public class RiseClipseValidatorSCL {
 
     // public because used by ui
     public static void prepare( List< String > oclFileNames, List< String > nsdFileNames, boolean displayNsdMessages ) {
-        oclFiles = new ArrayList< String >( oclFileNames );
-        nsdFiles = new ArrayList< String >( nsdFileNames );
+        oclFiles = new ArrayList<>( oclFileNames );
+        nsdFiles = new ArrayList<>( nsdFileNames );
         prepare( displayNsdMessages );
     }
 
@@ -676,6 +676,7 @@ public class RiseClipseValidatorSCL {
         SclPackage sclPg = SclPackage.eINSTANCE;
         if( sclPg == null ) {
             console.emergency( VALIDATOR_SCL_CATEGORY, 0, "SCL package not found" );
+            return;
         }
 
         ComposedEValidator validator = ComposedEValidator.install( sclPg );
@@ -706,7 +707,7 @@ public class RiseClipseValidatorSCL {
     }
 
     // public because used by ui
-    public static void run( boolean make_explicit_links, @NonNull String sclFile ) {
+    public static void run( boolean makeExplicitLinks, @NonNull String sclFile ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         if( xsdFile != null ) {
@@ -715,7 +716,7 @@ public class RiseClipseValidatorSCL {
         
         sclLoader.reset();
         Resource resource = sclLoader.loadWithoutValidation( sclFile );
-        if( make_explicit_links ) {
+        if( makeExplicitLinks ) {
             console.info( VALIDATOR_SCL_CATEGORY, 0, "Making explicit links for file: " + sclFile );
             sclLoader.finalizeLoad( console );
         }
@@ -724,7 +725,7 @@ public class RiseClipseValidatorSCL {
             // Some attributes must be re-initalialized
             if( nsdValidator != null ) nsdValidator.reset();
             // Not needed for the OCL validator
-            // if( oclValidator != null ) oclValidator.reset();
+            // if( oclValidator != null ) oclValidator.reset();  // NOSONAR
             validate( resource, sclAdapter );
         }
     }
@@ -734,7 +735,7 @@ public class RiseClipseValidatorSCL {
 
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
-        Map< Object, Object > context = new HashMap< Object, Object >();
+        Map< Object, Object > context = new HashMap<>();
         SubstitutionLabelProvider substitutionLabelProvider = new EValidator.SubstitutionLabelProvider() {
 
             @Override
@@ -795,6 +796,20 @@ public class RiseClipseValidatorSCL {
                     }
                     catch( NumberFormatException ex ) {}
                     console.output( new RiseClipseMessage( severity, parts[1], line, parts[3] ));
+                }
+                else if(( parts.length == 5 ) && ( parts[1].startsWith( "OCL" ))) {
+                    // This should be an OCL message with the added filename
+                    Severity severity = Severity.ERROR;
+                    try {
+                        severity = Severity.valueOf( parts[0] );
+                    }
+                    catch( IllegalArgumentException ex ) {}
+                    int line = 0;
+                    try {
+                        line = Integer.valueOf( parts[3] );
+                    }
+                    catch( NumberFormatException ex ) {}
+                    console.output( new RiseClipseMessage( severity, parts[1], parts[2], line, parts[4] ));
                 }
                 else {
                     console.error( VALIDATOR_SCL_CATEGORY, 0, message );
