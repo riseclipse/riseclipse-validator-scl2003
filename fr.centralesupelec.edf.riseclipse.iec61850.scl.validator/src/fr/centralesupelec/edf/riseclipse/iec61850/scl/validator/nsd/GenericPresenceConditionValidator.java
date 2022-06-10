@@ -95,18 +95,24 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     protected final IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
 
     protected NsIdentification nsIdentification;
+    protected NsdModel nsdModel;
     
     public GenericPresenceConditionValidator( NsIdentification nsIdentification, NsdModel nsdModel ) {
         this.nsIdentification = nsIdentification;
-        
-        createSpecifications( nsdModel );
+        this.nsdModel = nsdModel;
+    }
+    
+    protected void initialize() {
+        // Was initially in constructor.
+        // But a subclass may need to be constructed before building specifications. 
+        createSpecifications();
         checkSpecification();
     }
     
     protected abstract String getSetupMessageCategory();
     protected abstract String getValidationMessageCategory();
 
-    protected abstract void createSpecifications( NsdModel nsdModel );
+    protected abstract void createSpecifications();
 
     protected abstract String getPresenceConditionValidatorName();
 
@@ -451,26 +457,20 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             // Element is mandatory* if any sibling elements of type AnalogueValue include 'i' as a child, otherwise forbidden.
             // *Even though devices without floating point capability cannot exchange floating point values through ACSI services,
             // the description of scaling remains mandatory for their (SCL) configuration
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
-                             "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MFscaledAV\" in PresenceCondition" );
-//            if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
-//            mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
+            if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
+            mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
             break;
         case "MFscaledMagV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'mag' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
-                             "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MFscaledMagV\" in PresenceCondition" );
-//            if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
-//            mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
+            if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
+            mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
             break;
         case "MFscaledAngV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'ang' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
-                             "NOT IMPLEMENTED: " + getNsdComponentClassName(), " ", name, " declared as \"MFscaledAngV\" in PresenceCondition" );
-//            if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
-//            mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
+            if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
+            mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
             break;
         case "MOrms" :
             // Element is mandatory if the harmonic values in the context are calculated as a ratio to RMS value
@@ -1319,18 +1319,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataAttribute
         // TODO
         if( mandatoryIfAnalogValueIncludesIElseForbidden != null ) {
-            for( String name : mandatoryIfAnalogValueIncludesIElseForbidden ) {
-                if( presentSclComponent.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
-                                                "verification of PresenceCondition \"MFscaledAV\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            warning.getMessage(),
-                            new Object[] { sclModel, warning } ));
-                }
-            }
+            console.debug( getValidationMessageCategory(), sclModel.getLineNumber(),
+                    "validation of presence condition \"MFscaledAV\" on ", getSclModelClassName() );
+            res = validateMFscaledAV( sclModel, diagnostics ) && res;
         }
 
         // presCond: "MFscaledMagV" :
@@ -1339,18 +1330,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataAttribute
         // TODO
         if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden != null ) {
-            for( String name : mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden ) {
-                if( presentSclComponent.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
-                                                "verification of PresenceCondition \"MFscaledMagV\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            warning.getMessage(),
-                            new Object[] { sclModel, warning } ));
-                }
-            }
+            console.debug( getValidationMessageCategory(), sclModel.getLineNumber(),
+                    "validation of presence condition \"MFscaledMagV\" on ", getSclModelClassName() );
+            res = validateMFscaledMagV( sclModel, diagnostics ) && res;
         }
 
         // presCond: "MFscaledAngV" :
@@ -1359,18 +1341,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataAttribute
         // TODO
         if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden != null ) {
-            for( String name : mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden ) {
-                if( presentSclComponent.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
-                                                "verification of PresenceCondition \"MFscaledAngV\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            warning.getMessage(),
-                            new Object[] { sclModel, warning } ));
-                }
-            }
+            console.debug( getValidationMessageCategory(), sclModel.getLineNumber(),
+                    "validation of presence condition \"MFscaledAngV\" on ", getSclModelClassName() );
+            res = validateMFscaledAngV( sclModel, diagnostics ) && res;
         }
 
         // presCond: "MOrms" :
@@ -1633,5 +1606,53 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     protected abstract boolean validateMOln0( SclModel sclModel, DiagnosticChain diagnostics );
 
     protected abstract boolean validateOMSynPh( SclModel sclModel, DiagnosticChain diagnostics );
+    
+    protected boolean validateMFscaledAV( SclModel sclModel, DiagnosticChain diagnostics ) {
+        for( String name : mandatoryIfAnalogValueIncludesIElseForbidden ) {
+            if( presentSclComponent.get( name ) != null ) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                                            "verification of PresenceCondition \"MFscaledAV\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        warning.getMessage(),
+                        new Object[] { sclModel, warning } ));
+            }
+        }
+        return true;
+    }
+    
+    protected boolean validateMFscaledMagV( SclModel sclModel, DiagnosticChain diagnostics ) {
+        for( String name : mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden ) {
+            if( presentSclComponent.get( name ) != null ) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                                            "verification of PresenceCondition \"MFscaledMagV\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        warning.getMessage(),
+                        new Object[] { sclModel, warning } ));
+            }
+        }
+        return true;
+    }
+    
+    protected boolean validateMFscaledAngV( SclModel sclModel, DiagnosticChain diagnostics ) {
+        for( String name : mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden ) {
+            if( presentSclComponent.get( name ) != null ) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                                            "verification of PresenceCondition \"MFscaledAngV\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        warning.getMessage(),
+                        new Object[] { sclModel, warning } ));
+            }
+        }
+        return true;
+    }
 
 }

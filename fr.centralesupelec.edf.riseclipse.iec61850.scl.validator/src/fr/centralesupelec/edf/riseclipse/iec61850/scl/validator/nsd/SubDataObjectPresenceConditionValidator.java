@@ -53,12 +53,10 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
         return validators.get( new NsIdentificationName( nsIdentification, cdc.getName() ) );
     }
     
-    private CDC cdc;
-
     public SubDataObjectPresenceConditionValidator( NsIdentification nsIdentification, CDC cdc ) {
         super( nsIdentification, cdc );
         
-        this.cdc = cdc;
+        initialize();
     }
 
     @Override
@@ -72,8 +70,8 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     }
 
     @Override
-    protected void createSpecifications( CDC cdc ) {
-        cdc
+    protected void createSpecifications() {
+        nsdModel
         .getSubDataObject()
         .stream()
         .forEach( sda -> addSpecification( sda.getName(), sda.getPresCond(), sda.getPresCondArgs(), sda.getRefersToPresCondArgsDoc(), sda.getLineNumber(), sda.getFilename() )); 
@@ -86,12 +84,12 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
 
     @Override
     protected String getNsdModelName() {
-        return cdc.getName();
+        return nsdModel.getName();
     }
 
     @Override
     protected int getNsdModelLineNumber() {
-        return cdc.getLineNumber();
+        return nsdModel.getLineNumber();
     }
 
     @Override
