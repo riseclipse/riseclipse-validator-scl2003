@@ -799,15 +799,20 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
                              "validation of presence condition \"AtLeastOne\" on ", getSclModelClassName() );
             for( Entry< Integer, HashSet< String > > e1 : atLeastOne.entrySet() ) {
                 boolean groupOK = false;
+                String atLeastOneOf = " (at least one of:";
                 for( String member : e1.getValue() ) {
+                    atLeastOneOf += " " + member;
                     if( presentSclComponent.get( member ) != null ) {
                         groupOK = true;
                         break;
                     }
                 }
+                atLeastOneOf += ")";
                 if( ! groupOK ) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getLineNumber(), 
-                                              "group ", e1.getKey(), " has no elements in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
+                                              "group ", e1.getKey(), " has no elements in ", getSclModelClassName(), " with ", getNsdModelClassName(),
+                                              " ", getNsdModelName(), " at line ", getNsdModelLineNumber(),
+                                              atLeastOneOf );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -826,14 +831,18 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             console.debug( getValidationMessageCategory(), sclModel.getLineNumber(),
                              "validation of presence condition \"AtMostOne\" on ", getSclModelClassName() );
             int count = 0;
+            String atMostOneOf = " (at most one of:";
             for( String s : atMostOne ) {
+                atMostOneOf += " " + s;
                 if( presentSclComponent.get( s ) != null ) {
                     ++count;
                 }
+                atMostOneOf += ")";
             }
             if( count > 1 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getLineNumber(), 
-                                          getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " has more than one element marked AtMostOne" );
+                                          getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(),
+                                          " has more than one element marked AtMostOne", atMostOneOf );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -853,14 +862,19 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
                              "validation of presence condition \"AllOrNonePerGroup\" on ", getSclModelClassName() );
             for( Entry< Integer, HashSet< String > > e1 : allOrNonePerGroup.entrySet() ) {
                 int groupCount = 0;
+                String expectedMembers = " (expected members:";
                 for( String member : e1.getValue() ) {
+                    expectedMembers += " " + member;
                     if( presentSclComponent.get( member ) != null ) {
                         ++groupCount;
                     }
                 }
-                if(( groupCount > 0 ) && (groupCount < e1.getValue().size() )) {
+                expectedMembers += ")";
+                if(( groupCount > 0 ) && ( groupCount < e1.getValue().size() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getLineNumber(), 
-                                              "group ", e1.getKey(), " has neither none nor all elements in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
+                                              "group ", e1.getKey(), " has neither none nor all elements in ", getSclModelClassName(),
+                                              " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber(),
+                                              expectedMembers );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -882,14 +896,19 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allOnlyOneGroup.entrySet() ) {
                 int groupCount = 0;
+                String expectedMembers = " (expected members:";
                 for( String member : e1.getValue() ) {
+                    expectedMembers += " " + member;
                     if( presentSclComponent.get( member ) != null ) {
                         ++groupCount;
                     }
                 }
-                if(( groupCount > 0 ) && (groupCount < e1.getValue().size() )) {
+                expectedMembers += ")";
+                if(( groupCount > 0 ) && ( groupCount < e1.getValue().size() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getLineNumber(), 
-                                              "group ", e1.getKey(), " has neither none nor all elements in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
+                                              "group ", e1.getKey(), " has neither none nor all elements in ", getSclModelClassName(),
+                                              " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber(),
+                                              expectedMembers );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,

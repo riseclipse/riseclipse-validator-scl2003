@@ -989,15 +989,19 @@ public class DataObjectPresenceConditionValidator {
                            "validation of presence condition \"AtLeastOne\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< Integer, HashSet< String > > e1 : atLeastOne.entrySet() ) {
                 boolean groupOK = false;
+                String atLeastOneOf = " (at least one of:";
                 for( String member : e1.getValue() ) {
+                    atLeastOneOf += " " + member;
                     if( presentDO.get( member ) != null ) {
                         groupOK = true;
                         break;
                     }
+                    atLeastOneOf += ")";
                 }
                 if( ! groupOK ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "group ", e1.getKey(), " has no elements in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
+                                              "group ", e1.getKey(), " has no elements in LNodeType with LNClass ", anyLNClassName,
+                                              " in namespace \"", nsIdentification, "\"", atLeastOneOf );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1017,14 +1021,18 @@ public class DataObjectPresenceConditionValidator {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
                              "validation of presence condition \"AtMostOne\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             int count = 0;
+            String atMostOneOf = " (at most one of:";
             for( String s : atMostOne ) {
+                atMostOneOf += " " + s;
                 if( presentDO.get( s ) != null ) {
                     ++count;
                 }
+                atMostOneOf += ")";
             }
             if( count > 1 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                          "LNodeType with LNClass ", anyLNClassName, " has more than one element marked AtMostOne in namespace \"", nsIdentification, "\"" );
+                                          "LNodeType with LNClass ", anyLNClassName, " has more than one element marked AtMostOne in namespace \"",
+                                          nsIdentification, "\"", atMostOneOf );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1045,14 +1053,18 @@ public class DataObjectPresenceConditionValidator {
                            "validation of presence condition \"AllOrNonePerGroup\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
             for( Entry< Integer, HashSet< String > > e1 : allOrNonePerGroup.entrySet() ) {
                 int groupCount = 0;
+                String expectedMembers = " (expected members:";
                 for( String member : e1.getValue() ) {
+                    expectedMembers += " " + member;
                     if( presentDO.get( member ) != null ) {
                         ++groupCount;
                     }
                 }
-                if(( groupCount > 0 ) && (groupCount < e1.getValue().size() )) {
+                expectedMembers += ")";
+                if(( groupCount > 0 ) && ( groupCount < e1.getValue().size() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "group ", e1.getKey(), " has neither none nor all elements in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
+                                              "group ", e1.getKey(), " has neither none nor all elements in LNodeType with LNClass ", anyLNClassName,
+                                              " in namespace \"", nsIdentification, "\"", expectedMembers );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1075,14 +1087,18 @@ public class DataObjectPresenceConditionValidator {
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allOnlyOneGroup.entrySet() ) {
                 int groupCount = 0;
+                String expectedMembers = " (expected members:";
                 for( String member : e1.getValue() ) {
+                    expectedMembers += " " + member;
                     if( presentDO.get( member ) != null ) {
                         ++groupCount;
                     }
                 }
-                if(( groupCount > 0 ) && (groupCount < e1.getValue().size() )) {
+                expectedMembers += ")";
+                if(( groupCount > 0 ) && ( groupCount < e1.getValue().size() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
-                                              "group ", e1.getKey(), " has neither none nor all elements in LNodeType with LNClass ", anyLNClassName, " in namespace \"", nsIdentification, "\"" );
+                                              "group ", e1.getKey(), " has neither none nor all elements in LNodeType with LNClass ", anyLNClassName,
+                                              " in namespace \"", nsIdentification, "\"", expectedMembers );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
