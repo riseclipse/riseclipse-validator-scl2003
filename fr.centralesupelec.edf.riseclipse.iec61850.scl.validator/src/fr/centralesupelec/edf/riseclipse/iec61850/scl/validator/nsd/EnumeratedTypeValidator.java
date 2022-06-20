@@ -47,7 +47,7 @@ public class EnumeratedTypeValidator extends TypeValidator {
                        "EnumeratedTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " ) in namespace ", "TODO" );
         
         if( ! "Enum".equals( ada.getBType() )) {
-            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(), 
+            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(), 
                     "bType of DA/BDA \"", ada.getName(), "\" is not Enum" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
@@ -84,7 +84,7 @@ public class EnumeratedTypeValidator extends TypeValidator {
                 .findAny();
         
         if( ! found.isPresent() ) {
-            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, dai.getLineNumber(), 
+            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, dai.getFilename(), dai.getLineNumber(), 
                     "value \"", value, "\" of DAI \"", dai.getName(), "\" is not valid for EnumType \"",
                             enumType.getId(), "\" (line = ", enumType.getLineNumber(), ")" );
             diagnostics.add( new BasicDiagnostic(

@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
+import org.eclipse.emf.common.util.BasicDiagnostic;
+import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.jdt.annotation.NonNull;
 
@@ -38,8 +40,10 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.FCEnum;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SDO;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class CDCValidator {
 
@@ -211,7 +215,7 @@ public class CDCValidator {
         if( validatedDOType.contains( doType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( CDC_SETUP_NSD_CATEGORY, doType.getLineNumber(),
+        console.debug( CDC_SETUP_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(),
                        "CDCValidator.validateDOType( ", doType.getId(), " ) in namespace \"", nsIdentification, "\"" );
         validatedDOType.add( doType.getId() );
         
@@ -234,10 +238,16 @@ public class CDCValidator {
                 subDataObjectPresenceConditionValidator.addModelData( sdo, sdo.getName(), diagnostics );
             }
             else {
-                console.warning( CDC_VALIDATION_NSD_CATEGORY, sdo.getLineNumber(),
-                                 "Presence condition of SDO ", sdo.getName(),
-                                 " is not checked because its namespace \"", sdo.getNamespace(),
-                                 "\" is not the same as the namespace of its DOType \"", nsIdentification, "\"" );
+                RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(), 
+                        "Presence condition of SDO ", sdo.getName(),
+                        " is not checked because its namespace \"", sdo.getNamespace(),
+                        "\" is not the same as the namespace of its DOType \"", nsIdentification, "\"" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        warning.getMessage(),
+                        new Object[] { sdo, warning } ));
             }
         });
         
@@ -249,9 +259,16 @@ public class CDCValidator {
                 typeValidator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                console.error( CDC_VALIDATION_NSD_CATEGORY, da.getLineNumber(),
-                               "DA ", da.getName(), " of type " + da.getType(),
-                               " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
+                String daType = ( da.getType() == null ) ? ( " of type " + da.getBType() ) : ( " of bType " + da.getType() );
+                RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                        "DA ", da.getName(), daType,
+                        " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        error.getMessage(),
+                        new Object[] { da, error } ));
             }
 
             FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( da.getFc() );
@@ -259,9 +276,15 @@ public class CDCValidator {
                 fcValidator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                console.error( CDC_VALIDATION_NSD_CATEGORY, da.getLineNumber(),
-                               "FunctionalConstraint ", da.getFc(), " of DA " + da.getName(),
-                               " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
+                RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                        "FunctionalConstraint ", da.getFc(), " of DA " + da.getName(),
+                        " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        error.getMessage(),
+                        new Object[] { da, error } ));
             }
         }
       
@@ -276,13 +299,29 @@ public class CDCValidator {
                     res = cdcValidator.validateDOType( sdo.getRefersToDOType(), diagnostics ) && res;
                 }
                 else {
-                    console.warning( CDC_SETUP_NSD_CATEGORY, doType.getLineNumber(),
-                                     "while validating DOType: DOType for SDO ", sdo.getName(), " not found in namespace \"", nsId, "\"" );
+                    RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
+                            "while validating DOType: DOType for SDO ", sdo.getName(), " not found in namespace \"", nsId, "\"" );
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            warning.getMessage(),
+                            new Object[] { doType, warning } ));
                 }
             }
             else {
-                console.warning( CDC_SETUP_NSD_CATEGORY, doType.getLineNumber(),
-                                 "while validating DOType: validator for SDO ", sdo.getType(), " not found in namespace \"", nsId, "\"" );
+                nsId = nsIdentification;
+                if( sdo.getNamespace() != null ) {
+                    nsId = new NsIdentification( sdo.getNamespace() );
+                }
+                RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
+                        "while validating DOType: validator for SDO ", sdo.getType(), " not found in namespace \"", nsId, "\"" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        warning.getMessage(),
+                        new Object[] { doType, warning } ));
             }
         }
 
@@ -297,8 +336,14 @@ public class CDCValidator {
         
         DOType doType = do_.getRefersToDOType();
         if( doType == null ) {
-            console.error( CDC_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
-                           "DOType for DO \"", do_.getName(), " not found in namespace \"", nsIdentification, "\"" );
+            RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                    "DOType for DO \"", do_.getName(), " not found in namespace \"", nsIdentification, "\"" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.ERROR,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    error.getMessage(),
+                    new Object[] { do_, error } ));
             return false;
         }
         return validateDOType( doType, diagnostics );

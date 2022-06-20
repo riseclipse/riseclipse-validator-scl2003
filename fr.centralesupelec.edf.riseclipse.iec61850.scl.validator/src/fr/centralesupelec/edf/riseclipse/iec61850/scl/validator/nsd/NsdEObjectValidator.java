@@ -95,7 +95,7 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseLNodeType( LNodeType lNodeType ) {
-                AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+                AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                                                               "NsdEObjectValidator.validate( ", lNodeType.getId(), " )" );
                 return validateLNodeType( lNodeType, diagnostics );
             }
@@ -122,7 +122,7 @@ public class NsdEObjectValidator implements EValidator {
 
     private boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                        "NsdEObjectValidator.validateLNodeType( ", lNodeType.getLnClass(), " )" );
 
         boolean res = true;
@@ -131,15 +131,21 @@ public class NsdEObjectValidator implements EValidator {
             res = validateLNodeType( lNodeType, lNodeType.getNamespace(), diagnostics ) && res;
         }
         else {
-            console.info( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
-                          "LNodeType ", lNodeType.getId(), " has no namespace and cannot be validated in isolation.",
-                          " It will be checked if any LN with a namespace points to it." );
+            RiseClipseMessage info = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
+                    "LNodeType ", lNodeType.getId(), " has no namespace and cannot be validated in isolation.",
+                    " It will be checked if any LN with a namespace points to it." );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.INFO,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    info.getMessage(),
+                    new Object[] { lNodeType, info } ));
         }
 
         if( lNodeType.getReferredByAnyLN().size() == 0 ) {
             if( lNodeType.getNamespace() != null ) return res;
             
-            RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+            RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                              "LNodeType ", lNodeType.getId(), " will not be validated, no LN with a namespace points to it." );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
@@ -161,12 +167,12 @@ public class NsdEObjectValidator implements EValidator {
 
     private boolean validateLNodeType( LNodeType lNodeType, String namespace, DiagnosticChain diagnostics ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                        "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), " in namespace ", namespace );
 
         NsIdentification id = new NsIdentification( namespace );
         if( nsdResourceSet.getNS( id ) == null ) {
-            RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
+            RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                       "Cannot validate LNodeType ", lNodeType.getId(), " in namespace \"", namespace, "\" because this namespace is unknown" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.WARNING,
@@ -179,13 +185,13 @@ public class NsdEObjectValidator implements EValidator {
         // Check that LNodeType has a known LNClass in the given namespace
         LNClassValidator lnClassValidator = LNClassValidator.get( id, lNodeType.getLnClass() );
         if( lnClassValidator != null ) {
-            console.notice( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(),
+            console.notice( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                            "LNClass ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + namespace + "\"" );
 
             return lnClassValidator.validateLNodeType( lNodeType, diagnostics );
         }
         
-        RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
+        RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                   "LNClass ", lNodeType.getLnClass(), " not found for LNodeType in namespace \"", namespace, "\"" );
         diagnostics.add( new BasicDiagnostic(
                 Diagnostic.ERROR,

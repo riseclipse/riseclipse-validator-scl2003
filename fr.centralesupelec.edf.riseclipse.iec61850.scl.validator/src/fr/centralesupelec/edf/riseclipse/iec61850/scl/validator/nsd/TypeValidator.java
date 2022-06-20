@@ -88,12 +88,13 @@ public abstract class TypeValidator {
     public static TypeValidator buildConstructedAttributeValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute, IRiseClipseConsole console ) {
         NsIdentificationName nsId = new NsIdentificationName( nsIdentification, constructedAttribute.getName() );
         if( validators.get( nsId ) != null ) {
-            console.warning( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
+            // The usual case is when it has been built because used as the type of a SubDataAttribute
+            console.notice( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
                              "ConstructedAttribute ", constructedAttribute.getName(), " has already a validator in namespace \"",
                              nsIdentification, "\", it will be overwritten" );
         }
         else {
-            console.notice( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
+            console.info( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
                             "Adding validator for ConstructedAttribute ", constructedAttribute.getName(), " in namespace \"",
                             nsIdentification, "\"" );
         }
