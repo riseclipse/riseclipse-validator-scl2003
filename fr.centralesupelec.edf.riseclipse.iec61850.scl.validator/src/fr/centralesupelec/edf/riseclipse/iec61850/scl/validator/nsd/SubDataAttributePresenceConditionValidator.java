@@ -42,10 +42,10 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     private static HashMap< NsIdentificationName, SubDataAttributePresenceConditionValidator > validators = new HashMap<>();
     
     public static SubDataAttributePresenceConditionValidator get( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute ) {
-        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, constructedAttribute.getName() ))) {
-            validators.put( new NsIdentificationName( nsIdentification, constructedAttribute.getName() ), new SubDataAttributePresenceConditionValidator( nsIdentification, constructedAttribute ));
+        if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, constructedAttribute.getName() ))) {
+            validators.put( NsIdentificationName.of( nsIdentification, constructedAttribute.getName() ), new SubDataAttributePresenceConditionValidator( nsIdentification, constructedAttribute ));
         }
-        return validators.get( new NsIdentificationName( nsIdentification, constructedAttribute.getName() ) );
+        return validators.get( NsIdentificationName.of( nsIdentification, constructedAttribute.getName() ) );
     }
     
     public SubDataAttributePresenceConditionValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute ) {

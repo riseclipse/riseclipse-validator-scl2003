@@ -56,13 +56,13 @@ public class CDCValidator {
         if( validators == null ) return null;
         if( nsIdentification == null ) return null;
         if( doTypeName == null ) return null;
-       return validators.get( new NsIdentificationName( nsIdentification, doTypeName ));
+       return validators.get( NsIdentificationName.of( nsIdentification, doTypeName ));
     }
     
     public static void buildValidators( NsIdentification nsIdentification, Stream< CDC > stream, IRiseClipseConsole console ) {
         stream
         .forEach( cdc -> validators.put(
-                new NsIdentificationName( nsIdentification, cdc.getName() ),
+                NsIdentificationName.of( nsIdentification, cdc.getName() ),
                 new CDCValidator( nsIdentification, cdc, console )));
     }
 
@@ -234,7 +234,7 @@ public class CDCValidator {
         .getSDO()
         .stream()
         .forEach( sdo -> {
-            if(( sdo.getNamespace() == null ) || nsIdentification.equals( new NsIdentification( sdo.getNamespace() ))) {
+            if(( sdo.getNamespace() == null ) || nsIdentification.equals( NsIdentification.of( sdo.getNamespace() ))) {
                 subDataObjectPresenceConditionValidator.addModelData( sdo, sdo.getName(), diagnostics );
             }
             else {
@@ -292,7 +292,7 @@ public class CDCValidator {
             CDCValidator cdcValidator = subDataObjectValidatorMap.get( sdo.getName() );
             NsIdentification nsId = nsIdentification;
             if( sdo.getNamespace() != null ) {
-                nsId = new NsIdentification( sdo.getNamespace() );
+                nsId = NsIdentification.of( sdo.getNamespace() );
             }
             if( cdcValidator != null ) {
                 if( sdo.getRefersToDOType() != null ) {
@@ -312,7 +312,7 @@ public class CDCValidator {
             else {
                 nsId = nsIdentification;
                 if( sdo.getNamespace() != null ) {
-                    nsId = new NsIdentification( sdo.getNamespace() );
+                    nsId = NsIdentification.of( sdo.getNamespace() );
                 }
                 RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                         "while validating DOType: validator for SDO ", sdo.getType(), " not found in namespace \"", nsId, "\"" );

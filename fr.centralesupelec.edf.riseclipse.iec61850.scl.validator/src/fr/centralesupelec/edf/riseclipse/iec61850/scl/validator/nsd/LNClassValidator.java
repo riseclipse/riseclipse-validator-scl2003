@@ -53,13 +53,13 @@ public class LNClassValidator {
         if( validators == null ) return null;
         if( nsIdentification == null ) return null;
         if( lnClassName == null ) return null;
-        return validators.get( new NsIdentificationName( nsIdentification, lnClassName ));
+        return validators.get( NsIdentificationName.of( nsIdentification, lnClassName ));
     }
     
     public static void buildValidators( NsIdentification nsIdentification, Stream< LNClass > stream, IRiseClipseConsole console ) {
         stream
         .forEach( lnClass -> validators.put(
-                new NsIdentificationName( nsIdentification, lnClass.getName() ),
+                NsIdentificationName.of( nsIdentification, lnClass.getName() ),
                 new LNClassValidator( nsIdentification, lnClass, console )));
     }
 
@@ -168,7 +168,7 @@ public class LNClassValidator {
         .getDO()
         .stream()
         .forEach( do_ -> {
-            if(( do_.getNamespace() == null ) || nsIdentification.equals( new NsIdentification( do_.getNamespace() ))) {
+            if(( do_.getNamespace() == null ) || nsIdentification.equals( NsIdentification.of( do_.getNamespace() ))) {
                 dataObjectPresenceConditionValidator.addDO( do_, diagnostics );
             }
             else {
@@ -201,7 +201,7 @@ public class LNClassValidator {
                 //AbstractRiseClipseConsole.getConsole().error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
                 continue;
             }
-            if(( do_.getNamespace() == null ) || nsIdentification.equals( new NsIdentification( do_.getNamespace() ))) {
+            if(( do_.getNamespace() == null ) || nsIdentification.equals( NsIdentification.of( do_.getNamespace() ))) {
                 CDCValidator cdcValidator = dataObjectValidatorMap.get( names[0] );
                 if( cdcValidator != null ) {
                     if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
@@ -253,7 +253,7 @@ public class LNClassValidator {
                         0,
                         warning.getMessage(),
                         new Object[] { do_, warning } ));
-                CDCValidator cdcValidator = CDCValidator.get( new NsIdentification( do_.getNamespace() ), do_.getRefersToDOType().getCdc() );
+                CDCValidator cdcValidator = CDCValidator.get( NsIdentification.of( do_.getNamespace() ), do_.getRefersToDOType().getCdc() );
                 if( cdcValidator != null ) {
                     res = cdcValidator.validateDO( do_, diagnostics ) && res;
                 }

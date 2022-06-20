@@ -50,10 +50,10 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     private static HashMap< NsIdentificationName, DataAttributePresenceConditionValidator > validators = new HashMap<>();
     
     public static DataAttributePresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
-        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, cdc.getName() ))) {
-            validators.put( new NsIdentificationName( nsIdentification, cdc.getName() ), new DataAttributePresenceConditionValidator( nsIdentification, cdc ));
+        if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, cdc.getName() ))) {
+            validators.put( NsIdentificationName.of( nsIdentification, cdc.getName() ), new DataAttributePresenceConditionValidator( nsIdentification, cdc ));
         }
-        return validators.get( new NsIdentificationName( nsIdentification, cdc.getName() ));
+        return validators.get( NsIdentificationName.of( nsIdentification, cdc.getName() ));
     }
     
     private Set< String > analogueValues;

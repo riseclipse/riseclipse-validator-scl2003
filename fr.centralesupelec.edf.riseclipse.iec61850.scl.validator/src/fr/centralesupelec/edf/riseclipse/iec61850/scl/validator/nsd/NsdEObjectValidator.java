@@ -170,7 +170,7 @@ public class NsdEObjectValidator implements EValidator {
         console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                        "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), " in namespace ", namespace );
 
-        NsIdentification id = new NsIdentification( namespace );
+        NsIdentification id = NsIdentification.of( namespace );
         if( nsdResourceSet.getNS( id ) == null ) {
             RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                       "Cannot validate LNodeType ", lNodeType.getId(), " in namespace \"", namespace, "\" because this namespace is unknown" );

@@ -47,10 +47,10 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     private static HashMap< NsIdentificationName, SubDataObjectPresenceConditionValidator > validators = new HashMap<>();
     
     public static SubDataObjectPresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
-        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, cdc.getName() ))) {
-            validators.put( new NsIdentificationName( nsIdentification, cdc.getName() ), new SubDataObjectPresenceConditionValidator( nsIdentification, cdc ));
+        if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, cdc.getName() ))) {
+            validators.put( NsIdentificationName.of( nsIdentification, cdc.getName() ), new SubDataObjectPresenceConditionValidator( nsIdentification, cdc ));
         }
-        return validators.get( new NsIdentificationName( nsIdentification, cdc.getName() ) );
+        return validators.get( NsIdentificationName.of( nsIdentification, cdc.getName() ) );
     }
     
     public SubDataObjectPresenceConditionValidator( NsIdentification nsIdentification, CDC cdc ) {

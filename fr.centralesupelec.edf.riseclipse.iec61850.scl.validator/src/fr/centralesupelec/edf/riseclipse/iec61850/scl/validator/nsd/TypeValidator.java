@@ -39,13 +39,13 @@ public abstract class TypeValidator {
     
     public static TypeValidator get( NsIdentification nsIdentification, String typeName ) {
         if( validators == null ) return null;
-        return validators.get( new NsIdentificationName( nsIdentification, typeName ));
+        return validators.get( NsIdentificationName.of( nsIdentification, typeName ));
     }
     
     public static void buildBasicTypeValidators( NsIdentification nsIdentification, Stream< BasicType > basicTypeStream, IRiseClipseConsole console ) {
         basicTypeStream
         .forEach( basicType -> {
-            NsIdentificationName nsId = new NsIdentificationName( nsIdentification, basicType.getName() );
+            NsIdentificationName nsId = NsIdentificationName.of( nsIdentification, basicType.getName() );
             if( validators.get( nsId ) != null ) {
                 console.warning( BasicTypeValidator.BASIC_TYPE_SETUP_NSD_CATEGORY, basicType.getFilename(), basicType.getLineNumber(),
                                  "BasicType ", basicType.getName(), " has already a validator in namespace \"",
@@ -64,7 +64,7 @@ public abstract class TypeValidator {
     public static void builEnumerationdValidators( NsIdentification nsIdentification, Stream< Enumeration > enumerationStream, IRiseClipseConsole console ) {
         enumerationStream
         .forEach( enumeration -> {
-            NsIdentificationName nsId = new NsIdentificationName( nsIdentification, enumeration.getName() );
+            NsIdentificationName nsId = NsIdentificationName.of( nsIdentification, enumeration.getName() );
             if( validators.get( nsId ) != null ) {
                 console.warning( EnumerationValidator.ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
                                  "Enumeration ", enumeration.getName(), " has already a validator in namespace \"",
@@ -86,7 +86,7 @@ public abstract class TypeValidator {
 
     // A ConstructedAttribute may use another one whose validator has not yet being built
     public static TypeValidator buildConstructedAttributeValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute, IRiseClipseConsole console ) {
-        NsIdentificationName nsId = new NsIdentificationName( nsIdentification, constructedAttribute.getName() );
+        NsIdentificationName nsId = NsIdentificationName.of( nsIdentification, constructedAttribute.getName() );
         if( validators.get( nsId ) != null ) {
             // The usual case is when it has been built because used as the type of a SubDataAttribute
             console.notice( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),

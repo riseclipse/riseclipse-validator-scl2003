@@ -53,10 +53,10 @@ public class DataObjectPresenceConditionValidator {
     
     public static DataObjectPresenceConditionValidator get( NsIdentification nsIdentification, AnyLNClass anyLNClass, boolean isStatistic ) {
         var validators = isStatistic ? statisticalValidators : notStatisticalValidators;
-        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, anyLNClass.getName() ))) {
-            validators.put( new NsIdentificationName( nsIdentification, anyLNClass.getName() ), new DataObjectPresenceConditionValidator( nsIdentification, anyLNClass, isStatistic ));
+        if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, anyLNClass.getName() ))) {
+            validators.put( NsIdentificationName.of( nsIdentification, anyLNClass.getName() ), new DataObjectPresenceConditionValidator( nsIdentification, anyLNClass, isStatistic ));
         }
-        return validators.get( new NsIdentificationName( nsIdentification, anyLNClass.getName() ));
+        return validators.get( NsIdentificationName.of( nsIdentification, anyLNClass.getName() ));
     }
     
     private AnyLNClass anyLNClass;

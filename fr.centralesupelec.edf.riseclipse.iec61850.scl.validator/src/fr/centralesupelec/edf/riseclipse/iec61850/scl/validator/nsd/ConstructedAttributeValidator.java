@@ -88,12 +88,12 @@ public class ConstructedAttributeValidator extends TypeValidator {
                 typeValidator = TypeValidator.buildConstructedAttributeValidator( this.nsIdentification, sda.getRefersToConstructedAttribute(), console );
             }
             if( typeValidator != null ) {
-                subDataAttributeValidatorMap.put( new NsIdentificationName( this.nsIdentification, sda.getName() ), typeValidator );
+                subDataAttributeValidatorMap.put( NsIdentificationName.of( this.nsIdentification, sda.getName() ), typeValidator );
             }
             else {
                 console.warning( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
                                  "Type ", sda.getType(), " not found for SubDataAttribute ", sda.getName() );
-                subDataAttributeUnknownTypeMap.put( new NsIdentificationName( this.nsIdentification, sda.getName() ), sda.getType() );
+                subDataAttributeUnknownTypeMap.put( NsIdentificationName.of( this.nsIdentification, sda.getName() ), sda.getType() );
             }
         }
         
@@ -142,7 +142,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
         boolean res = subDataAttributePresenceConditionValidator.validate( daType, diagnostics );
         
         for( BDA bda : daType.getBDA() ) {
-            TypeValidator validator = subDataAttributeValidatorMap.get( new NsIdentificationName( nsIdentification, bda.getName() ) );
+            TypeValidator validator = subDataAttributeValidatorMap.get( NsIdentificationName.of( nsIdentification, bda.getName() ) );
             if( validator != null ) {
                 validator.validateAbstractDataAttribute( bda, diagnostics );
             }
@@ -150,8 +150,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
                 // if BDA not allowed, error will be reported by PresenceConditionValidator
                 // if BDA has unknown type, tell it
                 String ofType = "";
-                if( subDataAttributeUnknownTypeMap.containsKey( new NsIdentificationName( nsIdentification, bda.getName() ))) {
-                    ofType = " of type " + subDataAttributeUnknownTypeMap.get( new NsIdentificationName( nsIdentification, bda.getName() ));
+                if( subDataAttributeUnknownTypeMap.containsKey( NsIdentificationName.of( nsIdentification, bda.getName() ))) {
+                    ofType = " of type " + subDataAttributeUnknownTypeMap.get( NsIdentificationName.of( nsIdentification, bda.getName() ));
                 }
                 RiseClipseMessage warning = RiseClipseMessage.warning( CA_VALIDATION_NSD_CATEGORY, daType.getFilename(), daType.getLineNumber(), 
                         "while validating DAType: validator for BDA " + bda.getName() + ofType + " not found" );
