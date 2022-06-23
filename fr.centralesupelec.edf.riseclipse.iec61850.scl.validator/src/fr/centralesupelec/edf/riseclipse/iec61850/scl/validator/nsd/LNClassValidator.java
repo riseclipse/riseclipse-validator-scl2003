@@ -101,7 +101,6 @@ public class LNClassValidator {
     // This will check the presence condition
     private DataObjectPresenceConditionValidator notStatisticalDataObjectPresenceConditionValidator;
     private DataObjectPresenceConditionValidator statisticalDataObjectPresenceConditionValidator;
-    private DataObjectPresenceConditionValidator dataObjectPresenceConditionValidator;
     // Key is DataObject name (the corresponding DO has the same name)
     // Value is the CDCValidator given by the DataObject type
     private HashMap< String, CDCValidator > dataObjectValidatorMap = new HashMap<>();
@@ -153,7 +152,7 @@ public class LNClassValidator {
                 .getDO()
                 .stream()
                 .anyMatch( d -> "ClcSrc".equals( d.getName() ));
-        dataObjectPresenceConditionValidator = isStatistic  ? statisticalDataObjectPresenceConditionValidator : notStatisticalDataObjectPresenceConditionValidator;
+        DataObjectPresenceConditionValidator dataObjectPresenceConditionValidator = isStatistic  ? statisticalDataObjectPresenceConditionValidator : notStatisticalDataObjectPresenceConditionValidator;
         
         boolean res = true;
 
