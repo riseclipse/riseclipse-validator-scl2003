@@ -118,7 +118,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
         for( String name : mandatoryInLLN0ElseForbidden ) {
             if( presentSclComponent.get( name ) != null ) {
                 RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
-                                            "verification of PresenceCondition \"MFln0\" for ", getSclComponentClassName(), " ", name, " is not implemented in ",
+                                            "verification of PresenceCondition \"MFln0\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
                                             getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                             " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
@@ -137,7 +137,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
         for( String name : mandatoryInLLN0ElseOptional ) {
             if( presentSclComponent.get( name ) != null ) {
                 RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
-                                            "verification of PresenceCondition \"MOln0\" for ", getSclComponentClassName(), " ", name, " is not implemented in ",
+                                            "verification of PresenceCondition \"MOln0\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
                                             getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                             " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
@@ -180,7 +180,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
             }
             else {
                 RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                                            "verification of PresenceCondition \"OMSynPh\" for SDO \"", sdoName, "\" for DOType: multiple values for phsRef",
+                                            "verification of PresenceCondition \"OMSynPh\" for SDO \"", sdoName, "\" for DOType: multiple values for \"phsRef\"",
                                             " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
@@ -192,7 +192,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
         }
         else {
             RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                                        "verification of PresenceCondition \"OMSynPh\" for SDO \"", sdoName, "\" for DOType: DA phsRef not found",
+                                        "verification of PresenceCondition \"OMSynPh\" for SDO \"", sdoName, "\" for DOType: DA \"phsRef\" not found",
                                         " in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.WARNING,
@@ -205,7 +205,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
             for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
                 if( presentSclComponent.get( name ) == null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( SDO_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                                              "SDO \"", sdoName, "\" is mandatory in DOType because phsRef is not Synchrophasor", " in namespace \"", nsIdentification, "\"" );
+                                              "SDO \"", sdoName, "\" is mandatory in DOType because \"phsRef\" is not Synchrophasor", " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,

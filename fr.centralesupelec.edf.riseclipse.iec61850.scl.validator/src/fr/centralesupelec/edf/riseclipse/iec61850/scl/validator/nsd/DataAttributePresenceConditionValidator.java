@@ -173,7 +173,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                         DA da = presentSclComponent.get( attribute );
                         if( da == null ) {
                             RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
-                                                      getSclComponentClassName(), " ", attribute, " is mandatory in ", getSclModelClassName(),
+                                                      getSclComponentClassName(), " \"", attribute, "\" is mandatory in ", getSclModelClassName(),
                                                       " with LNClass LLN0", " in namespace \"", nsIdentification, "\"" );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
@@ -190,7 +190,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                         DA da = presentSclComponent.get( attribute );
                         if( da != null ) {
                             RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                                                      getSclComponentClassName(), " ", attribute, " is forbidden in ", getSclModelClassName(),
+                                                      getSclComponentClassName(), " \"", attribute, "\" is forbidden in ", getSclModelClassName(),
                                                       " with LNClass ", do_.getParentLNodeType().getLnClass(), " at line ", 
                                                       do_.getParentLNodeType().getLineNumber(), " in namespace \"", nsIdentification, "\"" );
                             diagnostics.add( new BasicDiagnostic(
@@ -216,9 +216,9 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
         for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
             if( presentSclComponent.get( name ) != null ) {
                 RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                                            "verification of PresenceCondition \"OMSynPh\" for", getSclComponentClassName(),
+                                            "verification of PresenceCondition \"OMSynPh\" for ", getSclComponentClassName(),
                                             " is not implemented in ", getSclModelClassName(), ") with ", getNsdModelClassName(),
-                                            " ", getNsdModelName(), " in namespace \"", nsIdentification, "\"" );
+                                            " \"", getNsdModelName(), "\" in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
