@@ -357,6 +357,13 @@ public class CDCValidator {
     }
 
     public CDCValidator getParameterizedCdcValidatorFor( String underlyingType, NsIdentification nsId, IRiseClipseConsole console ) {
+        if( "EnumDA".equals( underlyingType )) {
+            // IEC 61850-7-7
+            // It exists also a specific case for parameterized enumeration where the enumeration will be
+            // resolved at implementation and not in the NSD itself. To address this case, the specific
+            // keyword “EnumDA”.
+            return this;
+        }
         NsIdentificationName key = NsIdentificationName.of( nsId, underlyingType );
         if( ! parameterizedValidators.containsKey( key )) {
             Pair< TypeValidator, NsIdentification > underlyingTypeValidator = TypeValidator.get( nsId, underlyingType );
