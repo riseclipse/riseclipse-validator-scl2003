@@ -49,7 +49,7 @@ public class NsdValidator {
     public void prepare( @NonNull ComposedEValidator validator, @NonNull IRiseClipseConsole console, boolean displayNsdMessages ) {
         Severity level = Severity.WARNING;
         if( ! displayNsdMessages ) {
-            level = console.setLevel( Severity.ERROR );            
+            level = console.setLevel( Severity.WARNING );            
         }
         nsdLoader.getResourceSet().finalizeLoad( console );
         nsdEObjectValidator = new NsdEObjectValidator( nsdLoader.getResourceSet(), console );

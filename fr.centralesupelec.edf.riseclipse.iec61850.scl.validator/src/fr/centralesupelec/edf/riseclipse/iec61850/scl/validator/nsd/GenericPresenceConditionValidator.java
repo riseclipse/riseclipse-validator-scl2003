@@ -130,6 +130,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
                              name, " has already been added to ", getPresenceConditionValidatorName() );
             return;
         }
+        console.debug( getSetupMessageCategory(), filename, lineNumber,
+                "adding ", getSclComponentClassName(), " ", name, " to ", getNsdModelClassName(), " ", getNsdModelName() );
         presentSclComponent.put( name, null );
 
         switch( presCond ) {
@@ -647,7 +649,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     public boolean addModelData( @NonNull SclComponent sclComponent, String sclComponentName, DiagnosticChain diagnostics ) {
         if( ! presentSclComponent.containsKey( sclComponentName )) {
             RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclComponent.getFilename(), sclComponent.getLineNumber(), 
-                                      getSclComponentClassName(), " ", sclComponentName, " not found in ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
+                                      getSclComponentClassName(), " ", sclComponentName, " not expected in ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
