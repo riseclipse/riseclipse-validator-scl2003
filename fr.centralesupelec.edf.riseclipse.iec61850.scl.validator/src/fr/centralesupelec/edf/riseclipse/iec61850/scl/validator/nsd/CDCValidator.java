@@ -20,7 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
@@ -50,7 +50,7 @@ public class CDCValidator {
     private static final String CDC_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/CDC";
     private static final String CDC_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/CDC";
 
-    private static HashMap< NsIdentificationName, CDCValidator > validators = new HashMap<>();
+    private static IdentityHashMap< NsIdentificationName, CDCValidator > validators = new IdentityHashMap<>();
     
     public static CDCValidator get( NsIdentification nsIdentification, String doTypeName ) {
         if( validators == null ) return null;
@@ -98,13 +98,14 @@ public class CDCValidator {
     
     // Key is DataAttribute name (the corresponding DA has the same name)
     // Value is the TypeValidator given by the DataAttribute type
-    private HashMap< String, TypeValidator > dataAttributeTypeValidatorMap = new HashMap<>();
+    private IdentityHashMap< NsIdentificationName, TypeValidator > dataAttributeTypeValidatorMap;
     // Key is DataAttribute name (the corresponding DA has the same name)
     // Value is the FunctionalConstraintValidator given by the DataAttribute fc
-    private HashMap< String, FunctionalConstraintValidator > dataAttributeFunctionalConstraintValidatorMap = new HashMap<>();
+    // TODO: not used?
+    private IdentityHashMap< NsIdentificationName, FunctionalConstraintValidator > dataAttributeFunctionalConstraintValidatorMap;
     // Key is SubDataObject name (the corresponding SDO has the same name)
     // Value is the CDCValidator given by the SubDataObject type
-    private HashMap< String, CDCValidator > subDataObjectValidatorMap = new HashMap<>();
+    private IdentityHashMap< NsIdentificationName, CDCValidator > subDataObjectValidatorMap;
 
     private CDCValidator( NsIdentification nsIdentification, CDC cdc, IRiseClipseConsole console ) {
         console.debug( CDC_SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),

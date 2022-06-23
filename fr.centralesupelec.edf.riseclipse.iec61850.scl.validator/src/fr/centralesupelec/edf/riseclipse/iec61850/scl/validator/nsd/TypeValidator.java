@@ -20,7 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.DiagnosticChain;
@@ -35,7 +35,7 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public abstract class TypeValidator {
 
-    private static HashMap< NsIdentificationName, TypeValidator > validators = new HashMap<>();
+    private static IdentityHashMap< NsIdentificationName, TypeValidator > validators = new IdentityHashMap<>();
     
     public static TypeValidator get( NsIdentification nsIdentification, String typeName ) {
         if( validators == null ) return null;

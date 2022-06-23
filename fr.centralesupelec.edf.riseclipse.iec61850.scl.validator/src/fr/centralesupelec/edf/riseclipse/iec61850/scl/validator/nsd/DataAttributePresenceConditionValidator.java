@@ -20,7 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -47,9 +47,10 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     private static final String DA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/DataAttribute";
     private static final String DA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/DataAttribute";
 
-    private static HashMap< NsIdentificationName, DataAttributePresenceConditionValidator > validators = new HashMap<>();
+    private static IdentityHashMap< NsIdentificationName, DataAttributePresenceConditionValidator > validators = new IdentityHashMap<>();
     
     public static DataAttributePresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
+        // TODO: do we need to use dependsOn links?
         if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, cdc.getName() ))) {
             validators.put( NsIdentificationName.of( nsIdentification, cdc.getName() ), new DataAttributePresenceConditionValidator( nsIdentification, cdc ));
         }

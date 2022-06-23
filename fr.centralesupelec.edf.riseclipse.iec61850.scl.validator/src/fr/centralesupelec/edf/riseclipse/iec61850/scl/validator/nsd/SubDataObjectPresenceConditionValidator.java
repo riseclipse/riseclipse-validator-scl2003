@@ -20,7 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.BasicDiagnostic;
@@ -44,9 +44,10 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     private static final String SDO_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/SubDataObject";
     private static final String SDO_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/SubDataObject";
 
-    private static HashMap< NsIdentificationName, SubDataObjectPresenceConditionValidator > validators = new HashMap<>();
+    private static IdentityHashMap< NsIdentificationName, SubDataObjectPresenceConditionValidator > validators = new IdentityHashMap<>();
     
     public static SubDataObjectPresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
+        // TODO: do we need to use dependsOn links?
         if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, cdc.getName() ))) {
             validators.put( NsIdentificationName.of( nsIdentification, cdc.getName() ), new SubDataObjectPresenceConditionValidator( nsIdentification, cdc ));
         }

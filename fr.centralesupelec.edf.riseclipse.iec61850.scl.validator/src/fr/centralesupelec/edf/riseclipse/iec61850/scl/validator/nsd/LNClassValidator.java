@@ -20,6 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
+import java.util.IdentityHashMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Stream;
@@ -47,7 +48,7 @@ public class LNClassValidator {
     private static final String LNCLASS_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/LNClass";
     private static final String LNCLASS_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/LNClass";
 
-    private static HashMap< NsIdentificationName, LNClassValidator > validators = new HashMap<>();
+    private static IdentityHashMap< NsIdentificationName, LNClassValidator > validators = new IdentityHashMap<>();
     
     public static LNClassValidator get( NsIdentification nsIdentification, String lnClassName ) {
         if( validators == null ) return null;

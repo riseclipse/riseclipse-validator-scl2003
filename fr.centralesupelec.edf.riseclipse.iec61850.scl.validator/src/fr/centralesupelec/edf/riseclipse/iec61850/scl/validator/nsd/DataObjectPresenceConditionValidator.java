@@ -21,6 +21,7 @@
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -48,8 +49,8 @@ public class DataObjectPresenceConditionValidator {
     private static final String DO_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/DataObject";
     private static final String DO_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/DataObject";
 
-    private static HashMap< NsIdentificationName, DataObjectPresenceConditionValidator > notStatisticalValidators = new HashMap<>();
-    private static HashMap< NsIdentificationName, DataObjectPresenceConditionValidator > statisticalValidators = new HashMap<>();
+    private static IdentityHashMap< NsIdentificationName, DataObjectPresenceConditionValidator > notStatisticalValidators = new IdentityHashMap<>();
+    private static IdentityHashMap< NsIdentificationName, DataObjectPresenceConditionValidator > statisticalValidators = new IdentityHashMap<>();
     
     public static DataObjectPresenceConditionValidator get( NsIdentification nsIdentification, AnyLNClass anyLNClass, boolean isStatistic ) {
         var validators = isStatistic ? statisticalValidators : notStatisticalValidators;

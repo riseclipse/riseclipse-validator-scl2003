@@ -20,7 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
@@ -39,9 +39,10 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     private static final String SDA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/SubDataAttribute";
     private static final String SDA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/SubDataAttribute";
 
-    private static HashMap< NsIdentificationName, SubDataAttributePresenceConditionValidator > validators = new HashMap<>();
+    private static IdentityHashMap< NsIdentificationName, SubDataAttributePresenceConditionValidator > validators = new IdentityHashMap<>();
     
     public static SubDataAttributePresenceConditionValidator get( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute ) {
+        // TODO: do we need to use dependsOn links?
         if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, constructedAttribute.getName() ))) {
             validators.put( NsIdentificationName.of( nsIdentification, constructedAttribute.getName() ), new SubDataAttributePresenceConditionValidator( nsIdentification, constructedAttribute ));
         }

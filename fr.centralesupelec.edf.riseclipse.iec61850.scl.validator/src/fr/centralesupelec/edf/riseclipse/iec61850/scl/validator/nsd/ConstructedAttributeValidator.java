@@ -20,7 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.HashSet;
 
 import org.eclipse.emf.common.util.BasicDiagnostic;
@@ -50,8 +50,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
     private HashSet< String > validatedDAType; 
 
     private SubDataAttributePresenceConditionValidator subDataAttributePresenceConditionValidator;
-    private HashMap< NsIdentificationName, TypeValidator > subDataAttributeValidatorMap = new HashMap<>();
-    private HashMap< NsIdentificationName, String > subDataAttributeUnknownTypeMap = new HashMap<>();
+    private IdentityHashMap< NsIdentificationName, TypeValidator > subDataAttributeValidatorMap = new IdentityHashMap<>();
+    private IdentityHashMap< NsIdentificationName, String > subDataAttributeUnknownTypeMap = new IdentityHashMap<>();
 
     private NsIdentification nsIdentification;
 
