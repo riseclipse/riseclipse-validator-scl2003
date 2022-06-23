@@ -255,7 +255,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
         for( String name : mandatoryIfAnalogValueIncludesIElseForbidden ) {
             if( iIsPresent && ( presentSclComponent.get( name ) == null )) {
                 RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                        getSclComponentClassName(), " ", name, " is mandatory in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
+                        getSclComponentClassName(), " \"", name, "\" is mandatory in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
                         " because there are sibling elements of type AnalogueValue which includes 'i' as a child" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
@@ -267,7 +267,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
             }
             else if( ! iIsPresent && ( presentSclComponent.get( name ) != null )) {
                 RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                        getSclComponentClassName(), " ", name, " is forbidden in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
+                        getSclComponentClassName(), " \"", name, "\" is forbidden in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
                         " because there are no sibling element of type AnalogueValue which includes 'i' as a child" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
@@ -325,7 +325,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
         for( String name : toTest ) {
             if( iIsPresent && ( presentSclComponent.get( name ) == null )) {
                 RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                        getSclComponentClassName(), " ", name, " is mandatory in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
+                        getSclComponentClassName(), " \"", name, "\" is mandatory in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
                         " because there are sibling elements of type Vector which includes 'i' as a child of their " + marOrAng + " attribute" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
@@ -337,7 +337,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
             }
             else if( ! iIsPresent && ( presentSclComponent.get( name ) != null )) {
                 RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                        getSclComponentClassName(), " ", name, " is forbidden in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
+                        getSclComponentClassName(), " \"", name, "\" is forbidden in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
                         " because there are no sibling element of type Vector which includes 'i' as a child of their " + marOrAng + " attribute" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
