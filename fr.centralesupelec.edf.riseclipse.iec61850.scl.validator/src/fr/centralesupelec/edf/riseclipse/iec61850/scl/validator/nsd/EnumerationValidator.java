@@ -40,6 +40,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.Pair;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class EnumerationValidator extends TypeValidator {
@@ -55,11 +56,15 @@ public class EnumerationValidator extends TypeValidator {
     private boolean isMultiplierKind;
 
     public EnumerationValidator( Enumeration enumeration, NsIdentification nsIdentification, IRiseClipseConsole console ) {
+        console.debug( ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getLineNumber(),
+                "EnumerationValidator( ", enumeration.getName(), " )in namespace\"", nsIdentification, "\"" );
+
         this.name = enumeration.getName();
         String inheritedFromName = enumeration.getInheritedFrom();
         
         if(( inheritedFromName != null ) && ( ! inheritedFromName.isEmpty() )) {
-            TypeValidator inheritedValidator = TypeValidator.get( nsIdentification, inheritedFromName );
+            Pair< TypeValidator, NsIdentification > res = TypeValidator.get( nsIdentification, inheritedFromName );
+            TypeValidator inheritedValidator = res.getLeft();
             if(( inheritedValidator != null ) && ( inheritedValidator instanceof EnumerationValidator )) {
                 EnumerationValidator inheritedFrom = ( EnumerationValidator ) inheritedValidator;
                 literals.putAll( inheritedFrom.literals );

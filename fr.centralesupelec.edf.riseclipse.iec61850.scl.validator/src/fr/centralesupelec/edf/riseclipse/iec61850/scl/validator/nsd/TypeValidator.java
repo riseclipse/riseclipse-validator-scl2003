@@ -32,14 +32,21 @@ import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.Pair;
 
 public abstract class TypeValidator {
 
     private static IdentityHashMap< NsIdentificationName, TypeValidator > validators = new IdentityHashMap<>();
     
-    public static TypeValidator get( NsIdentification nsIdentification, String typeName ) {
-        if( validators == null ) return null;
-        return validators.get( NsIdentificationName.of( nsIdentification, typeName ));
+    public static Pair< TypeValidator, NsIdentification > get( NsIdentification nsIdentification, String typeName ) {
+        NsIdentification nsId = nsIdentification;
+        TypeValidator typeValidator = null;
+        while(( typeValidator == null ) && ( nsId != null )) {
+            typeValidator = validators.get( NsIdentificationName.of( nsId, typeName ));
+            nsIdentification = nsId;
+            nsId = nsId.getDependsOn();
+        }
+        return Pair.of( typeValidator, nsIdentification );
     }
     
     public static void buildBasicTypeValidators( NsIdentification nsIdentification, Stream< BasicType > basicTypeStream, IRiseClipseConsole console ) {

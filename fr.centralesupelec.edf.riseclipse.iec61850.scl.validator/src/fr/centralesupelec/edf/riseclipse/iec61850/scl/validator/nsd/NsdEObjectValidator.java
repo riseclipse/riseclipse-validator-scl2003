@@ -183,12 +183,12 @@ public class NsdEObjectValidator implements EValidator {
             return false;
         }
         // Check that LNodeType has a known LNClass in the given namespace
-        LNClassValidator lnClassValidator = LNClassValidator.get( id, lNodeType.getLnClass() );
-        if( lnClassValidator != null ) {
+        Pair< LNClassValidator, NsIdentification > lnClassValidator = LNClassValidator.get( id, lNodeType.getLnClass() );
+        if( lnClassValidator.getLeft() != null ) {
             console.notice( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
-                           "LNClass ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + namespace + "\"" );
+                           "LNClass ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + lnClassValidator.getRight() + "\"" );
 
-            return lnClassValidator.validateLNodeType( lNodeType, diagnostics );
+            return lnClassValidator.getLeft().validateLNodeType( lNodeType, diagnostics );
         }
         
         RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 

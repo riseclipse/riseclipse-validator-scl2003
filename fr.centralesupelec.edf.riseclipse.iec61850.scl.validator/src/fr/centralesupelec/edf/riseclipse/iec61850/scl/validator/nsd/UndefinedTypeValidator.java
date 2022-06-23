@@ -34,6 +34,12 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class UndefinedTypeValidator extends TypeValidator {
 
+    private NsIdentification nsIdentification;
+
+    public UndefinedTypeValidator( NsIdentification nsIdentification ) {
+        this.nsIdentification = nsIdentification;
+    }
+
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
         @NonNull
@@ -42,7 +48,7 @@ public class UndefinedTypeValidator extends TypeValidator {
                        "UndefinedTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " ) in namespace \"", nsIdentification, "\"" );
 
         if( "Enum".equals( ada.getBType() )) {
-            return new EnumeratedTypeValidator().validateAbstractDataAttribute( ada, diagnostics );
+            return new EnumeratedTypeValidator( nsIdentification ).validateAbstractDataAttribute( ada, diagnostics );
         }
 
         if( "Struct".equals( ada.getBType() )) {

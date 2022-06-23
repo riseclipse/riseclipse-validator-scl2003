@@ -54,6 +54,7 @@ public class DataObjectPresenceConditionValidator {
     
     public static DataObjectPresenceConditionValidator get( NsIdentification nsIdentification, AnyLNClass anyLNClass, boolean isStatistic ) {
         var validators = isStatistic ? statisticalValidators : notStatisticalValidators;
+        // TODO: do we need to use dependsOn links?
         if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, anyLNClass.getName() ))) {
             validators.put( NsIdentificationName.of( nsIdentification, anyLNClass.getName() ), new DataObjectPresenceConditionValidator( nsIdentification, anyLNClass, isStatistic ));
         }

@@ -33,13 +33,13 @@ import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ServiceConstructedAttribut
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.SubDataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.BDA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DAType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.Pair;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class ConstructedAttributeValidator extends TypeValidator {
@@ -56,6 +56,9 @@ public class ConstructedAttributeValidator extends TypeValidator {
     private NsIdentification nsIdentification;
 
     public ConstructedAttributeValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute, IRiseClipseConsole console ) {
+        console.debug( CA_SETUP_NSD_CATEGORY, constructedAttribute.getLineNumber(),
+                "ConstructedAttributeValidator( ", constructedAttribute.getName(), " ) in namespace \"", nsIdentification, "\"" );
+
         this.nsIdentification = nsIdentification;
         subDataAttributePresenceConditionValidator = SubDataAttributePresenceConditionValidator.get( nsIdentification, constructedAttribute );
         
@@ -63,32 +66,22 @@ public class ConstructedAttributeValidator extends TypeValidator {
             if( sda.getType() == null ) {
                 console.warning( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
                                  "type not specified for SubDataAttribute ", sda.getName() );
+                }
                 continue;
             }
-            // When we look for a validator, we first search in the current namespace.
-            // If this fails, we use DependsOn links
-            TypeValidator typeValidator = null;
-            // Reinitialize before searching
-            nsIdentification = this.nsIdentification;
-            while( nsIdentification != null ) {
-                typeValidator = TypeValidator.get( nsIdentification, sda.getType() );
-                if( typeValidator != null ) break;
-                if(( sda.eResource() != null ) && ( sda.eResource().getResourceSet() instanceof NsdResourceSetImpl )) {
-                    nsIdentification = (( NsdResourceSetImpl ) sda.eResource().getResourceSet() ).getDependsOn( nsIdentification );
-                }
-                else {
-                    break;
-                }
-            }
+            Pair< TypeValidator, NsIdentification > res = TypeValidator.get( this.nsIdentification, sda.getType() );
+            TypeValidator typeValidator = res.getLeft();
+            NsIdentification nsId = res.getRight();
             // The type of the SubDataAttribute may be a ConstructedAttribute whose validator is not yet built
             if(( typeValidator == null ) && ( sda.getRefersToConstructedAttribute() != null )) {
                 console.notice( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
                               "Validator for ConstructedAttribute ", constructedAttribute.getName(),
                               " needs validator for SubDataAttribute ", sda.getName(), " of type ", sda.getType(), " which is not yet built" );
                 typeValidator = TypeValidator.buildConstructedAttributeValidator( this.nsIdentification, sda.getRefersToConstructedAttribute(), console );
+                nsId = this.nsIdentification;
             }
             if( typeValidator != null ) {
-                subDataAttributeValidatorMap.put( NsIdentificationName.of( this.nsIdentification, sda.getName() ), typeValidator );
+                subDataAttributeValidatorMap.put( NsIdentificationName.of( nsId, sda.getName() ), typeValidator );
             }
             else {
                 console.warning( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
@@ -142,9 +135,14 @@ public class ConstructedAttributeValidator extends TypeValidator {
         boolean res = subDataAttributePresenceConditionValidator.validate( daType, diagnostics );
         
         for( BDA bda : daType.getBDA() ) {
-            TypeValidator validator = subDataAttributeValidatorMap.get( NsIdentificationName.of( nsIdentification, bda.getName() ) );
-            if( validator != null ) {
-                validator.validateAbstractDataAttribute( bda, diagnostics );
+            TypeValidator typeValidator = null;
+            NsIdentification nsId = nsIdentification;
+            while(( typeValidator == null ) && ( nsId != null )) {
+                typeValidator = subDataAttributeValidatorMap.get( NsIdentificationName.of( nsId, bda.getName() ));
+                nsId = nsId.getDependsOn();
+            }
+            if( typeValidator != null ) {
+                typeValidator.validateAbstractDataAttribute( bda, diagnostics );
             }
             else {
                 // if BDA not allowed, error will be reported by PresenceConditionValidator

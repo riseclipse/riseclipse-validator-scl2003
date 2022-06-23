@@ -35,12 +35,12 @@ import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.Pair;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class LNClassValidator {
@@ -50,11 +50,15 @@ public class LNClassValidator {
 
     private static IdentityHashMap< NsIdentificationName, LNClassValidator > validators = new IdentityHashMap<>();
     
-    public static LNClassValidator get( NsIdentification nsIdentification, String lnClassName ) {
-        if( validators == null ) return null;
-        if( nsIdentification == null ) return null;
-        if( lnClassName == null ) return null;
-        return validators.get( NsIdentificationName.of( nsIdentification, lnClassName ));
+    public static Pair<LNClassValidator,NsIdentification> get( NsIdentification nsIdentification, String lnClassName ) {
+        NsIdentification nsId = nsIdentification;
+        LNClassValidator lnClassValidator = null;
+        while(( lnClassValidator == null ) && ( nsId != null )) {
+            lnClassValidator = validators.get( NsIdentificationName.of( nsId, lnClassName ));
+            nsIdentification = nsId;
+            nsId = nsId.getDependsOn();
+        }
+        return Pair.of( lnClassValidator, nsIdentification );
     }
     
     public static void buildValidators( NsIdentification nsIdentification, Stream< LNClass > stream, IRiseClipseConsole console ) {
@@ -112,23 +116,9 @@ public class LNClassValidator {
         
         AnyLNClass lnClass = anyLNClass;
         while( lnClass != null ) {
-            for( DataObject do_ : lnClass.getDataObject() ) { 
-                // When we look for a validator, we first search in the current namespace.
-                // If this fails, we use DependsOn links
-                CDCValidator cdcValidator = null;
-                // Reinitialize before searching
-                nsIdentification = this.nsIdentification;
-                while( nsIdentification != null ) {
-                    cdcValidator = CDCValidator.get( nsIdentification, do_.getType() );
-                    if( cdcValidator != null ) break;
-                    // TODO: NsdObjectImpl.getResourceSet() should be available in interface
-                    if(( do_.eResource() != null ) && ( do_.eResource().getResourceSet() instanceof NsdResourceSetImpl )) {
-                        nsIdentification = (( NsdResourceSetImpl ) do_.eResource().getResourceSet() ).getDependsOn( nsIdentification );
-                    }
-                    else {
-                        break;
-                    }
-                }
+            for( DataObject do_ : lnClass.getDataObject() ) {
+                Pair< CDCValidator, NsIdentification > res = CDCValidator.get( this.nsIdentification, do_.getType() );
+                CDCValidator cdcValidator = res.getLeft();
                 if( cdcValidator != null ) {
                     dataObjectValidatorMap.put( do_.getName(), cdcValidator );
                     console.notice( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
@@ -254,7 +244,8 @@ public class LNClassValidator {
                         0,
                         warning.getMessage(),
                         new Object[] { do_, warning } ));
-                CDCValidator cdcValidator = CDCValidator.get( NsIdentification.of( do_.getNamespace() ), do_.getRefersToDOType().getCdc() );
+                Pair< CDCValidator, NsIdentification > pair = CDCValidator.get( NsIdentification.of( do_.getNamespace() ), do_.getRefersToDOType().getCdc() );
+                CDCValidator cdcValidator = pair.getLeft();
                 if( cdcValidator != null ) {
                     res = cdcValidator.validateDO( do_, diagnostics ) && res;
                 }
