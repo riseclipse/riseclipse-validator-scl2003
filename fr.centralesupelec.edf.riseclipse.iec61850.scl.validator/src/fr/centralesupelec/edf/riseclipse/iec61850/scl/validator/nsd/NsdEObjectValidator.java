@@ -37,6 +37,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.util.SclSwitch;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.Pair;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class NsdEObjectValidator implements EValidator {
@@ -48,8 +49,15 @@ public class NsdEObjectValidator implements EValidator {
         this.nsdResourceSet = nsdResourceSet;
         
         // To avoid building several times the validators, we process the ordered list of NsIdentification (root first)
+        
+        // CDC "ENS" in 61850-7-3 is enumParameterized
+        // AbstractLNClass "DomainLN" in 61850-7-4 uses it with enumeration "BehaviourModeKind" which is also defined in 61850-7-4
+        // The tool makes a copy of the CDC and sets the right type to the appropriate DataAttribute, but the CDC is still in 61850-7-3
+        // Validators for 61850-7-3 are built before those of 61850-7-4, and when the one for the instantiated CDC is built,
+        // validator for "BehaviourModeKind" is not yet built and therefore not found
+        // This is why there are several loops
         for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList( console )) {
-            console.info( NsdValidator.SETUP_NSD_CATEGORY, 0, "Getting NSD rules for namespace \"", nsIdentification, "\"" );
+            console.debug( NsdValidator.SETUP_NSD_CATEGORY, 0, "Building basic and enumeration validators in namespace \"", nsIdentification, "\"" );
             // Order is important !
             TypeValidator.buildBasicTypeValidators(
                     nsIdentification,
@@ -59,14 +67,23 @@ public class NsdEObjectValidator implements EValidator {
                     nsIdentification,
                     nsdResourceSet.getEnumerationStream( nsIdentification, false ),
                     console );
+        }
+        for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList( console )) {
+            console.debug( NsdValidator.SETUP_NSD_CATEGORY, 0, "Building constructed attributes validators in namespace \"", nsIdentification, "\"" );
             TypeValidator.buildConstructedAttributeValidators(
                     nsIdentification,
                     nsdResourceSet.getConstructedAttributeStream( nsIdentification, false ),
                     console );
+        }
+        for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList( console )) {
+            console.debug( NsdValidator.SETUP_NSD_CATEGORY, 0, "Building CDC validators in namespace \"", nsIdentification, "\"" );
             CDCValidator.buildValidators(
                     nsIdentification,
                     nsdResourceSet.getCDCStream( nsIdentification, false ),
                     console );
+        }
+        for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList( console )) {
+            console.debug( NsdValidator.SETUP_NSD_CATEGORY, 0, "Building LNClass validators in namespace \"", nsIdentification, "\"" );
             LNClassValidator.buildValidators(
                     nsIdentification,
                     nsdResourceSet.getLNClassStream( nsIdentification, false ),

@@ -64,7 +64,8 @@ public class ConstructedAttributeValidator extends TypeValidator {
         
         for( SubDataAttribute sda : constructedAttribute.getSubDataAttribute() ) {
             if( sda.getType() == null ) {
-                console.warning( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
+                if(( !( constructedAttribute instanceof ServiceConstructedAttribute )) || (! (( ServiceConstructedAttribute ) constructedAttribute ).isTypeKindParameterized() )) {
+                    console.warning( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
                                  "type not specified for SubDataAttribute ", sda.getName() );
                 }
                 continue;

@@ -339,5 +339,35 @@ public class CDCValidator {
         }
         return validateDOType( doType, diagnostics );
     }
+    
+    private CDCValidator( CDCValidator baseValidator, TypeValidator underlyingTypeValidator, NsIdentification nsId ) {
+        this.nsIdentification                              = baseValidator.nsIdentification;
+        this.cdc                                           = baseValidator.cdc;
+        this.validatedDOType                               = new HashSet<>();
+        this.dataAttributePresenceConditionValidator       = baseValidator.dataAttributePresenceConditionValidator;
+        this.subDataObjectPresenceConditionValidator       = baseValidator.subDataObjectPresenceConditionValidator;
+        this.dataAttributeTypeValidatorMap                 = new IdentityHashMap< NsIdentificationName, TypeValidator >( baseValidator.dataAttributeTypeValidatorMap );
+        this.dataAttributeFunctionalConstraintValidatorMap = baseValidator.dataAttributeFunctionalConstraintValidatorMap;
+        this.subDataObjectValidatorMap                     = baseValidator.subDataObjectValidatorMap;
+        this.parameterizedValidators                       = baseValidator.parameterizedValidators;
+        
+        for( String att : cdc.getParameterizedDataAttributeNames() ) {
+            dataAttributeTypeValidatorMap.put( NsIdentificationName.of( nsIdentification, att ), underlyingTypeValidator );
+        }
+    }
+
+    public CDCValidator getParameterizedCdcValidatorFor( String underlyingType, NsIdentification nsId, IRiseClipseConsole console ) {
+        NsIdentificationName key = NsIdentificationName.of( nsId, underlyingType );
+        if( ! parameterizedValidators.containsKey( key )) {
+            Pair< TypeValidator, NsIdentification > underlyingTypeValidator = TypeValidator.get( nsId, underlyingType );
+            if(( underlyingTypeValidator == null ) || ( underlyingTypeValidator.getLeft() == null )) {
+                console.error( CDC_SETUP_NSD_CATEGORY , 0, "Validator for underlying type ", underlyingType,
+                        " not found in namespace \"", nsId, "\" while parameterizing CDC ", getName() );
+                return this;
+            }
+            parameterizedValidators.put( key, new CDCValidator( this, underlyingTypeValidator.getLeft(), underlyingTypeValidator.getRight() ));
+        }
+        return parameterizedValidators.get( key );
+    }
 
 }
