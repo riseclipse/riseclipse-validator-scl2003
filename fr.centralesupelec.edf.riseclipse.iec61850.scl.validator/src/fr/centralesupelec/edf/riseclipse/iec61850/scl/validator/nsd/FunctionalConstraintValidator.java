@@ -56,7 +56,7 @@ public class FunctionalConstraintValidator {
 
     public void validateAbstractDataAttribute( DA da, DiagnosticChain diagnostics ) {
         if( ! code.equals( da.getFc() )) {
-            RiseClipseMessage error = RiseClipseMessage.error( FC_VALIDATION_NSD_CATEGORY, da.getLineNumber(), 
+            RiseClipseMessage error = RiseClipseMessage.error( FC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
                                       "functional contraint \"", da.getFc(), "\" of DA \"", da.getName(), "\" is wrong, it should be \"", code + "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,

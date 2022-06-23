@@ -20,7 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
@@ -39,21 +39,20 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     private static final String SDA_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/SubDataAttribute";
     private static final String SDA_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/SubDataAttribute";
 
-    private static HashMap< NsIdentificationName, SubDataAttributePresenceConditionValidator > validators = new HashMap<>();
+    private static IdentityHashMap< NsIdentificationName, SubDataAttributePresenceConditionValidator > validators = new IdentityHashMap<>();
     
     public static SubDataAttributePresenceConditionValidator get( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute ) {
-        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, constructedAttribute.getName() ))) {
-            validators.put( new NsIdentificationName( nsIdentification, constructedAttribute.getName() ), new SubDataAttributePresenceConditionValidator( nsIdentification, constructedAttribute ));
+        // TODO: do we need to use dependsOn links?
+        if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, constructedAttribute.getName() ))) {
+            validators.put( NsIdentificationName.of( nsIdentification, constructedAttribute.getName() ), new SubDataAttributePresenceConditionValidator( nsIdentification, constructedAttribute ));
         }
-        return validators.get( new NsIdentificationName( nsIdentification, constructedAttribute.getName() ) );
+        return validators.get( NsIdentificationName.of( nsIdentification, constructedAttribute.getName() ) );
     }
-    
-    private ConstructedAttribute constructedAttribute;
     
     public SubDataAttributePresenceConditionValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute ) {
         super( nsIdentification, constructedAttribute );
 
-        this.constructedAttribute = constructedAttribute;
+        initialize();
     }
     
     @Override
@@ -67,8 +66,8 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     }
 
     @Override
-    protected void createSpecifications( ConstructedAttribute constructedAttribute ) {
-        constructedAttribute
+    protected void createSpecifications() {
+        nsdModel
         .getSubDataAttribute()
         .stream()
         .forEach( sda -> addSpecification( sda.getName(), sda.getPresCond(), sda.getPresCondArgs(), sda.getRefersToPresCondArgsDoc(), sda.getLineNumber(), sda.getFilename() )); 
@@ -81,12 +80,12 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
 
     @Override
     protected String getNsdModelName() {
-        return constructedAttribute.getName();
+        return nsdModel.getName();
     }
 
     @Override
     protected int getNsdModelLineNumber() {
-        return constructedAttribute.getLineNumber();
+        return nsdModel.getLineNumber();
     }
 
     @Override
@@ -113,7 +112,7 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     protected boolean validateMFln0( DAType sclModel, DiagnosticChain diagnostics ) {
         for( String name : mandatoryInLLN0ElseForbidden ) {
             if( presentSclComponent.get( name ) != null ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"MFln0\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
@@ -130,7 +129,7 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     protected boolean validateMOln0( DAType sclModel, DiagnosticChain diagnostics ) {
         for( String name : mandatoryInLLN0ElseOptional ) {
             if( presentSclComponent.get( name ) != null ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"MOln0\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
@@ -147,7 +146,7 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     protected boolean validateOMSynPh( DAType sclModel, DiagnosticChain diagnostics ) {
         for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
             if( presentSclComponent.get( name ) != null ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"OMSynPh\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,

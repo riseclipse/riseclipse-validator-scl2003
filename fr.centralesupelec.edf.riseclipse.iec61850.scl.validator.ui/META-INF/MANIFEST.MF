@@ -3,10 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: RiseClipse IEC61850 SCL Tools UI
 Bundle-Vendor: CentraleSupélec & EDF
 Bundle-SymbolicName: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui
-Bundle-Version: 1.2.3.qualifier
+Bundle-Version: 1.2.4.qualifier
 Automatic-Module-Name: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui
 Export-Package: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application,
  fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.component
 Require-Bundle: fr.centralesupelec.edf.riseclipse.main;bundle-version="1.2.5",
- fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;bundle-version="1.2.3"
+ fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;bundle-version="1.2.4"
 Bundle-RequiredExecutionEnvironment: JavaSE-11

@@ -532,12 +532,12 @@ public abstract class BasicTypeValidator extends TypeValidator {
     
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
-        AbstractRiseClipseConsole.getConsole().debug( BASIC_TYPE_VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
+        AbstractRiseClipseConsole.getConsole().debug( BASIC_TYPE_VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(),
                                                       "BasicTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " )" );
         boolean res = true;
         if( ! getName().equals( ada.getBType() )) {
             
-            RiseClipseMessage error = RiseClipseMessage.error( BASIC_TYPE_VALIDATION_NSD_CATEGORY, ada.getLineNumber(), 
+            RiseClipseMessage error = RiseClipseMessage.error( BASIC_TYPE_VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(), 
                                       "type of DA/BDA \"", ada.getName(), "\" is not \"", getName(), "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
@@ -552,7 +552,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
             if( val.getValue().isEmpty() ) {
                 if( ! acceptEmptyValue() ) {
                     
-                    RiseClipseMessage error = RiseClipseMessage.error( BASIC_TYPE_VALIDATION_NSD_CATEGORY, ada.getLineNumber(), 
+                    RiseClipseMessage error = RiseClipseMessage.error( BASIC_TYPE_VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(), 
                                               "empty value of Val in DA/BDA \"", ada.getName(), "\" is not valid for \"",
                                               getName(), "\" type" );
                     diagnostics.add( new BasicDiagnostic(
@@ -575,7 +575,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
                 if( val.getValue().isEmpty() ) {
                     if( ! acceptEmptyValue() ) {
                         
-                        RiseClipseMessage error = RiseClipseMessage.error( BASIC_TYPE_VALIDATION_NSD_CATEGORY, dai.getLineNumber(), 
+                        RiseClipseMessage error = RiseClipseMessage.error( BASIC_TYPE_VALIDATION_NSD_CATEGORY, dai.getFilename(), dai.getLineNumber(), 
                                                   "empty value of Val in DAI \"", dai.getName(), "\" is not valid for \"",
                                                   getName(), "\" type" );
                         diagnostics.add( new BasicDiagnostic(
@@ -602,7 +602,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
             if( daOrDai instanceof AbstractDataAttribute ) name = (( AbstractDataAttribute ) daOrDai ).getName();
             if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
             String msgValue = value.isEmpty() ? "empty value" : "value \"" + value + "\"";
-            RiseClipseMessage error = RiseClipseMessage.error( BASIC_TYPE_VALIDATION_NSD_CATEGORY, daOrDai.getLineNumber(), 
+            RiseClipseMessage error = RiseClipseMessage.error( BASIC_TYPE_VALIDATION_NSD_CATEGORY, daOrDai.getFilename(), daOrDai.getLineNumber(), 
                                       msgValue, " of Val in DA/BDA/DAI \"", name, "\" is not a valid \"",
                                       getName(), "\" value" );
             diagnostics.add( new BasicDiagnostic(
@@ -621,7 +621,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
         String name = "";
         if( daOrDai instanceof AbstractDataAttribute ) name = (( AbstractDataAttribute ) daOrDai ).getName();
         if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
-        RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, daOrDai.getLineNumber(), 
+        RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, daOrDai.getFilename(), daOrDai.getLineNumber(), 
                                     "verification of value \"", value, "\" of Val in DA/BDA/DAI \"", name,
                                     "\" is not implemented for BasicType \"", getName(), "\"" );
         diagnostics.add( new BasicDiagnostic(

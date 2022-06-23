@@ -40,6 +40,7 @@ import fr.centralesupelec.edf.riseclipse.iec61850.scl.Val;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.Pair;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class EnumerationValidator extends TypeValidator {
@@ -55,11 +56,15 @@ public class EnumerationValidator extends TypeValidator {
     private boolean isMultiplierKind;
 
     public EnumerationValidator( Enumeration enumeration, NsIdentification nsIdentification, IRiseClipseConsole console ) {
+        console.debug( ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getLineNumber(),
+                "EnumerationValidator( ", enumeration.getName(), " )in namespace\"", nsIdentification, "\"" );
+
         this.name = enumeration.getName();
         String inheritedFromName = enumeration.getInheritedFrom();
         
         if(( inheritedFromName != null ) && ( ! inheritedFromName.isEmpty() )) {
-            TypeValidator inheritedValidator = TypeValidator.get( nsIdentification, inheritedFromName );
+            Pair< TypeValidator, NsIdentification > res = TypeValidator.get( nsIdentification, inheritedFromName );
+            TypeValidator inheritedValidator = res.getLeft();
             if(( inheritedValidator != null ) && ( inheritedValidator instanceof EnumerationValidator )) {
                 EnumerationValidator inheritedFrom = ( EnumerationValidator ) inheritedValidator;
                 literals.putAll( inheritedFrom.literals );
@@ -99,12 +104,12 @@ public class EnumerationValidator extends TypeValidator {
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( ENUMERATION_VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
+        console.debug( ENUMERATION_VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(),
                        "EnumerationValidator.validateAbstractDataAttribute( ", ada.getName(), " )" );
         
         boolean res = true;
         if( ! "Enum".equals(  ada.getBType() )) {
-            RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, ada.getLineNumber(), 
+            RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(), 
                                       "bType of DA/BDA \"", ada.getName(), "\" is not Enum" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
@@ -159,7 +164,7 @@ public class EnumerationValidator extends TypeValidator {
             String name = "";
             if( daOrDai instanceof AbstractDataAttribute ) name = (( AbstractDataAttribute ) daOrDai ).getName();
             if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
-            RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, daOrDai.getLineNumber(), 
+            RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, daOrDai.getFilename(), daOrDai.getLineNumber(), 
                                       "value \"", value, "\" of DA/BDA/DAI \"", name, "\" is not valid for EnumType \"",
                                       enumType.getId(), "\" (line = ", enumType.getLineNumber(), ")" );
             diagnostics.add( new BasicDiagnostic(
@@ -178,7 +183,7 @@ public class EnumerationValidator extends TypeValidator {
         if( validatedEnumType.contains( enumType.getId() )) return true;
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( ENUMERATION_VALIDATION_NSD_CATEGORY, enumType.getLineNumber(),
+        console.debug( ENUMERATION_VALIDATION_NSD_CATEGORY, enumType.getFilename(), enumType.getLineNumber(),
                        "EnumerationValidator.validateEnumType( ", enumType.getId(), " )" );
         validatedEnumType.add( enumType.getId() );
         
@@ -193,7 +198,7 @@ public class EnumerationValidator extends TypeValidator {
             if(( enumVal.getOrd() < 0 ) && ( ! isMultiplierKind )) continue;
             
             if( ! literals.containsKey( enumVal.getOrd() )) {
-                RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getLineNumber(), 
+                RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
                                           "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType (id = ", enumType.getId(),
                                           ") is not defined as LiteralVal in standard Enumeration ", getName() );
                 diagnostics.add( new BasicDiagnostic(
@@ -207,7 +212,7 @@ public class EnumerationValidator extends TypeValidator {
             else {
                 // while the supported positive value of the enumeration items shall be used by the implementation.
                 if( ! literals.get( enumVal.getOrd() ).equals( enumVal.getValue() )) {
-                    RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getLineNumber(), 
+                    RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
                                               "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType (id = " , enumType.getId(),
                                               ") has incorrect name (\"", enumVal.getValue(), "\" instead of \"", literals.get( enumVal.getOrd() ), "\")" );
                     diagnostics.add( new BasicDiagnostic(

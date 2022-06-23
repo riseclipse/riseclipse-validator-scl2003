@@ -20,7 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.BasicDiagnostic;
@@ -44,21 +44,20 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     private static final String SDO_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/SubDataObject";
     private static final String SDO_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/SubDataObject";
 
-    private static HashMap< NsIdentificationName, SubDataObjectPresenceConditionValidator > validators = new HashMap<>();
+    private static IdentityHashMap< NsIdentificationName, SubDataObjectPresenceConditionValidator > validators = new IdentityHashMap<>();
     
     public static SubDataObjectPresenceConditionValidator get( NsIdentification nsIdentification, CDC cdc ) {
-        if( ! validators.containsKey( new NsIdentificationName( nsIdentification, cdc.getName() ))) {
-            validators.put( new NsIdentificationName( nsIdentification, cdc.getName() ), new SubDataObjectPresenceConditionValidator( nsIdentification, cdc ));
+        // TODO: do we need to use dependsOn links?
+        if( ! validators.containsKey( NsIdentificationName.of( nsIdentification, cdc.getName() ))) {
+            validators.put( NsIdentificationName.of( nsIdentification, cdc.getName() ), new SubDataObjectPresenceConditionValidator( nsIdentification, cdc ));
         }
-        return validators.get( new NsIdentificationName( nsIdentification, cdc.getName() ) );
+        return validators.get( NsIdentificationName.of( nsIdentification, cdc.getName() ) );
     }
     
-    private CDC cdc;
-
     public SubDataObjectPresenceConditionValidator( NsIdentification nsIdentification, CDC cdc ) {
         super( nsIdentification, cdc );
         
-        this.cdc = cdc;
+        initialize();
     }
 
     @Override
@@ -72,8 +71,8 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     }
 
     @Override
-    protected void createSpecifications( CDC cdc ) {
-        cdc
+    protected void createSpecifications() {
+        nsdModel
         .getSubDataObject()
         .stream()
         .forEach( sda -> addSpecification( sda.getName(), sda.getPresCond(), sda.getPresCondArgs(), sda.getRefersToPresCondArgsDoc(), sda.getLineNumber(), sda.getFilename() )); 
@@ -86,12 +85,12 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
 
     @Override
     protected String getNsdModelName() {
-        return cdc.getName();
+        return nsdModel.getName();
     }
 
     @Override
     protected int getNsdModelLineNumber() {
-        return cdc.getLineNumber();
+        return nsdModel.getLineNumber();
     }
 
     @Override
@@ -118,7 +117,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     protected boolean validateMFln0( DOType sclModel, DiagnosticChain diagnostics ) {
         for( String name : mandatoryInLLN0ElseForbidden ) {
             if( presentSclComponent.get( name ) != null ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"MFln0\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
@@ -135,7 +134,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     protected boolean validateMOln0( DOType sclModel, DiagnosticChain diagnostics ) {
         for( String name : mandatoryInLLN0ElseOptional ) {
             if( presentSclComponent.get( name ) != null ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getLineNumber(), 
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"MOln0\" for ", getSclComponentClassName(), " ", name, " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " ", getNsdModelName(), " at line ", getNsdModelLineNumber() );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
@@ -162,7 +161,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
         if( phsRef.isPresent() ) {
             EList< Val > vals = phsRef.get().getVal();
             if( vals.size() == 0 ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
+                RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                                             "verification of PresenceCondition \"OMSynPh\" for SDO ", sdoName, " for DOType: no value for phsRef" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
@@ -175,7 +174,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
                 phsRefIsSynchrophasor = "Synchrophasor".equals( vals.get( 0 ).getValue() );
             }
             else {
-                RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
+                RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                                             "verification of PresenceCondition \"OMSynPh\" for SDO ", sdoName, " for DOType: multiple values for phsRef" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
@@ -186,7 +185,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
             }
         }
         else {
-            RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
+            RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                                         "verification of PresenceCondition \"OMSynPh\" for SDO ", sdoName, " for DOType: DA phsRef not found" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.WARNING,
@@ -198,7 +197,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
         if( ! phsRefIsSynchrophasor ) {
             for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
                 if( presentSclComponent.get( name ) == null ) {
-                    RiseClipseMessage error = RiseClipseMessage.error( SDO_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
+                    RiseClipseMessage error = RiseClipseMessage.error( SDO_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                                               "SDO ", sdoName, " is mandatory in DOType because phsRef is not Synchrophasor" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,

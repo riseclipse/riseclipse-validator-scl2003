@@ -130,7 +130,7 @@ public class RiseClipseValidatorSCL {
     private static final String DEFAULT_NAMESPACE_REVISION = "B";
     private static final Integer DEFAULT_NAMESPACE_RELEASE = Integer.valueOf( 1 );
     
-    public static final NsIdentification DEFAULT_NS_IDENTIFICATION = new NsIdentification(
+    public static final NsIdentification DEFAULT_NS_IDENTIFICATION = NsIdentification.of(
             DEFAULT_NAMESPACE_ID,
             DEFAULT_NAMESPACE_VERSION,
             DEFAULT_NAMESPACE_REVISION,

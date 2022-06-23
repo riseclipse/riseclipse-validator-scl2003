@@ -25,32 +25,42 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.jdt.annotation.NonNull;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
+import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
 public class UndefinedTypeValidator extends TypeValidator {
+
+    private NsIdentification nsIdentification;
+
+    public UndefinedTypeValidator( NsIdentification nsIdentification ) {
+        this.nsIdentification = nsIdentification;
+    }
 
     @Override
     public boolean validateAbstractDataAttribute( AbstractDataAttribute ada, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getLineNumber(),
-                       "UndefinedTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " )" );
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(),
+                       "UndefinedTypeValidator.validateAbstractDataAttribute( ", ada.getName(), " ) in namespace \"", nsIdentification, "\"" );
 
         if( "Enum".equals( ada.getBType() )) {
-            return new EnumeratedTypeValidator().validateAbstractDataAttribute( ada, diagnostics );
+            return new EnumeratedTypeValidator( nsIdentification ).validateAbstractDataAttribute( ada, diagnostics );
         }
 
         if( "Struct".equals( ada.getBType() )) {
             if( ada.getRefersToDAType() == null ) {
+                RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(), 
+                        "type of DA/BDA \"", ada.getName(), " is unknown in namespace \"", nsIdentification.toString(), "\"");
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        "[NSD validation] type of DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is unknown",
-                        new Object[] { ada } ));
+                        error.getMessage(),
+                        new Object[] { ada, error } ));
                 return false;
             }
             
@@ -66,12 +76,14 @@ public class UndefinedTypeValidator extends TypeValidator {
             return basicTypeValidator.validateAbstractDataAttribute( ada, diagnostics );
         }
 
+        RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(), 
+                "bType of DA/BDA \"", ada.getName(), " is unknown in namespace \"", nsIdentification.toString(), "\"");
         diagnostics.add( new BasicDiagnostic(
                 Diagnostic.ERROR,
                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                 0,
-                "[NSD validation] bType of DA/BDA \"" + ada.getName() + "\" (line = " + ada.getLineNumber() + ") is unknown",
-                new Object[] { ada } ));
+                error.getMessage(),
+                new Object[] { ada, error } ));
         return false;
     }
 
