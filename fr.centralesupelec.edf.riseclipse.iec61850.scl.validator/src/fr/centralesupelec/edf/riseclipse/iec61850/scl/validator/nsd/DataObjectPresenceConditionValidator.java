@@ -129,11 +129,13 @@ public class DataObjectPresenceConditionValidator {
     
     private final IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
     private NsIdentification nsIdentification;
+    private boolean isStatistic;
     
     @SuppressWarnings( "unchecked" )        // cast of HashMap.clone() result
     private DataObjectPresenceConditionValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass, boolean isStatistic ) {
         this.nsIdentification = nsIdentification;
         this.anyLNClass = anyLNClass;
+        this.isStatistic = isStatistic;
         
         // Build validator for parent first, because it is needed (atLeastOne for example)
         AnyLNClass parent = anyLNClass.getRefersToAbstractLNClass();
@@ -242,9 +244,12 @@ public class DataObjectPresenceConditionValidator {
             break;
         case "na" :
             // Element is not applicable
-            // -> TODO: what does it mean ? what do we have to check ?
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
-                             "NOT IMPLEMENTED: DataObject ", name, " declared as \"na\" in PresenceCondition" );
+            // TODO: what does it mean ? what do we have to check ?
+            // DONE: if used by statistics presence condition, no need to display message
+            if( ! isStatistic ) {
+                console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+                             "NOT IMPLEMENTED: DataObject ", name, " declared as \"na\" in non statistic PresenceCondition" );
+            }
             if( notApplicable == null ) notApplicable = new HashSet<>();
             notApplicable.add( name );
             break;
