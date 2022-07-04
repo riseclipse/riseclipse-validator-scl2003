@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Doc;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.NsdObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
+import fr.centralesupelec.edf.riseclipse.iec61850.scl.IDNaming;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
@@ -40,7 +41,7 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.Pair;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
-public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObject, SclModel extends SclObject, @Nullable SclComponent extends SclObject > {
+public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObject, SclModel extends IDNaming, @Nullable SclComponent extends SclObject > {
     
     // Name of the NsdComponent/SclComponent, SclComponent
     protected HashMap< String, SclComponent > presentSclComponent = new HashMap<>();
@@ -131,7 +132,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
             return;
         }
         console.debug( getSetupMessageCategory(), filename, lineNumber,
-                "adding ", getSclComponentClassName(), " \"", name, "\" to ", getNsdModelClassName(), " ", getNsdModelName() );
+                "adding ", getSclComponentClassName(), " \"", name, "\" to ", getNsdModelClassName(), " \"", getNsdModelName(), "\"" );
         presentSclComponent.put( name, null );
 
         switch( presCond ) {
@@ -680,7 +681,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                         "PresenceConditionValidator.validate()", " in namespace \"", nsIdentification, "\"" );
+                getPresenceConditionValidatorName(), ".validate( ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" ) in namespace \"", nsIdentification, "\"" );
 
         boolean res = true;
         
@@ -688,13 +689,16 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Element is mandatory
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( mandatory != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"M\" on ", getSclModelClassName() );
             for( String name : this.mandatory ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"M\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) == null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                              getSclComponentClassName(), " \"", name, "\" is mandatory in ", getSclModelClassName(), " with ", getNsdModelClassName(),
-                                              " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                                              getSclComponentClassName(), " \"", name, "\" is mandatory in ", getSclModelClassName(), " id = \"",
+                                              sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ",
+                                              getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -710,9 +714,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Element is optional
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( optional != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"O\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( String name : this.optional ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"O\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) == null ) {
                     // Nothing
                 }
@@ -723,13 +729,16 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Element is forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( forbidden != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"F\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( String name : this.forbidden ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"F\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                               getSclComponentClassName(), " \"", name, "\" is forbidden in ", getSclModelClassName(), " with ", getNsdModelClassName(),
-                                               " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                            getSclComponentClassName(), " \"", name, "\" is forbidden in ", getSclModelClassName(), " id = \"",
+                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ",
+                            getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -747,6 +756,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // -> TODO: what does it mean ? what do we have to check ?
         if( notApplicable != null ) {
             for( String name : notApplicable ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"na\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"na\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -767,6 +780,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryMulti != null ) {
             for( String name : mandatoryMulti ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"Mmulti\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"Mmulti\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -787,6 +804,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalMulti != null ) {
             for( String name : optionalMulti ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"Omulti\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"Mmulti\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -807,9 +828,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // At least one of marked elements of a group n shall be present
         // Usage in standard NSD files (version 2007B): DataObject and SubDataObject and DataAttribute and SubDataAttribute
         if( atLeastOne != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"AtLeastOne\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< Integer, HashSet< String > > e1 : atLeastOne.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"AtLeastOne\" for ", getSclComponentClassName(), " group ", e1.getKey(), " in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 boolean groupOK = false;
                 String atLeastOneOf = " (at least one of:";
                 for( String member : e1.getValue() ) {
@@ -841,7 +864,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataObject
         if( atMostOne != null ) {
             console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"AtMostOne\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
+                    "validation of presence condition \"AtMostOne\" for ", getSclComponentClassName(), " in ", getSclModelClassName(), " id = \"",
+                    sclModel.getId(), "\" with ", getNsdModelClassName(),
+                    " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
             int count = 0;
             String atMostOneOf = " (at most one of:";
             for( String s : atMostOne ) {
@@ -870,9 +895,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // All or none of the elements of a group n shall be present
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( allOrNonePerGroup != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"AllOrNonePerGroup\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< Integer, HashSet< String > > e1 : allOrNonePerGroup.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"AllOrNonePerGroup\" for ", getSclComponentClassName(), " group ", e1.getKey(), " in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 int groupCount = 0;
                 String expectedMembers = " (expected members:";
                 for( String member : e1.getValue() ) {
@@ -903,10 +930,12 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // All elements of only one group n shall be present
         // Usage in standard NSD files (version 2007B): DataObject and SubDataAttribute
         if( allOnlyOneGroup != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"AllOnlyOneGroup\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allOnlyOneGroup.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"AllOnlyOneGroup\" for ", getSclComponentClassName(), " group ", e1.getKey(), " in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 int groupCount = 0;
                 String expectedMembers = " (expected members:";
                 for( String member : e1.getValue() ) {
@@ -966,10 +995,12 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // All elements of at least one group n shall be present
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( allAtLeastOneGroup != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"AllAtLeastOneGroup\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             int groupNumber = 0;
             for( Entry< Integer, HashSet< String > > e1 : allAtLeastOneGroup.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"AllAtLeastOneGroup\" for ", getSclComponentClassName(), " group ", e1.getKey(), " in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 int groupCount = 0;
                 for( String member : e1.getValue() ) {
                     if( presentSclComponent.get( member ) != null ) {
@@ -999,9 +1030,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Mandatory if sibling element is present, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfSiblingPresentElseForbidden != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"MF\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MF\" for ", getSclComponentClassName(), " element \"", entry.getKey(), "\" sibling \"", entry.getValue(),
+                        "\" in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( entry.getValue() ) != null ) {
                     if( presentSclComponent.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
@@ -1040,9 +1073,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Mandatory if sibling element is present, otherwise optional
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryIfSiblingPresentElseOptional != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"MO\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MO\" for ", getSclComponentClassName(), " element \"", entry.getKey(), "\" sibling \"", entry.getValue(),
+                        "\" in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( entry.getValue() ) != null ) {
                     if( presentSclComponent.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
@@ -1066,9 +1101,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Optional if sibling element is present, otherwise mandatory
         // Usage in standard NSD files (version 2007B): None
         if( optionalIfSiblingPresentElseMandatory != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"OM\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : optionalIfSiblingPresentElseMandatory.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"OM\" for ", getSclComponentClassName(), " element \"", entry.getKey(), "\" sibling \"", entry.getValue(),
+                        "\" in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( entry.getValue() ) == null ) {
                     if( presentSclComponent.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
@@ -1092,9 +1129,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Forbidden if sibling element is present, otherwise mandatory
         // Usage in standard NSD files (version 2007B): None
         if( forbiddenIfSiblingPresentElseMandatory != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"FM\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"FM\" for ", getSclComponentClassName(), " element \"", entry.getKey(), "\" sibling \"", entry.getValue(),
+                        "\" in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( entry.getValue() ) != null ) {
                     if( presentSclComponent.get( entry.getKey() ) != null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
@@ -1134,12 +1173,14 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // If satisfied, the element is mandatory, otherwise optional
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseOptional != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"MOcond\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : mandatoryIfTextConditionElseOptional.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOcond\" for ", getSclComponentClassName(), " ", entry.getKey(), " textual condition number ", entry.getValue(),
+                        " in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 String doc = mandatoryIfTextConditionElseOptionalDoc.get( entry.getKey() );
 
-                RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
+                RiseClipseMessage warning = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
                                           getSclComponentClassName(), " ", entry.getKey(), " is mandatory in ", getSclModelClassName(), " with ",
                                           getNsdModelClassName(), " \"", getNsdModelName(), "\" if textual condition number ", entry.getValue(), " (not evaluated) is true, else optional. It is ",
                                           ( presentSclComponent.get( entry.getKey() ) == null ? "absent." : "present." ), ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
@@ -1148,8 +1189,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        error.getMessage(),
-                        new Object[] { sclModel, error } ));
+                        warning.getMessage(),
+                        new Object[] { sclModel, warning } ));
             }
         }
         
@@ -1159,9 +1200,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // If satisfied, the element is mandatory, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfTextConditionElseForbidden != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"MFcond\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : mandatoryIfTextConditionElseForbidden.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MFcond\" for ", getSclComponentClassName(), entry.getKey(), " textual condition number ", entry.getValue(),
+                        " in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 String doc = mandatoryIfTextConditionElseForbiddenDoc.get( entry.getKey() );
 
                 RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
@@ -1184,9 +1227,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // If satisfied, the element is optional, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalIfTextConditionElseForbidden != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"OFcond\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : optionalIfTextConditionElseForbidden.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"OFcond\" for ", getSclComponentClassName(), entry.getKey(), " textual condition number ", entry.getValue(),
+                        " in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 String doc = optionalIfTextConditionElseForbiddenDoc.get( entry.getKey() );
 
                 RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
@@ -1209,6 +1254,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): None
         if( mandatoryMultiRange != null ) {
             for( String name : mandatoryMultiRange.keySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MmultiRange\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MmultiRange\" for ", getSclComponentClassName(), " ", name,
@@ -1230,6 +1279,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataObject
         if( optionalMultiRange != null ) {
             for( String name : optionalMultiRange.keySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"OmultiRange\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"OmultiRange\" for ", getSclComponentClassName(), " ", name,
@@ -1251,6 +1304,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mandatoryIfSubstitutionElseForbidden != null ) {
             for( String name : mandatoryIfSubstitutionElseForbidden ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MFsubst\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MFsubst\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1271,7 +1328,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryInLLN0ElseOptional != null ) {
             console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"MOln0\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
+                    "validation of presence condition \"MOln0\" for ", getSclComponentClassName(), " in ", getSclModelClassName(), " id = \"",
+                    sclModel.getId(), "\" with ", getNsdModelClassName(),
+                    " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
             res = validateMOln0( sclModel, diagnostics ) && res;
         }
         
@@ -1280,7 +1339,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryInLLN0ElseForbidden != null ) {
             console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"MFln0\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
+                    "validation of presence condition \"MFln0\" for ", getSclComponentClassName(), " in ", getSclModelClassName(), " id = \"",
+                    sclModel.getId(), "\" with ", getNsdModelClassName(),
+                    " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
             res = validateMFln0( sclModel, diagnostics ) && res;
         }
 
@@ -1291,6 +1352,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO: The meaning is not clear.
         if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional != null ) {
             for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOlnNs\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOlnNs\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1313,6 +1378,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO: The meaning is not clear.
         if( mandatoryIfNameSpaceOfDataClassDeviatesElseOptional != null ) {
             for( String name : mandatoryIfNameSpaceOfDataClassDeviatesElseOptional ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOcdcNs\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MOcdcNs\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ", getSclModelClassName(),
@@ -1334,6 +1403,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO: The meaning is not clear.
         if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional != null ) {
             for( String name : mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOdataNs\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOdataNs\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1357,7 +1430,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mandatoryIfAnalogValueIncludesIElseForbidden != null ) {
             console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                    "validation of presence condition \"MFscaledAV\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
+                    "validation of presence condition \"MFscaledAV\" for ", getSclComponentClassName(), " in ", getSclModelClassName(), " id = \"",
+                    sclModel.getId(), "\" with ", getNsdModelClassName(),
+                    " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
             res = validateMFscaledAV( sclModel, diagnostics ) && res;
         }
 
@@ -1368,7 +1443,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden != null ) {
             console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                    "validation of presence condition \"MFscaledMagV\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
+                    "validation of presence condition \"MFscaledMagV\" for ", getSclComponentClassName(), " in ", getSclModelClassName(), " id = \"",
+                    sclModel.getId(), "\" with ", getNsdModelClassName(),
+                    " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
             res = validateMFscaledMagV( sclModel, diagnostics ) && res;
         }
 
@@ -1379,7 +1456,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden != null ) {
             console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                    "validation of presence condition \"MFscaledAngV\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
+                    "validation of presence condition \"MFscaledAngV\" for ", getSclComponentClassName(), " in ", getSclModelClassName(), " id = \"",
+                    sclModel.getId(), "\" with ", getNsdModelClassName(),
+                    " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
             res = validateMFscaledAngV( sclModel, diagnostics ) && res;
         }
 
@@ -1390,6 +1469,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional != null ) {
             for( String name : mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOrms\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOrms\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1410,6 +1493,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryInRootLogicalDeviceElseOptional != null ) {
             for( String name : mandatoryInRootLogicalDeviceElseOptional ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOrootLD\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOrootLD\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1431,6 +1518,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mandatoryIfControlSupportsTimeElseOptional != null ) {
             for( String name : mandatoryIfControlSupportsTimeElseOptional ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOoperTm\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOoperTm\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1453,6 +1544,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO: One or more elements ? Is there an instance number ?
         if( oneOrMoreIfSiblingPresentElseForbidden != null ) {
             for( String name : oneOrMoreIfSiblingPresentElseForbidden.keySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MmultiF\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MmultiF\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1475,6 +1570,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mandatoryIfControlSupportsSecurity1ElseOptional != null ) {
             for( String name : mandatoryIfControlSupportsSecurity1ElseOptional ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOsbo\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOsbo\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1497,6 +1596,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mandatoryIfControlSupportsSecurity2ElseOptional != null ) {
             for( String name : mandatoryIfControlSupportsSecurity2ElseOptional ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOenhanced\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOenhanced\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1519,6 +1622,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO: same as "MOlnNs" ?
         if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 != null ) {
             for( String name : mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MONamPlt\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MONamPlt\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1539,9 +1646,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // Optional if sibling element is present, otherwise forbidden
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute
         if( optionalIfSiblingPresentElseForbidden != null ) {
-            console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"OF\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
             for( Entry< String, String > entry : optionalIfSiblingPresentElseForbidden.entrySet() ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"OF\" for ", getSclComponentClassName(), " element ", entry.getKey(), " sibling ", entry.getValue(),
+                        " in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( entry.getValue() ) == null ) {
                     if( presentSclComponent.get( entry.getKey() ) != null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
@@ -1567,6 +1676,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mandatoryIfMeasuredValueExposesRange != null ) {
             for( String name : mandatoryIfMeasuredValueExposesRange ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MORange\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MORange\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1588,7 +1701,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( optionalIfPhsRefIsSynchrophasorElseMandatory != null ) {
             console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
-                             "validation of presence condition \"OMSynPh\" on ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"" );
+                    "validation of presence condition \"OMSynPh\" for ", getSclComponentClassName(), " in ", getSclModelClassName(), " id = \"",
+                    sclModel.getId(), "\" with ", getNsdModelClassName(),
+                    " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
             res = validateOMSynPh( sclModel, diagnostics ) && res;
         }
 
@@ -1596,6 +1711,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mAllOrNonePerGroup != null ) {
             for( String name : mAllOrNonePerGroup ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MAllOrNonePerGroup\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MAllOrNonePerGroup\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
@@ -1615,6 +1734,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mOctrl != null ) {
             for( String name : mOctrl ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOctrl\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MOctrl\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ", getSclModelClassName(),
@@ -1633,6 +1756,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mOsboNormal != null ) {
             for( String name : mOsboNormal ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOsboNormal\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MOsboNormal\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ", getSclModelClassName(),
@@ -1651,6 +1778,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
         // TODO
         if( mOsboEnhanced != null ) {
             for( String name : mOsboEnhanced ) {
+                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                        "validation of presence condition \"MOsboEnhanced\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
+                        sclModel.getId(), "\" with ", getNsdModelClassName(),
+                        " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MOsboEnhanced\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ", getSclModelClassName(),
