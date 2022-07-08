@@ -1,4 +1,10 @@
 
+## 1.2.4-SNAPSHOT (2022/07/08)
+- support for extensions LNClasses (used in IEC 61869-9:2016)
+- take into account namespace specified in a DAI
+- no error if EnumDA is used as underlyingType
+- handle MFscaledAV, MFscaledMagV and MFscaledAngV presence conditions
+
 ## 1.2.3 (2022/05/31)
 - SCL objects know their filename, it allows OCL constraints to depend on the kind of file (ICD, SCD…) using the filename extension
 
