@@ -1,4 +1,7 @@
 
+## 1.2.3 (2022/05/31)
+- SCL objects know their filename, it allows OCL constraints to depend on the kind of file (ICD, SCD…) using the filename extension
+
 ## 1.2.2 (2022/05/16)
 - support for multiple NSD namespaces
 - take into account whether an AnyLNClass is statistic or not for presence conditions
