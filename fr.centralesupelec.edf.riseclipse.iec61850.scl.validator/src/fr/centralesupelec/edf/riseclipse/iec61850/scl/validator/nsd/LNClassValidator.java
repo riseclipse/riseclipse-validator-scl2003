@@ -163,7 +163,7 @@ public class LNClassValidator {
         .getDO()
         .stream()
         .forEach( do_ -> {
-            if(( do_.getNamespace() == null ) || nsIdentification.equals( NsIdentification.of( do_.getNamespace() ))) {
+            if(( do_.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( do_.getNamespace() ) )) {
                 dataObjectPresenceConditionValidator.addDO( do_, diagnostics );
             }
             else {
