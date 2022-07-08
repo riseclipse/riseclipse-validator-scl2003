@@ -29,6 +29,7 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.jdt.annotation.NonNull;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.NsdObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ServiceConstructedAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.SubDataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
@@ -54,13 +55,15 @@ public class ConstructedAttributeValidator extends TypeValidator {
     private IdentityHashMap< NsIdentificationName, String > subDataAttributeUnknownTypeMap = new IdentityHashMap<>();
 
     private NsIdentification nsIdentification;
+    private ConstructedAttribute constructedAttribute;
 
     public ConstructedAttributeValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute, IRiseClipseConsole console ) {
         console.debug( CA_SETUP_NSD_CATEGORY, constructedAttribute.getLineNumber(),
                 "ConstructedAttributeValidator( ", constructedAttribute.getName(), " ) in namespace \"", nsIdentification, "\"" );
 
         this.nsIdentification = nsIdentification;
-        subDataAttributePresenceConditionValidator = SubDataAttributePresenceConditionValidator.get( nsIdentification, constructedAttribute );
+        this.constructedAttribute = constructedAttribute;
+        this.subDataAttributePresenceConditionValidator = SubDataAttributePresenceConditionValidator.get( nsIdentification, constructedAttribute );
         
         for( SubDataAttribute sda : constructedAttribute.getSubDataAttribute() ) {
             if( sda.getType() == null ) {
@@ -70,7 +73,19 @@ public class ConstructedAttributeValidator extends TypeValidator {
                 }
                 continue;
             }
-            Pair< TypeValidator, NsIdentification > res = TypeValidator.get( this.nsIdentification, sda.getType() );
+            NsdObject type = sda.getRefersToBasicType();
+            if( type == null ) {
+                type = sda.getRefersToEnumeration();
+            }
+            if( type == null ) {
+                type = sda.getRefersToConstructedAttribute();
+            }
+            if( type == null ) {
+                console.warning( CA_SETUP_NSD_CATEGORY, sda.getFilename(), sda.getLineNumber(),
+                        "Type ", sda.getType(), " not found for SubDataAttribute ", sda.getName() );
+                continue;
+            }
+            Pair< TypeValidator, NsIdentification > res = TypeValidator.get( this.nsIdentification, type );
             TypeValidator typeValidator = res.getLeft();
             NsIdentification nsId = res.getRight();
             // The type of the SubDataAttribute may be a ConstructedAttribute whose validator is not yet built
@@ -164,6 +179,11 @@ public class ConstructedAttributeValidator extends TypeValidator {
         }
       
         return res;
+    }
+
+    @Override
+    protected String getName() {
+        return constructedAttribute.getName();
     }
 
 }

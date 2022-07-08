@@ -48,9 +48,10 @@ public class LNClassValidator {
     private static final String LNCLASS_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/LNClass";
     private static final String LNCLASS_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/LNClass";
 
+    // The name of an LNClass in a namespace is unique
     private static IdentityHashMap< NsIdentificationName, LNClassValidator > validators = new IdentityHashMap<>();
     
-    public static Pair<LNClassValidator,NsIdentification> get( NsIdentification nsIdentification, String lnClassName ) {
+    public static Pair< LNClassValidator, NsIdentification > get( NsIdentification nsIdentification, String lnClassName ) {
         NsIdentification nsId = nsIdentification;
         LNClassValidator lnClassValidator = null;
         while(( lnClassValidator == null ) && ( nsId != null )) {
@@ -116,7 +117,12 @@ public class LNClassValidator {
         AnyLNClass lnClass = anyLNClass;
         while( lnClass != null ) {
             for( DataObject do_ : lnClass.getDataObject() ) {
-                Pair< CDCValidator, NsIdentification > res = CDCValidator.get( this.nsIdentification, do_.getType() );
+                if( do_.getRefersToCDC() == null ) {
+                    console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                            "CDC unknown for DataObject ", do_.getName(), " in namespace \"", this.nsIdentification, "\"" );
+                    continue;
+                }
+                Pair< CDCValidator, NsIdentification > res = CDCValidator.get( this.nsIdentification, do_.getRefersToCDC() );
                 CDCValidator cdcValidator = res.getLeft();
                 if( cdcValidator != null ) {
                     dataObjectValidatorMap.put( do_.getName(), cdcValidator );
@@ -191,7 +197,7 @@ public class LNClassValidator {
                 //AbstractRiseClipseConsole.getConsole().error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
                 continue;
             }
-            if(( do_.getNamespace() == null ) || nsIdentification.equals( NsIdentification.of( do_.getNamespace() ))) {
+            if(( do_.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( do_.getNamespace() ))) {
                 CDCValidator cdcValidator = dataObjectValidatorMap.get( names[0] );
                 if( cdcValidator != null ) {
                     if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
@@ -243,7 +249,7 @@ public class LNClassValidator {
                         0,
                         warning.getMessage(),
                         new Object[] { do_, warning } ));
-                Pair< CDCValidator, NsIdentification > pair = CDCValidator.get( NsIdentification.of( do_.getNamespace() ), do_.getRefersToDOType().getCdc() );
+                Pair< CDCValidator, NsIdentification > pair = CDCValidator.getByName( NsIdentification.of( do_.getNamespace() ), do_.getRefersToDOType().getCdc() );
                 CDCValidator cdcValidator = pair.getLeft();
                 if( cdcValidator != null ) {
                     res = cdcValidator.validateDO( do_, diagnostics ) && res;

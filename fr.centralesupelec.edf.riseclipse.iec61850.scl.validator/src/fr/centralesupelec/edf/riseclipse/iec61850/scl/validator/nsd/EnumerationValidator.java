@@ -63,7 +63,7 @@ public class EnumerationValidator extends TypeValidator {
         String inheritedFromName = enumeration.getInheritedFrom();
         
         if(( inheritedFromName != null ) && ( ! inheritedFromName.isEmpty() )) {
-            Pair< TypeValidator, NsIdentification > res = TypeValidator.get( nsIdentification, inheritedFromName );
+            Pair< TypeValidator, NsIdentification > res = TypeValidator.getByName( nsIdentification, inheritedFromName );
             TypeValidator inheritedValidator = res.getLeft();
             if(( inheritedValidator != null ) && ( inheritedValidator instanceof EnumerationValidator )) {
                 EnumerationValidator inheritedFrom = ( EnumerationValidator ) inheritedValidator;
@@ -88,6 +88,7 @@ public class EnumerationValidator extends TypeValidator {
         reset();
     }
     
+    @Override
     public String getName() {
         return name;
     }

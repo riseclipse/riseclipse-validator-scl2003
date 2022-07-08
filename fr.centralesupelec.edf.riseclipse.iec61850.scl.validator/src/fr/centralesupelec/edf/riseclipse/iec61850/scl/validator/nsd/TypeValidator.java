@@ -28,31 +28,49 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.BasicType;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Enumeration;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.NsdObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.Pair;
 
 public abstract class TypeValidator {
 
-    private static IdentityHashMap< NsIdentificationName, TypeValidator > validators = new IdentityHashMap<>();
+    // ServiceConstructedAttribute may be parameterized, therefore the name is not an identifier
+    // private static IdentityHashMap< NsIdentificationName, TypeValidator > validators = new IdentityHashMap<>();
+    private static IdentityHashMap< NsIdentificationObject, TypeValidator > validators = new IdentityHashMap<>();
     
-    public static Pair< TypeValidator, NsIdentification > get( NsIdentification nsIdentification, String typeName ) {
+    public static Pair< TypeValidator, NsIdentification > get( NsIdentification nsIdentification, NsdObject type ) {
         NsIdentification nsId = nsIdentification;
         TypeValidator typeValidator = null;
         while(( typeValidator == null ) && ( nsId != null )) {
-            typeValidator = validators.get( NsIdentificationName.of( nsId, typeName ));
+            typeValidator = validators.get( NsIdentificationObject.of( nsId, type ));
             nsIdentification = nsId;
             nsId = nsId.getDependsOn();
         }
         return Pair.of( typeValidator, nsIdentification );
     }
     
+    public static Pair< TypeValidator, NsIdentification > getByName( NsIdentification nsIdentification, String typeName ) {
+        NsIdentification nsId = nsIdentification;
+        while( nsId != null ) {
+            for( TypeValidator validator : validators.values() ) {
+                if( validator.getName().equals( typeName ))
+                    return Pair.of( validator, nsIdentification );
+            }
+            nsIdentification = nsId;
+            nsId = nsId.getDependsOn();
+        }
+        return Pair.of( null, nsIdentification );
+    }
+    
+    protected abstract String getName();
+
     public static void buildBasicTypeValidators( NsIdentification nsIdentification, Stream< BasicType > basicTypeStream, IRiseClipseConsole console ) {
         basicTypeStream
         .forEach( basicType -> {
-            NsIdentificationName nsId = NsIdentificationName.of( nsIdentification, basicType.getName() );
+            NsIdentificationObject nsId = NsIdentificationObject.of( nsIdentification, basicType );
             if( validators.get( nsId ) != null ) {
                 console.warning( BasicTypeValidator.BASIC_TYPE_SETUP_NSD_CATEGORY, basicType.getFilename(), basicType.getLineNumber(),
                                  "BasicType ", basicType.getName(), " has already a validator in namespace \"",
@@ -71,7 +89,7 @@ public abstract class TypeValidator {
     public static void builEnumerationdValidators( NsIdentification nsIdentification, Stream< Enumeration > enumerationStream, IRiseClipseConsole console ) {
         enumerationStream
         .forEach( enumeration -> {
-            NsIdentificationName nsId = NsIdentificationName.of( nsIdentification, enumeration.getName() );
+            NsIdentificationObject nsId = NsIdentificationObject.of( nsIdentification, enumeration );
             if( validators.get( nsId ) != null ) {
                 console.warning( EnumerationValidator.ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
                                  "Enumeration ", enumeration.getName(), " has already a validator in namespace \"",
@@ -93,7 +111,7 @@ public abstract class TypeValidator {
 
     // A ConstructedAttribute may use another one whose validator has not yet being built
     public static TypeValidator buildConstructedAttributeValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute, IRiseClipseConsole console ) {
-        NsIdentificationName nsId = NsIdentificationName.of( nsIdentification, constructedAttribute.getName() );
+        NsIdentificationObject nsId = NsIdentificationObject.of( nsIdentification, constructedAttribute );
         if( validators.get( nsId ) != null ) {
             // The usual case is when it has been built because used as the type of a SubDataAttribute
             console.notice( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
