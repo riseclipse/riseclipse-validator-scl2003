@@ -1018,8 +1018,8 @@ public class DataObjectPresenceConditionValidator {
                         groupOK = true;
                         break;
                     }
-                    atLeastOneOf += ")";
                 }
+                atLeastOneOf += ")";
                 if( ! groupOK ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                               "group ", e1.getKey(), " has no elements in LNodeType with LNClass ", anyLNClassName,
@@ -1050,8 +1050,8 @@ public class DataObjectPresenceConditionValidator {
                 if( presentDO.get( s ) != null ) {
                     ++count;
                 }
-                atMostOneOf += ")";
             }
+            atMostOneOf += ")";
             if( count > 1 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                           "LNodeType with LNClass \"", anyLNClassName, "\" has more than one element marked AtMostOne in namespace \"",

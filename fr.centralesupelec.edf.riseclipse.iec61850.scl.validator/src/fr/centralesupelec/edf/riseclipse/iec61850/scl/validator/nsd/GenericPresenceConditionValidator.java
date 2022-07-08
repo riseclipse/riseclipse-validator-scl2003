@@ -874,8 +874,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
                 if( presentSclComponent.get( s ) != null ) {
                     ++count;
                 }
-                atMostOneOf += ")";
             }
+            atMostOneOf += ")";
             if( count > 1 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
                                           getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(),
