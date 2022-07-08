@@ -119,11 +119,6 @@ public class LNClassValidator {
                 Pair< CDCValidator, NsIdentification > res = CDCValidator.get( this.nsIdentification, do_.getType() );
                 CDCValidator cdcValidator = res.getLeft();
                 if( cdcValidator != null ) {
-                    if( do_.isSetUnderlyingType() ) {
-                        console.notice( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
-                                "making specific CDC ", cdcValidator.getName(), " for DataObject ", do_.getName(), " with underlyingType ", do_.getUnderlyingType() );
-                        cdcValidator = cdcValidator.getParameterizedCdcValidatorFor( do_.getUnderlyingType(), this.nsIdentification, console );
-                    }
                     dataObjectValidatorMap.put( do_.getName(), cdcValidator );
                     console.notice( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
                                     "CDC for DataObject ", do_.getName(), " found with type ", do_.getType() );

@@ -111,8 +111,6 @@ public class CDCValidator {
     // Value is the CDCValidator given by the SubDataObject type
     private IdentityHashMap< NsIdentificationName, CDCValidator > subDataObjectValidatorMap;
     
-    private IdentityHashMap< NsIdentificationName, CDCValidator > parameterizedValidators;
-
     private CDCValidator( NsIdentification nsIdentification, CDC cdc, IRiseClipseConsole console ) {
         console.debug( CDC_SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
                 "CDCValidator( ", cdc.getName(), " ) in namespace \"", nsIdentification, "\"" );
@@ -123,7 +121,6 @@ public class CDCValidator {
         this.dataAttributeTypeValidatorMap = new IdentityHashMap<>();
         this.dataAttributeFunctionalConstraintValidatorMap = new IdentityHashMap<>();
         this.subDataObjectValidatorMap = new IdentityHashMap<>();
-        this.parameterizedValidators = new IdentityHashMap<>();
         
         for( DataAttribute da : cdc.getDataAttribute() ) {
             // may be null if enumParameterized or typeKindParameterized
@@ -142,18 +139,6 @@ public class CDCValidator {
                 }
             }
             else {
-                if( cdc.isEnumParameterized() ) {
-                    if( "ENUMERATED".equals( da.getTypeKind().getLiteral() )) {
-                        dataAttributeTypeValidatorMap.put( NsIdentificationName.of( this.nsIdentification, da.getName() ), new EnumeratedTypeValidator( this.nsIdentification ) );
-                        continue;
-                    }
-                }
-                if( cdc.isTypeKindParameterized() ) {
-                    if( "undefined".equals( da.getTypeKind().getLiteral() )) {
-                        dataAttributeTypeValidatorMap.put( NsIdentificationName.of( this.nsIdentification, da.getName() ), new UndefinedTypeValidator( this.nsIdentification ) );
-                        continue;
-                    }
-                }
                 console.warning( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                                  "Type not found for DataAttribute ", da.getName(),
                                  " in namespace \"", this.nsIdentification, "\"" );
@@ -340,41 +325,4 @@ public class CDCValidator {
         return validateDOType( doType, diagnostics );
     }
     
-    private CDCValidator( CDCValidator baseValidator, TypeValidator underlyingTypeValidator, NsIdentification nsId ) {
-        this.nsIdentification                              = baseValidator.nsIdentification;
-        this.cdc                                           = baseValidator.cdc;
-        this.validatedDOType                               = new HashSet<>();
-        this.dataAttributePresenceConditionValidator       = baseValidator.dataAttributePresenceConditionValidator;
-        this.subDataObjectPresenceConditionValidator       = baseValidator.subDataObjectPresenceConditionValidator;
-        this.dataAttributeTypeValidatorMap                 = new IdentityHashMap< NsIdentificationName, TypeValidator >( baseValidator.dataAttributeTypeValidatorMap );
-        this.dataAttributeFunctionalConstraintValidatorMap = baseValidator.dataAttributeFunctionalConstraintValidatorMap;
-        this.subDataObjectValidatorMap                     = baseValidator.subDataObjectValidatorMap;
-        this.parameterizedValidators                       = baseValidator.parameterizedValidators;
-        
-        for( String att : cdc.getParameterizedDataAttributeNames() ) {
-            dataAttributeTypeValidatorMap.put( NsIdentificationName.of( nsIdentification, att ), underlyingTypeValidator );
-        }
-    }
-
-    public CDCValidator getParameterizedCdcValidatorFor( String underlyingType, NsIdentification nsId, IRiseClipseConsole console ) {
-        if( "EnumDA".equals( underlyingType )) {
-            // IEC 61850-7-7
-            // It exists also a specific case for parameterized enumeration where the enumeration will be
-            // resolved at implementation and not in the NSD itself. To address this case, the specific
-            // keyword “EnumDA”.
-            return this;
-        }
-        NsIdentificationName key = NsIdentificationName.of( nsId, underlyingType );
-        if( ! parameterizedValidators.containsKey( key )) {
-            Pair< TypeValidator, NsIdentification > underlyingTypeValidator = TypeValidator.get( nsId, underlyingType );
-            if(( underlyingTypeValidator == null ) || ( underlyingTypeValidator.getLeft() == null )) {
-                console.error( CDC_SETUP_NSD_CATEGORY , 0, "Validator for underlying type ", underlyingType,
-                        " not found in namespace \"", nsId, "\" while parameterizing CDC ", getName() );
-                return this;
-            }
-            parameterizedValidators.put( key, new CDCValidator( this, underlyingTypeValidator.getLeft(), underlyingTypeValidator.getRight() ));
-        }
-        return parameterizedValidators.get( key );
-    }
-
 }
