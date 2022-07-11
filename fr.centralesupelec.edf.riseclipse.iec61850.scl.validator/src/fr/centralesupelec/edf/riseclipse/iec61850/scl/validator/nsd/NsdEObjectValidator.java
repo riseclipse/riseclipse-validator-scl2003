@@ -142,14 +142,8 @@ public class NsdEObjectValidator implements EValidator {
                 }
                 NsIdentificationName nsId = NsIdentificationName.of( anyLN.getNamespace(), anyLN.getRefersToLNodeType().getId() );
                 if( validatedLNodeTypes.contains( nsId )) {
-                    RiseClipseMessage info = RiseClipseMessage.info( NsdValidator.VALIDATION_NSD_CATEGORY, anyLN.getFilename(), anyLN.getLineNumber(),
+                    AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, anyLN.getFilename(), anyLN.getLineNumber(),
                             "LNodeType id=\"", anyLN.getRefersToLNodeType().getId(), "\" has already been validated in namespace \"", anyLN.getNamespace(), "\"" );
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.INFO,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            info.getMessage(),
-                            new Object[] { anyLN, info } ));
                     return true;
                 }
                 validatedLNodeTypes.add( nsId );
