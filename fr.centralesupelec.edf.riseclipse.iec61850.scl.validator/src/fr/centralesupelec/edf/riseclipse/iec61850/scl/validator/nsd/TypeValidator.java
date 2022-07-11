@@ -77,7 +77,7 @@ public abstract class TypeValidator {
                                  nsIdentification, "\", it will be overwritten" );
             }
             else {
-                console.notice( BasicTypeValidator.BASIC_TYPE_SETUP_NSD_CATEGORY, basicType.getFilename(), basicType.getLineNumber(),
+                console.debug( BasicTypeValidator.BASIC_TYPE_SETUP_NSD_CATEGORY, basicType.getFilename(), basicType.getLineNumber(),
                                 "Adding validator for BasicType ", basicType.getName(), " in namespace \"",
                                 nsIdentification, "\"" );
             }
@@ -96,7 +96,7 @@ public abstract class TypeValidator {
                                  nsIdentification, "\", it will be overwritten" );
             }
             else {
-                console.notice( EnumerationValidator.ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
+                console.debug( EnumerationValidator.ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
                                 "Adding validator for Enumeration ", enumeration.getName(), " in namespace \"",
                                 nsIdentification, "\"" );
             }
@@ -119,7 +119,7 @@ public abstract class TypeValidator {
                              nsIdentification, "\", it will be overwritten" );
         }
         else {
-            console.info( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
+            console.debug( ConstructedAttributeValidator.CA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
                             "Adding validator for ConstructedAttribute ", constructedAttribute.getName(), " in namespace \"",
                             nsIdentification, "\"" );
         }
