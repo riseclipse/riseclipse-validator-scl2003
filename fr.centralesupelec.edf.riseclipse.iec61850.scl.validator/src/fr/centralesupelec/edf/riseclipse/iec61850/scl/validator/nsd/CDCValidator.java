@@ -132,8 +132,21 @@ public class CDCValidator {
     private IdentityHashMap< NsIdentificationObject, CDCValidator > subDataObjectValidatorMap;
     
     private CDCValidator( NsIdentification nsIdentification, CDC cdc, IRiseClipseConsole console ) {
+        String parameter = "";
+        if( cdc.isEnumParameterized() ) {
+            for( DataAttribute da : cdc.getDataAttribute() ) {
+                if( cdc.getParameterizedDataAttributeNames().contains( da.getName() )) {
+                    if( da.isSetType() ) {
+                        parameter = " for parameter " + da.getType();
+                    }
+                    else {
+                        parameter = " not parameterized";
+                    }
+                }
+            }
+        }
         console.debug( CDC_SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
-                "CDCValidator( ", cdc.getName(), " ) in namespace \"", nsIdentification, "\"" );
+                "CDCValidator( ", cdc.getName(), parameter, " ) in namespace \"", nsIdentification, "\"" );
         this.cdc = cdc;
         this.nsIdentification = nsIdentification;
         this.dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( nsIdentification, cdc );
