@@ -52,6 +52,9 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
     public SubDataAttributePresenceConditionValidator( NsIdentification nsIdentification, ConstructedAttribute constructedAttribute ) {
         super( nsIdentification, constructedAttribute );
 
+        console.debug( SDA_SETUP_NSD_CATEGORY, constructedAttribute.getFilename(), constructedAttribute.getLineNumber(),
+                "SubDataAttributePresenceConditionValidator( \"", constructedAttribute.getName(), "\" in namespace \"", nsIdentification, "\" )");
+        
         initialize();
     }
     

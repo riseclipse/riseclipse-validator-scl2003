@@ -63,6 +63,9 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     public DataAttributePresenceConditionValidator( NsIdentification nsIdentification, CDC cdc ) {
         super( nsIdentification, cdc );
         
+        console.debug( DA_SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
+                "DataAttributePresenceConditionValidator( \"", cdc.getName(), "\" in namespace \"", nsIdentification, "\" )");
+        
         analogueValues = new HashSet<>();
         vectors        = new HashSet<>();
         
