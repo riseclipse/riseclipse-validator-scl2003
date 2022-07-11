@@ -533,30 +533,30 @@ public class RiseClipseValidatorSCL {
             .getIED()
             .stream()
             .forEach( ied -> {
-                console.info( VALIDATOR_SCL_CATEGORY, 0, "IED: " + ied.getName() );
+                console.info( VALIDATOR_SCL_CATEGORY, 0, "IED: " + ied.getName() + " line: " + ied.getLineNumber() );
                 ied
                 .getAccessPoint()
                 .stream()
                 .forEach( ap -> {
-                    console.info( VALIDATOR_SCL_CATEGORY, 0, "  AccessPoint: " + ap.getName() );
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "  AccessPoint: " + ap.getName() + " line: " + ap.getLineNumber() );
                     if( ap.getServer() != null ) {
                         ap
                         .getServer()
                         .getLDevice()
                         .stream()
                         .forEach( ld -> {
-                            console.info( VALIDATOR_SCL_CATEGORY, 0, "  LDevice: " + ld.getInst() + "\t\t" + ld.getNamespace() );
+                            console.info( VALIDATOR_SCL_CATEGORY, 0, "  LDevice: " + ld.getInst() + " line: " + ld.getLineNumber() + "\t\t" + ld.getNamespace() );
                             console.info( VALIDATOR_SCL_CATEGORY, 0, "    LN: " + ld.getLN0().getLnClass() + "\t\t\t" + ld.getLN0().getNamespace() );
                             ld
                             .getLN()
                             .stream()
                             .forEach( ln -> {
-                                console.info( VALIDATOR_SCL_CATEGORY, 0, "    LN: " + ln.getLnClass() + "\t\t\t" + ln.getNamespace() );
+                                console.info( VALIDATOR_SCL_CATEGORY, 0, "    LN: " + ln.getLnClass() + " line: " + ln.getLineNumber() + "\t\t\t" + ln.getNamespace() );
                                 ln
                                 .getDOI()
                                 .stream()
                                 .forEach( doi -> {
-                                    console.info( VALIDATOR_SCL_CATEGORY, 0, "      DOI: " + doi.getName() + "\t\t\t" + doi.getNamespace() );
+                                    console.info( VALIDATOR_SCL_CATEGORY, 0, "      DOI: " + doi.getName() + " line: " + doi.getLineNumber() + "\t\t\t" + doi.getNamespace() );
 //                                    doi
 //                                    .getDAI()
 //                                    .stream()
