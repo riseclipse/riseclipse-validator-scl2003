@@ -119,7 +119,7 @@ public class LNClassValidator {
             for( DataObject do_ : lnClass.getDataObject() ) {
                 if( do_.getRefersToCDC() == null ) {
                     console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
-                            "CDC unknown for DataObject ", do_.getName(), " in namespace \"", this.nsIdentification, "\"" );
+                            "CDC unknown for DataObject \"", do_.getName(), "\" in namespace \"", this.nsIdentification, "\"" );
                     continue;
                 }
                 Pair< CDCValidator, NsIdentification > res = CDCValidator.get( this.nsIdentification, do_.getRefersToCDC() );
@@ -127,11 +127,11 @@ public class LNClassValidator {
                 if( cdcValidator != null ) {
                     dataObjectValidatorMap.put( do_.getName(), cdcValidator );
                     console.notice( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
-                                    "CDC for DataObject ", do_.getName(), " found with type ", do_.getType() );
+                                    "CDC for DataObject \"", do_.getName(), "\" found with type ", do_.getType() );
                 }
                 else {
                     console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
-                                     "CDC not found for DataObject ", do_.getName(), " in namespace \"", this.nsIdentification, "\"" );
+                                     "CDC not found for DataObject \"", do_.getName(), "\" in namespace \"", this.nsIdentification, "\"" );
                 }
             }
 
@@ -169,8 +169,8 @@ public class LNClassValidator {
             }
             else {
                 RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                        "Presence condition of DO ", do_.getName(),
-                        " is not checked because its namespace \"", do_.getNamespace(),
+                        "Presence condition of DO \"", do_.getName(),
+                        "\" is not checked because its namespace \"", do_.getNamespace(),
                         "\" is not the same as the namespace of its LNodeType \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
@@ -202,9 +202,9 @@ public class LNClassValidator {
                 if( cdcValidator != null ) {
                     if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
                         RiseClipseMessage error = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                                "DOType id = ", do_.getRefersToDOType().getId(), " at line ", do_.getRefersToDOType().getLineNumber(),
-                                " used by DO ", do_.getName(), " has wrong CDC ", do_.getRefersToDOType().getCdc(),
-                                ", it should be ", cdcValidator.getName(), " in namespace \"", nsIdentification + "\"" );
+                                "DOType id = \"", do_.getRefersToDOType().getId(), "\" at line ", do_.getRefersToDOType().getLineNumber(),
+                                " used by DO \"", do_.getName(), "\" has wrong CDC \"", do_.getRefersToDOType().getCdc(),
+                                "\", it should be \"", cdcValidator.getName(), "\" in namespace \"", nsIdentification + "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.WARNING,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -216,7 +216,7 @@ public class LNClassValidator {
                 }
                 else {
                     RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                            "DO ", do_.getName(), " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
+                            "DO \"", do_.getName(), "\" cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -228,7 +228,7 @@ public class LNClassValidator {
             else {
                 if( do_.getRefersToDOType() == null ) {
                     RiseClipseMessage error = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                            "DO ", do_.getName(), " cannot be verified because its DOType is unknown" );
+                            "DO \"", do_.getName(), "\" cannot be verified because its DOType is unknown" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -240,9 +240,9 @@ public class LNClassValidator {
                 }
 
                 RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                        "DO ", do_.getName(), " cannot be checked against the CDC given by the LNClass of its AnyLN  because its namespace \"",
+                        "DO \"", do_.getName(), "\" cannot be checked against the CDC given by the LNClass of its AnyLN  because its namespace \"",
                         do_.getNamespace(), "\" differs from current namespace \"", nsIdentification, "\". It will be checked using the CDC ",
-                        " of its DOType ", do_.getRefersToDOType().getCdc() );
+                        " of its DOType \"", do_.getRefersToDOType().getCdc(), "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -256,7 +256,7 @@ public class LNClassValidator {
                 }
                 else {
                     warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                            "DO ", do_.getName(), " cannot be verified because there is no CDC validator for it in namespace \"" + do_.getNamespace() + "\"" );
+                            "DO \"", do_.getName(), "\" cannot be verified because there is no CDC validator for it in namespace \"" + do_.getNamespace() + "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
