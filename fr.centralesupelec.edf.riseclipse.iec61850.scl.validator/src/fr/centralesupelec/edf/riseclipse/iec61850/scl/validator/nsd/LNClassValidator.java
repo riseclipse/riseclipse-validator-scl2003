@@ -247,29 +247,29 @@ public class LNClassValidator {
                     continue;
                 }
 
-                RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                         "DO \"", do_.getName(), "\" cannot be checked against the CDC given by the LNClass of its AnyLN  because its namespace \"",
                         do_.getNamespace(), "\" differs from current namespace \"", nsIdentification, "\". It will be checked using the CDC ",
                         " of its DOType \"", do_.getRefersToDOType().getCdc(), "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { do_, warning } ));
+                        notice.getMessage(),
+                        new Object[] { do_, notice } ));
                 Pair< CDCValidator, NsIdentification > pair = CDCValidator.getByName( NsIdentification.of( do_.getNamespace() ), do_.getRefersToDOType().getCdc() );
                 CDCValidator cdcValidator = pair.getLeft();
                 if( cdcValidator != null ) {
                     res = cdcValidator.validateDO( do_, diagnostics ) && res;
                 }
                 else {
-                    warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                    RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                             "DO \"", do_.getName(), "\" cannot be verified because there is no CDC validator for it in namespace \"" + do_.getNamespace() + "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
+                            notice.getMessage(),
                             new Object[] { do_, warning } ));
                     
                 }
