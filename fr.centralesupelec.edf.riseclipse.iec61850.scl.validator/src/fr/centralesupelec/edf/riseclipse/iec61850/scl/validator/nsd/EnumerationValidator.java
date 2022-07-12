@@ -52,14 +52,16 @@ public class EnumerationValidator extends TypeValidator {
 
     // Name of EnumVal may be empty, so we use LiteralVal as key
     private HashMap< Integer, String > literals = new HashMap<>();
-    private String name;
+    private Enumeration enumeration;
     private boolean isMultiplierKind;
+    private NsIdentification nsIdentification;
 
     public EnumerationValidator( Enumeration enumeration, NsIdentification nsIdentification, IRiseClipseConsole console ) {
         console.debug( ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getLineNumber(),
                 "EnumerationValidator( ", enumeration.getName(), " )in namespace\"", nsIdentification, "\"" );
 
-        this.name = enumeration.getName();
+        this.enumeration = enumeration;
+        this.nsIdentification = nsIdentification;
         String inheritedFromName = enumeration.getInheritedFrom();
         
         if(( inheritedFromName != null ) && ( ! inheritedFromName.isEmpty() )) {
@@ -90,7 +92,7 @@ public class EnumerationValidator extends TypeValidator {
     
     @Override
     public String getName() {
-        return name;
+        return enumeration.getName();
     }
     
     /*
@@ -167,7 +169,7 @@ public class EnumerationValidator extends TypeValidator {
             if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
             RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, daOrDai.getFilename(), daOrDai.getLineNumber(), 
                                       "value \"", value, "\" of DA/BDA/DAI \"", name, "\" is not valid for EnumType \"",
-                                      enumType.getId(), "\" (line = ", enumType.getLineNumber(), ")" );
+                                      enumType.getId(), "\" (line = ", enumType.getLineNumber(), ") in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -185,7 +187,7 @@ public class EnumerationValidator extends TypeValidator {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.debug( ENUMERATION_VALIDATION_NSD_CATEGORY, enumType.getFilename(), enumType.getLineNumber(),
-                       "EnumerationValidator.validateEnumType( ", enumType.getId(), " )" );
+                       "EnumerationValidator.validateEnumType( ", enumType.getId(), " ) in namespace \"", nsIdentification, "\"" );
         validatedEnumType.add( enumType.getId() );
         
         boolean res = true;
@@ -201,7 +203,7 @@ public class EnumerationValidator extends TypeValidator {
             if( ! literals.containsKey( enumVal.getOrd() )) {
                 RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
                                           "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType (id = ", enumType.getId(),
-                                          ") is not defined as LiteralVal in standard Enumeration ", getName() );
+                                          ") is not defined as LiteralVal in standard Enumeration ", getName(), " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -215,7 +217,8 @@ public class EnumerationValidator extends TypeValidator {
                 if( ! literals.get( enumVal.getOrd() ).equals( enumVal.getValue() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
                                               "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType (id = " , enumType.getId(),
-                                              ") has incorrect name (\"", enumVal.getValue(), "\" instead of \"", literals.get( enumVal.getOrd() ), "\")" );
+                                              ") has incorrect name (\"", enumVal.getValue(), "\" instead of \"", literals.get( enumVal.getOrd() ), "\" in standard enumeration ",
+                                              getName(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
