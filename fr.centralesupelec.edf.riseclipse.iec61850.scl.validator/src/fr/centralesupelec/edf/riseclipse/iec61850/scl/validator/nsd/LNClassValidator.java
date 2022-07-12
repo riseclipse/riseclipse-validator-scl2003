@@ -164,7 +164,12 @@ public class LNClassValidator {
         .getDO()
         .stream()
         .forEach( do_ -> {
-            if(( do_.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( do_.getNamespace() ) )) {
+            // Take LNClass "LPHD" in IEC_61850-7-4_2007B4.nsd extended by IEC_61869-9_2016.nsd
+            // nsIdentification of this is "IEC 61850-7-4:2007B"
+            // For the DataObject "NamVariant", its namespace is "IEC 61869-9:2016"
+            // The presence of this DataObject cannot be checked by LNClass "LPHD" in namespace "IEC 61850-7-4:2007B"
+            // And "IEC 61850-7-4:2007B" does not depends on "IEC 61869-9:2016" (this is the reverse)
+            if(( do_.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( do_.getNamespace() ))) {
                 dataObjectPresenceConditionValidator.addDO( do_, diagnostics );
             }
             else {
@@ -197,7 +202,10 @@ public class LNClassValidator {
                 //AbstractRiseClipseConsole.getConsole().error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
                 continue;
             }
-            if(( do_.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( do_.getNamespace() ))) {
+            // Same example as above
+            // "IEC 61869-9:2016" depends on "IEC 61850-7-4:2007B"
+            // Therefore, we can check DataObject "NamVariant"
+            if(( do_.getNamespace() == null ) || NsIdentification.of( do_.getNamespace() ).dependsOn( nsIdentification )) {
                 CDCValidator cdcValidator = dataObjectValidatorMap.get( names[0] );
                 if( cdcValidator != null ) {
                     if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
