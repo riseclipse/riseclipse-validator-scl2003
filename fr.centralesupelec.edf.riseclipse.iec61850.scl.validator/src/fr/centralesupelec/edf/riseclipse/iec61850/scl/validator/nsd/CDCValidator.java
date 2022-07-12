@@ -70,24 +70,6 @@ public class CDCValidator {
         return Pair.of( cdcValidator, nsIdentification );
     }
     
-    public static Pair< CDCValidator, NsIdentification > getByName( NsIdentification nsIdentification, String cdcName ) {
-        NsIdentification nsId = nsIdentification;
-        while( nsId != null ) {
-            for( CDCValidator validator : validators.values() ) {
-                if( validator.getName().equals( cdcName )) {
-                    // If the CDC is parameterized, there is no way to get the right parameter
-                    if( validator.cdc.isEnumParameterized() || validator.cdc.isTypeKindParameterized() ) {
-                        return Pair.of( null, nsIdentification );
-                    }
-                    return Pair.of( validator, nsIdentification );
-                }
-            }
-            nsIdentification = nsId;
-            nsId = nsId.getDependsOn();
-        }
-        return Pair.of( null, nsIdentification );
-    }
-    
     public static void buildValidators( NsIdentification nsIdentification, Stream< CDC > stream, IRiseClipseConsole console ) {
         stream
         .forEach( cdc -> validators.put(
@@ -358,7 +340,6 @@ public class CDCValidator {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.debug( CDC_VALIDATION_NSD_CATEGORY, do_.getLineNumber(),
                 "CDCValidator( ", getName(), " ).validateDO( ", do_.getName(), " ) in namespace \"", nsIdentification, "\"" );
-        
         DOType doType = do_.getRefersToDOType();
         if( doType == null ) {
             RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
