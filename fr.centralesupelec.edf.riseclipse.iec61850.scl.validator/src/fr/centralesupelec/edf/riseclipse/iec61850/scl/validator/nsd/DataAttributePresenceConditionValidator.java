@@ -295,7 +295,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     protected boolean validateMFscaledAngV( DOType doType, DiagnosticChain diagnostics ) {
         // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'ang' attribute, otherwise forbidden.
         // *See MFscaledAV
-        return validateMFscaledMagOrAngV( doType, "mag", mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden, diagnostics );
+        return validateMFscaledMagOrAngV( doType, "ang", mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden, diagnostics );
     }
 
     private boolean validateMFscaledMagOrAngV( DOType doType, String marOrAng, Set< String> toTest, DiagnosticChain diagnostics ) {
