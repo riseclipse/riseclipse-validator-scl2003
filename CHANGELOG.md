@@ -1,6 +1,7 @@
 
-## 1.2.4-SNAPSHOT (2022/07/08)
+## 1.2.4 (2022/07/12)
 - support for extensions LNClasses (used in IEC 61869-9:2016)
+- support parameterized CDC and ServiceConstructedAttribute
 - take into account namespace specified in a DAI
 - no error if EnumDA is used as underlyingType
 - handle MFscaledAV, MFscaledMagV and MFscaledAngV presence conditions
