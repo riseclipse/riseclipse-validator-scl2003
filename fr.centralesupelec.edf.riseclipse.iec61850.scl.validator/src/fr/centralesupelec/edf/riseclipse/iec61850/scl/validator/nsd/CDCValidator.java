@@ -31,9 +31,11 @@ import org.eclipse.jdt.annotation.NonNull;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataAttribute;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.NsdObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.SubDataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DOType;
@@ -50,23 +52,46 @@ public class CDCValidator {
     private static final String CDC_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/CDC";
     private static final String CDC_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/CDC";
 
-    private static IdentityHashMap< NsIdentificationName, CDCValidator > validators = new IdentityHashMap<>();
+    // CDC may be parameterized.
+    // When the parameter is given by the DataObject, a copy of the CDC is done with the right data attribute type
+    // (see DataObjectImpl.createParameterizedComponents()).
+    // The CDCImpl class ensure uniqueness of a given parameterized CDC (see CDCImpl.getParameterizedCDC()).
+    // Therefore, we look for the CDCValidator using the CDC object.
+    private static IdentityHashMap< NsIdentificationObject, CDCValidator > validators = new IdentityHashMap<>();
     
-    public static Pair< CDCValidator, NsIdentification > get( NsIdentification nsIdentification, String doTypeName ) {
+    public static Pair< CDCValidator, NsIdentification > get( NsIdentification nsIdentification, CDC cdc ) {
         NsIdentification nsId = nsIdentification;
         CDCValidator cdcValidator = null;
         while(( cdcValidator == null ) && ( nsId != null )) {
-            cdcValidator = validators.get( NsIdentificationName.of( nsId, doTypeName ));
+            cdcValidator = validators.get( NsIdentificationObject.of( nsId, cdc ));
             nsIdentification = nsId;
             nsId = nsId.getDependsOn();
         }
         return Pair.of( cdcValidator, nsIdentification );
     }
     
+    public static Pair< CDCValidator, NsIdentification > getByName( NsIdentification nsIdentification, String cdcName ) {
+        NsIdentification nsId = nsIdentification;
+        while( nsId != null ) {
+            for( CDCValidator validator : validators.values() ) {
+                if( validator.getName().equals( cdcName )) {
+                    // If the CDC is parameterized, there is no way to get the right parameter
+                    if( validator.cdc.isEnumParameterized() || validator.cdc.isTypeKindParameterized() ) {
+                        return Pair.of( null, nsIdentification );
+                    }
+                    return Pair.of( validator, nsIdentification );
+                }
+            }
+            nsIdentification = nsId;
+            nsId = nsId.getDependsOn();
+        }
+        return Pair.of( null, nsIdentification );
+    }
+    
     public static void buildValidators( NsIdentification nsIdentification, Stream< CDC > stream, IRiseClipseConsole console ) {
         stream
         .forEach( cdc -> validators.put(
-                NsIdentificationName.of( nsIdentification, cdc.getName() ),
+                NsIdentificationObject.of( nsIdentification, cdc ),
                 new CDCValidator( nsIdentification, cdc, console )));
     }
 
@@ -109,13 +134,24 @@ public class CDCValidator {
     private IdentityHashMap< NsIdentificationName, FunctionalConstraintValidator > dataAttributeFunctionalConstraintValidatorMap;
     // Key is SubDataObject name (the corresponding SDO has the same name)
     // Value is the CDCValidator given by the SubDataObject type
-    private IdentityHashMap< NsIdentificationName, CDCValidator > subDataObjectValidatorMap;
+    private IdentityHashMap< NsIdentificationObject, CDCValidator > subDataObjectValidatorMap;
     
-    private IdentityHashMap< NsIdentificationName, CDCValidator > parameterizedValidators;
-
     private CDCValidator( NsIdentification nsIdentification, CDC cdc, IRiseClipseConsole console ) {
+        String parameter = "";
+        if( cdc.isEnumParameterized() ) {
+            for( DataAttribute da : cdc.getDataAttribute() ) {
+                if( cdc.getParameterizedDataAttributeNames().contains( da.getName() )) {
+                    if( da.isSetType() ) {
+                        parameter = " for parameter " + da.getType();
+                    }
+                    else {
+                        parameter = " not parameterized";
+                    }
+                }
+            }
+        }
         console.debug( CDC_SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
-                "CDCValidator( ", cdc.getName(), " ) in namespace \"", nsIdentification, "\"" );
+                "CDCValidator( ", cdc.getName(), parameter, " ) in namespace \"", nsIdentification, "\"" );
         this.cdc = cdc;
         this.nsIdentification = nsIdentification;
         this.dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( nsIdentification, cdc );
@@ -123,12 +159,17 @@ public class CDCValidator {
         this.dataAttributeTypeValidatorMap = new IdentityHashMap<>();
         this.dataAttributeFunctionalConstraintValidatorMap = new IdentityHashMap<>();
         this.subDataObjectValidatorMap = new IdentityHashMap<>();
-        this.parameterizedValidators = new IdentityHashMap<>();
         
         for( DataAttribute da : cdc.getDataAttribute() ) {
-            // may be null if enumParameterized or typeKindParameterized
-            if( da.getType() != null ) {
-                Pair< TypeValidator, NsIdentification > typeValidator = TypeValidator.get( this.nsIdentification, da.getType() );
+            NsdObject type = da.getRefersToBasicType();
+            if( type == null ) {
+                type = da.getRefersToEnumeration();
+            }
+            if( type == null ) {
+                type = da.getRefersToConstructedAttribute();
+            }
+            if( type != null ) {
+                Pair< TypeValidator, NsIdentification > typeValidator = TypeValidator.get( this.nsIdentification, type );
                 if(( typeValidator != null ) && ( typeValidator.getLeft() != null )) {
                     dataAttributeTypeValidatorMap.put( NsIdentificationName.of( typeValidator.getRight(), da.getName() ), typeValidator.getLeft() );
                     console.info( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
@@ -142,18 +183,6 @@ public class CDCValidator {
                 }
             }
             else {
-                if( cdc.isEnumParameterized() ) {
-                    if( "ENUMERATED".equals( da.getTypeKind().getLiteral() )) {
-                        dataAttributeTypeValidatorMap.put( NsIdentificationName.of( this.nsIdentification, da.getName() ), new EnumeratedTypeValidator( this.nsIdentification ) );
-                        continue;
-                    }
-                }
-                if( cdc.isTypeKindParameterized() ) {
-                    if( "undefined".equals( da.getTypeKind().getLiteral() )) {
-                        dataAttributeTypeValidatorMap.put( NsIdentificationName.of( this.nsIdentification, da.getName() ), new UndefinedTypeValidator( this.nsIdentification ) );
-                        continue;
-                    }
-                }
                 console.warning( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                                  "Type not found for DataAttribute ", da.getName(),
                                  " in namespace \"", this.nsIdentification, "\"" );
@@ -174,9 +203,14 @@ public class CDCValidator {
         }
         
         for( SubDataObject sdo : cdc.getSubDataObject() ) {
-            Pair< CDCValidator, NsIdentification > cdcValidator = CDCValidator.get( this.nsIdentification, sdo.getType() );
+            if( sdo.getRefersToCDC() == null ) {
+                console.warning( CDC_SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
+                        "CDC unknown for SubDataObject ", sdo.getName(), " in namespace \"", this.nsIdentification, "\"" );
+                continue;
+            }
+            Pair< CDCValidator, NsIdentification > cdcValidator = CDCValidator.get( this.nsIdentification, sdo.getRefersToCDC() );
             if(( cdcValidator != null ) && ( cdcValidator.getLeft() != null )) {
-                subDataObjectValidatorMap.put( NsIdentificationName.of( cdcValidator.getRight(), sdo.getName() ), cdcValidator.getLeft() );
+                subDataObjectValidatorMap.put( NsIdentificationObject.of( cdcValidator.getRight(), sdo.getRefersToCDC() ), cdcValidator.getLeft() );
                 console.info( CDC_SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
                               "CDC validator for SubDataObject ", sdo.getName(), " found with type ", sdo.getType(), " in namespace \"", cdcValidator.getRight(), "\"" );
             }
@@ -282,7 +316,7 @@ public class CDCValidator {
             }
             CDCValidator cdcValidator = null;
             while(( cdcValidator == null ) && ( nsId != null )) {
-                cdcValidator = subDataObjectValidatorMap.get( NsIdentificationName.of( nsIdentification, sdo.getName() ));
+                cdcValidator = subDataObjectValidatorMap.get( NsIdentificationObject.of( nsIdentification, sdo.getRefersToDOType() ));
                 nsId = nsId.getDependsOn();
             }
             if( cdcValidator != null ) {
@@ -340,41 +374,4 @@ public class CDCValidator {
         return validateDOType( doType, diagnostics );
     }
     
-    private CDCValidator( CDCValidator baseValidator, TypeValidator underlyingTypeValidator, NsIdentification nsId ) {
-        this.nsIdentification                              = baseValidator.nsIdentification;
-        this.cdc                                           = baseValidator.cdc;
-        this.validatedDOType                               = new HashSet<>();
-        this.dataAttributePresenceConditionValidator       = baseValidator.dataAttributePresenceConditionValidator;
-        this.subDataObjectPresenceConditionValidator       = baseValidator.subDataObjectPresenceConditionValidator;
-        this.dataAttributeTypeValidatorMap                 = new IdentityHashMap< NsIdentificationName, TypeValidator >( baseValidator.dataAttributeTypeValidatorMap );
-        this.dataAttributeFunctionalConstraintValidatorMap = baseValidator.dataAttributeFunctionalConstraintValidatorMap;
-        this.subDataObjectValidatorMap                     = baseValidator.subDataObjectValidatorMap;
-        this.parameterizedValidators                       = baseValidator.parameterizedValidators;
-        
-        for( String att : cdc.getParameterizedDataAttributeNames() ) {
-            dataAttributeTypeValidatorMap.put( NsIdentificationName.of( nsIdentification, att ), underlyingTypeValidator );
-        }
-    }
-
-    public CDCValidator getParameterizedCdcValidatorFor( String underlyingType, NsIdentification nsId, IRiseClipseConsole console ) {
-        if( "EnumDA".equals( underlyingType )) {
-            // IEC 61850-7-7
-            // It exists also a specific case for parameterized enumeration where the enumeration will be
-            // resolved at implementation and not in the NSD itself. To address this case, the specific
-            // keyword “EnumDA”.
-            return this;
-        }
-        NsIdentificationName key = NsIdentificationName.of( nsId, underlyingType );
-        if( ! parameterizedValidators.containsKey( key )) {
-            Pair< TypeValidator, NsIdentification > underlyingTypeValidator = TypeValidator.get( nsId, underlyingType );
-            if(( underlyingTypeValidator == null ) || ( underlyingTypeValidator.getLeft() == null )) {
-                console.error( CDC_SETUP_NSD_CATEGORY , 0, "Validator for underlying type ", underlyingType,
-                        " not found in namespace \"", nsId, "\" while parameterizing CDC ", getName() );
-                return this;
-            }
-            parameterizedValidators.put( key, new CDCValidator( this, underlyingTypeValidator.getLeft(), underlyingTypeValidator.getRight() ));
-        }
-        return parameterizedValidators.get( key );
-    }
-
 }

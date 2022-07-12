@@ -134,6 +134,9 @@ public class DataObjectPresenceConditionValidator {
     
     @SuppressWarnings( "unchecked" )        // cast of HashMap.clone() result
     private DataObjectPresenceConditionValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass, boolean isStatistic ) {
+        console.debug( DO_SETUP_NSD_CATEGORY, anyLNClass.getFilename(), anyLNClass.getLineNumber(),
+                "DataObjectPresenceConditionValidator( \"", anyLNClass.getName(), "\" in namespace \"", nsIdentification, "\" )");
+        
         this.nsIdentification = nsIdentification;
         this.anyLNClass = anyLNClass;
         this.isStatistic = isStatistic;

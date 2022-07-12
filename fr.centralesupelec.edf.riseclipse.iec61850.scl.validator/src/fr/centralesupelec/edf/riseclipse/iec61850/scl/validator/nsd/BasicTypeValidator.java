@@ -518,6 +518,7 @@ public abstract class BasicTypeValidator extends TypeValidator {
         this.name = name;
     }
     
+    @Override
     public String getName() {
         return name;
     }
@@ -537,15 +538,17 @@ public abstract class BasicTypeValidator extends TypeValidator {
         boolean res = true;
         if( ! getName().equals( ada.getBType() )) {
             
+            String type = ada.isSetType() ? ( " \"" + ada.getType() + "\"" ) : "";
             RiseClipseMessage error = RiseClipseMessage.error( BASIC_TYPE_VALIDATION_NSD_CATEGORY, ada.getFilename(), ada.getLineNumber(), 
-                                      "type of DA/BDA \"", ada.getName(), "\" is not \"", getName(), "\"" );
+                                      "type of DA/BDA \"", ada.getName(), "\" is not \"", getName(), "\", it is \"", ada.getBType(),
+                                      "\"", type );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
                     error.getMessage(),
                     new Object[] { ada, error } ));
-            res = false;
+            return false;
         }
         
         for( Val val : ada.getVal() ) {

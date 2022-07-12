@@ -57,6 +57,9 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     public SubDataObjectPresenceConditionValidator( NsIdentification nsIdentification, CDC cdc ) {
         super( nsIdentification, cdc );
         
+        console.debug( SDO_SETUP_NSD_CATEGORY, cdc.getFilename(), cdc.getLineNumber(),
+                "SubDataObjectPresenceConditionValidator( \"", cdc.getName(), "\" in namespace \"", nsIdentification, "\" )");
+        
         initialize();
     }
 
