@@ -74,8 +74,13 @@ public class CDCValidator {
         NsIdentification nsId = nsIdentification;
         while( nsId != null ) {
             for( CDCValidator validator : validators.values() ) {
-                if( validator.getName().equals( cdcName ))
+                if( validator.getName().equals( cdcName )) {
+                    // If the CDC is parameterized, there is no way to get the right parameter
+                    if( validator.cdc.isEnumParameterized() || validator.cdc.isTypeKindParameterized() ) {
+                        return Pair.of( null, nsIdentification );
+                    }
                     return Pair.of( validator, nsIdentification );
+                }
             }
             nsIdentification = nsId;
             nsId = nsId.getDependsOn();
