@@ -247,19 +247,19 @@ public class LNClassValidator {
                     continue;
                 }
 
-                RiseClipseMessage notice = RiseClipseMessage.notice( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                        "DO \"", do_.getName(), "\" cannot be checked against the CDC given by the LNClass of its AnyLN  because its namespace \"",
-                        do_.getNamespace(), "\" differs from current namespace \"", nsIdentification, "\". It will be checked using the CDC ",
-                        " of its DOType \"", do_.getRefersToDOType().getCdc(), "\"" );
-                diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.INFO,
-                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                        0,
-                        notice.getMessage(),
-                        new Object[] { do_, notice } ));
                 Pair< CDCValidator, NsIdentification > pair = CDCValidator.getByName( NsIdentification.of( do_.getNamespace() ), do_.getRefersToDOType().getCdc() );
                 CDCValidator cdcValidator = pair.getLeft();
                 if( cdcValidator != null ) {
+                    RiseClipseMessage notice = RiseClipseMessage.notice( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                            "DO \"", do_.getName(), "\" cannot be checked against the CDC given by the LNClass of its AnyLN  because its namespace \"",
+                            do_.getNamespace(), "\" differs from current namespace \"", nsIdentification, "\". It will be checked using the CDC ",
+                            " of its DOType \"", do_.getRefersToDOType().getCdc(), "\"" );
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.INFO,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            notice.getMessage(),
+                            new Object[] { do_, notice } ));
                     res = cdcValidator.validateDO( do_, diagnostics ) && res;
                 }
                 else {
@@ -269,7 +269,7 @@ public class LNClassValidator {
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            notice.getMessage(),
+                            warning.getMessage(),
                             new Object[] { do_, warning } ));
                     
                 }
