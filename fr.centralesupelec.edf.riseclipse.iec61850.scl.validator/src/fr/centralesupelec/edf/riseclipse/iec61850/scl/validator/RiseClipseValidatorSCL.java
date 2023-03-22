@@ -178,10 +178,11 @@ public class RiseClipseValidatorSCL {
                         + " [" + LEVEL_OPTION + "]"
                         + " [" + OUTPUT_OPTION + " <file>]"
                         + " [" + MAKE_EXPLICIT_LINKS_OPTION + "]"
-                        + " (<oclFile> | <nsdFile> | <sclFile>)+" 
+                        + " (<directory> | <oclFile> | <nsdFile> | <sclFile> | <zipFile>)+" 
         );
         console.info( VALIDATOR_SCL_CATEGORY, 0,
-                  "Files ending with \".ocl\" are considered OCL files, "
+                  "Directories are searched recursively, "
+                + "files ending with \".ocl\" are considered OCL files, "
                 + "files ending with \".nsd\" are considered NS files, "
                 + "files ending with \".snsd\" are considered ServiceNS files, "
                 + "files ending with \".AppNS\" are considered ApplicableServiceNS files, "
