@@ -1,5 +1,5 @@
 # *************************************************************************
-# **  Copyright (c) 2022 CentraleSupélec & EDF.
+# **  Copyright (c) 2022-23 CentraleSupélec & EDF.
 # **  All rights reserved. This program and the accompanying materials
 # **  are made available under the terms of the Eclipse Public License v2.0
 # **  which accompanies this distribution, and is available at
@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Set up Python 3.10
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
