@@ -521,8 +521,7 @@ public class RiseClipseValidatorSCL {
         @NonNull ArrayList< String > files = new ArrayList<>();
         @NonNull String zipName = zipPath.getFileName().toString();
         zipName = zipName.substring( 0, zipName.lastIndexOf( '.' ));
-        try {
-            @NonNull ZipFile zipFile = new ZipFile( zipPath.toFile() );
+        try( @NonNull ZipFile zipFile = new ZipFile( zipPath.toFile() )) {
             @NonNull Path unzipDir = Files.createTempDirectory( zipName );
             @NonNull Enumeration< ? extends ZipEntry > entries = zipFile.entries();
             while( entries.hasMoreElements() ) {
@@ -550,7 +549,9 @@ public class RiseClipseValidatorSCL {
                     }
 
                     // write file content
-                    zipFile.getInputStream( zipEntry ).transferTo( new FileOutputStream( newFile ));
+                    FileOutputStream out = new FileOutputStream( newFile );
+                    zipFile.getInputStream( zipEntry ).transferTo( out);
+                    out.close();
                     files.add( newFile.getAbsolutePath() );
                 }
             }
