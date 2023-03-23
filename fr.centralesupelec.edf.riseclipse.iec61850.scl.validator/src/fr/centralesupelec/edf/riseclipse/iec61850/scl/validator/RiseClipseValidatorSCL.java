@@ -549,9 +549,9 @@ public class RiseClipseValidatorSCL {
                     }
 
                     // write file content
-                    FileOutputStream out = new FileOutputStream( newFile );
-                    zipFile.getInputStream( zipEntry ).transferTo( out);
-                    out.close();
+                    try( @NonNull FileOutputStream out = new FileOutputStream( newFile )) {
+                        zipFile.getInputStream( zipEntry ).transferTo( out );
+                    }
                     files.add( newFile.getAbsolutePath() );
                 }
             }
