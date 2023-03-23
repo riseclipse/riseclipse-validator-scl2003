@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2016-2022 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2023 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -21,18 +21,23 @@
 
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DependsOn;
@@ -76,6 +81,7 @@ public class RiseClipseValidatorSCL {
     private static final String SNSD_FILE_EXTENSION = ".snsd";
     private static final String NSD_FILE_EXTENSION = ".nsd";
     private static final String OCL_FILE_EXTENSION = ".ocl";
+    private static final String ZIP_FILE_EXTENSION = ".zip";
 
     private static final String HELP_OPTION                            = "--help";
     private static final String HELP_ENVIRONMENT_OPTION                = "--help-environment";
@@ -172,14 +178,16 @@ public class RiseClipseValidatorSCL {
                         + " [" + LEVEL_OPTION + "]"
                         + " [" + OUTPUT_OPTION + " <file>]"
                         + " [" + MAKE_EXPLICIT_LINKS_OPTION + "]"
-                        + " (<oclFile> | <nsdFile> | <sclFile>)+" 
+                        + " (<directory> | <oclFile> | <nsdFile> | <sclFile> | <zipFile>)+" 
         );
         console.info( VALIDATOR_SCL_CATEGORY, 0,
-                  "Files ending with \".ocl\" are considered OCL files, "
+                  "Directories are searched recursively, "
+                + "files ending with \".ocl\" are considered OCL files, "
                 + "files ending with \".nsd\" are considered NS files, "
                 + "files ending with \".snsd\" are considered ServiceNS files, "
                 + "files ending with \".AppNS\" are considered ApplicableServiceNS files, "
                 + "files ending with \".nsdoc\" are considered NSDoc files "
+                + "files ending with \".zip\" are decompressed and each file inside is taken into account "
                 + " (case is ignored for all these extensions), "
                 + "all others are considered SCL files" );
         System.exit( -1 );
@@ -198,6 +206,7 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\tfiles ending with \".snsd\" are considered ServiceNS files," );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\tfiles ending with \".AppNS\" are considered ApplicableServiceNS files (at most one should be given)," );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\tfiles ending with \".nsdoc\" are considered NSDoc files," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\tfiles ending with \".zip\" are decompressed and each file inside is taken into account," );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\tcase is ignored for all these extensions," );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\tall others are considered SCL files." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
@@ -466,25 +475,37 @@ public class RiseClipseValidatorSCL {
             int dotPos = name.lastIndexOf( "." );
             if( dotPos != -1 ) {
                 if( name.substring( dotPos ).equalsIgnoreCase( OCL_FILE_EXTENSION )) {
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "adding as OCL file ", name );
                     oclFiles.add( name );
                 }
                 else if( name.substring( dotPos ).equalsIgnoreCase( NSD_FILE_EXTENSION )) {
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "adding as NSD file ", name );
                     nsdFiles.add( name );
                 }
                 else if( name.substring( dotPos ).equalsIgnoreCase( SNSD_FILE_EXTENSION )) {
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "adding as NSD file ", name );
                     nsdFiles.add( name );
                 }
                 else if( name.substring( dotPos ).equalsIgnoreCase( APP_NS_FILE_EXTENSION )) {
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "adding as NSD file ", name );
                     nsdFiles.add( name );
                 }
                 else if( name.substring( dotPos ).equalsIgnoreCase( NSDOC_FILE_EXTENSION )) {
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "adding as NSD file ", name );
                     nsdFiles.add( name );
                 }
+                else if( name.substring( dotPos ).equalsIgnoreCase( ZIP_FILE_EXTENSION )) {
+                    for( String file : getFilesFromZipFile( path, console )) {
+                        getFiles( Paths.get( file ).normalize(), console );
+                    }
+                }
                 else {
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "adding as SCL file ", name );
                     sclFiles.add( name );
                 }
             }
             else {
+                console.info( VALIDATOR_SCL_CATEGORY, 0, "adding as SCL file ", name );
                 sclFiles.add( name );
             }
         }
@@ -492,6 +513,87 @@ public class RiseClipseValidatorSCL {
             console.error( VALIDATOR_SCL_CATEGORY, 0, "Cannot read file ", path );
         }
         
+    }
+
+    // Code taken partially from https://www.baeldung.com/java-compress-and-uncompress
+    // and also from https://stackoverflow.com/questions/9324933/what-is-a-good-java-library-to-zip-unzip-files
+    private static @NonNull ArrayList< String > getFilesFromZipFile( @NonNull Path zipPath, @NonNull IRiseClipseConsole console ) {
+        @NonNull ArrayList< String > files = new ArrayList<>();
+        @NonNull String zipName = zipPath.getFileName().toString();
+        zipName = zipName.substring( 0, zipName.lastIndexOf( '.' ));
+        try( @NonNull ZipFile zipFile = new ZipFile( zipPath.toFile() )) {
+            @NonNull Path unzipDir = Files.createTempDirectory( zipName );
+            @NonNull Enumeration< ? extends ZipEntry > entries = zipFile.entries();
+            while( entries.hasMoreElements() ) {
+                @NonNull ZipEntry zipEntry = entries.nextElement();
+                File newFile = newFileFromZipEntry( unzipDir.toFile(), zipEntry, console );
+                if( newFile == null ) continue;
+                if( zipEntry.isDirectory() ) {
+                    if( ! newFile.isDirectory() && ! newFile.mkdirs() ) {
+                        console.alert( VALIDATOR_SCL_CATEGORY, 0,
+                                       "Failed to create directory for ",
+                                       zipEntry.getName(),
+                                       ", files after will be ignored" );
+                        return files;
+                    }
+                } 
+                else {
+                    // fix for Windows-created archives
+                    @NonNull File parent = newFile.getParentFile();
+                    if( ! parent.isDirectory() && ! parent.mkdirs() ) {
+                        console.alert( VALIDATOR_SCL_CATEGORY, 0,
+                                "Failed to create directory for ",
+                                parent.getName(),
+                                ", files after will be ignored" );
+                        return files;
+                    }
+
+                    // write file content
+                    try( @NonNull FileOutputStream out = new FileOutputStream( newFile )) {
+                        zipFile.getInputStream( zipEntry ).transferTo( out );
+                    }
+                    files.add( newFile.getAbsolutePath() );
+                }
+            }
+        }
+        catch( IOException e ) {
+            console.alert( VALIDATOR_SCL_CATEGORY, 0,
+                    "IOException while trying to handle: ",
+                    zipPath.toString(),
+                    ", it will be ignored" );
+        }
+        return files;
+    }
+
+    // From https://www.baeldung.com/java-compress-and-uncompress
+    // The newFile() method guards against writing files to the file system outside the target folder.
+    // This vulnerability is called Zip Slip.
+    private static File newFileFromZipEntry( @NonNull File destinationDir, @NonNull ZipEntry zipEntry, @NonNull IRiseClipseConsole console ) {
+        @NonNull File destFile = new File( destinationDir, zipEntry.getName() );
+
+        try {
+            String destDirPath = destinationDir.getCanonicalPath();
+            String destFilePath = destFile.getCanonicalPath();
+
+            if( ! destFilePath.startsWith( destDirPath + File.separator )) {
+                console.alert( VALIDATOR_SCL_CATEGORY, 0,
+                               "Entry: ",
+                               zipEntry.getName(),
+                               " is outside of the target dir: ",
+                               destDirPath,
+                               ", it will be ignored" );
+                return null;
+            }
+        }
+        catch( IOException e ) {
+            console.alert( VALIDATOR_SCL_CATEGORY, 0,
+                    "IOException while trying to get path for: ",
+                    zipEntry.getName(),
+                    ", it will be ignored" );
+            return null;
+        }
+
+        return destFile;
     }
 
     @SuppressWarnings( "unused" )

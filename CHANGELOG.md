@@ -1,4 +1,8 @@
 
+## 1.2.5 (2023/03/23)
+- support for zip files given on the command line
+- use lastest components
+
 ## 1.2.4 (2022/07/12)
 - support for extensions LNClasses (used in IEC 61869-9:2016)
 - support parameterized CDC and ServiceConstructedAttribute

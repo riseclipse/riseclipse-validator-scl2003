@@ -23,6 +23,8 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 import java.util.IdentityHashMap;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import org.eclipse.emf.common.util.DiagnosticChain;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.BasicType;
@@ -33,7 +35,6 @@ import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AbstractDataAttribute;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
-import fr.centralesupelec.edf.riseclipse.util.Pair;
 
 public abstract class TypeValidator {
 
