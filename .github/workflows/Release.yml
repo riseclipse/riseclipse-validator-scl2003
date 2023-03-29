@@ -45,4 +45,6 @@ jobs:
     needs: [call-validate-release-workflow]
     uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Deploy-On-RiseClipseWeb.yml@master
     with:
+      artifact_path: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL
+      release_version: ${{ needs.call-validate-release-workflow.outputs.release_version }}
       dest_folder: "profiles/EDF-61850-Ed.2%fr.riseclipse.iec61850Ed_2%scl"
