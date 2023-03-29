@@ -20,7 +20,9 @@
 name: Release on GitHub and DockerHub
 
 # This CD workflow switches pre-release to release on GitHub (without rc flag)
-# It also builds and push a docker image of the RiseClipse Validator SCL CLI tool
+# It also 
+#   - builds and push a docker image of the RiseClipse Validator SCL CLI tool
+#   - scp the RiseClipse Validator SCL CLI tool to the corresponding riseclipseweb profile
 
 on: workflow_dispatch
 
@@ -43,8 +45,13 @@ jobs:
   call-release-riseclipseweb-workflow:
     name: Release on riseclipseweb
     needs: [call-validate-release-workflow]
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Deploy-On-RiseClipseWeb.yml@master
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-RiseClipseWeb.yml@master
     with:
       artifact_path: riseclipse-validator-scl2003/fr.centralesupelec.edf.riseclipse.iec61850.scl.validator/target/RiseClipseValidatorSCL
       release_version: ${{ needs.call-validate-release-workflow.outputs.release_version }}
       dest_folder: "profiles/EDF-61850-Ed.2%fr.riseclipse.iec61850Ed_2%scl"
+    secrets:
+      REMOTE_WEB_HOSTNAME: ${{ secrets.REMOTE_WEB_HOSTNAME }}
+      REMOTE_WEB_USERNAME: ${{ secrets.REMOTE_WEB_USERNAME }}
+      REMOTE_WEB_PASSWORD: ${{ secrets.REMOTE_WEB_PASSWORD }}
+      REMOTE_WEB_FOLDER: ${{ secrets.REMOTE_WEB_FOLDER }}
