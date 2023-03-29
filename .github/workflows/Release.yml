@@ -39,3 +39,10 @@ jobs:
     secrets:
       DOCKER_USER: ${{ secrets.RISECLIPSE_DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.RISECLIPSE_DOCKER_ACCESS_TOKEN }}
+
+  call-release-riseclipseweb-workflow:
+    name: Release on riseclipseweb
+    needs: [call-validate-release-workflow]
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Deploy-On-RiseClipseWeb.yml@master
+    with:
+      dest_folder: "profiles/EDF-61850-Ed.2%fr.riseclipse.iec61850Ed_2%scl"
