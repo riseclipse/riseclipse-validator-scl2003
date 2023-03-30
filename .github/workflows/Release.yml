@@ -51,5 +51,6 @@ jobs:
     secrets:
       REMOTE_WEB_HOSTNAME: ${{ secrets.REMOTE_WEB_HOSTNAME }}
       REMOTE_WEB_USERNAME: ${{ secrets.REMOTE_WEB_USERNAME }}
-      REMOTE_WEB_PASSWORD: ${{ secrets.REMOTE_WEB_PASSWORD }}
+      REMOTE_WEB_SSHKEY: ${{ secrets.REMOTE_WEB_SSHKEY }}
+      REMOTE_WEB_PASSPHRASE: ${{ secrets.REMOTE_WEB_PASSPHRASE }}
       REMOTE_WEB_FOLDER: ${{ secrets.REMOTE_WEB_FOLDER }}
