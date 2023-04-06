@@ -1,0 +1,34 @@
+# This is a basic workflow that is manually triggered
+
+name: Test Release RiseClipseWeb
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+# Curl useless because pull artifact from pre-release workflow
+#  download-artifact:
+#   runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#      - name: Download Artifact
+#        run: |
+#          curl -L -o RiseClipseValidatorSCL-1.2.5.jar $(curl -s https://api.github.com/repos/riseclipse/riseclipse-validator-scl2003/releases/latest | grep "browser_download_url.*jar" \
+#              | cut -d : -f 2,3 \
+#              | tr -d \")
+  call-release-riseclipseweb-workflow:
+    name: Release on riseclipseweb
+    # needs: [call-validate-release-workflow]
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-RiseClipseWeb.yml@workflow/fix-release-riseclipseweb
+    with:
+      dest_folder: "EDF-61850-Ed.2%fr.riseclipse.iec61850Ed_2%scl/"
+    secrets:
+      RISECLIPSE_WEB_HOSTNAME: ${{ secrets.RISECLIPSE_WEB_HOSTNAME }}
+      RISECLIPSE_WEB_USERNAME: ${{ secrets.RISECLIPSE_WEB_USERNAME }}
+      RISECLIPSE_WEB_SSHKEY: ${{ secrets.RISECLIPSE_WEB_SSHKEY }}
+      RISECLIPSE_WEB_PASSPHRASE: ${{ secrets.RISECLIPSE_WEB_PASSPHRASE }}
