@@ -1,0 +1,31 @@
+# This is a basic workflow that is manually triggered
+
+name: Test Release RiseClipseWeb
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  call-release-riseclipseweb-workflow:
+    name: Release on riseclipseweb
+    # needs: [call-validate-release-workflow]
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-RiseClipseWeb.yml@workflow/fix-release-riseclipseweb
+    with:
+      dest_folder: "EDF-61850-Ed.2%fr.riseclipse.iec61850Ed_2%scl/"
+    secrets:
+      RISECLIPSE_WEB_HOSTNAME: ${{ secrets.RISECLIPSE_WEB_HOSTNAME }}
+      RISECLIPSE_WEB_USERNAME: ${{ secrets.RISECLIPSE_WEB_USERNAME }}
+      RISECLIPSE_WEB_SSHKEY: ${{ secrets.RISECLIPSE_WEB_SSHKEY }}
+      RISECLIPSE_WEB_PASSPHRASE: ${{ secrets.RISECLIPSE_WEB_PASSPHRASE }}
