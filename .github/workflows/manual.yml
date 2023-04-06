@@ -9,18 +9,18 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  download-artifact:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download Artifact
-        run: |
-          curl -L -o RiseClipseValidatorSCL-1.2.5.jar $(curl -s https://api.github.com/repos/riseclipse/riseclipse-validator-scl2003/releases/latest | grep "browser_download_url.*jar" \
-              | cut -d : -f 2,3 \
-              | tr -d \")
+# Curl useless because pull artifact from pre-release workflow
+#  download-artifact:
+#   runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#      - name: Download Artifact
+#        run: |
+#          curl -L -o RiseClipseValidatorSCL-1.2.5.jar $(curl -s https://api.github.com/repos/riseclipse/riseclipse-validator-scl2003/releases/latest | grep "browser_download_url.*jar" \
+#              | cut -d : -f 2,3 \
+#              | tr -d \")
   call-release-riseclipseweb-workflow:
     name: Release on riseclipseweb
     # needs: [call-validate-release-workflow]
