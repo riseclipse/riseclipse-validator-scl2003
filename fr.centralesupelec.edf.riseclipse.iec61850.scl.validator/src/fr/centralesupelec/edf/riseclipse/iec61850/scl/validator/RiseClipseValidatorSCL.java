@@ -742,7 +742,7 @@ public class RiseClipseValidatorSCL {
         Severity oldLevel = console.setLevel( Severity.INFO );
         String oldFormat = console.setFormatString( INFO_FORMAT_STRING );
         
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "Copyright (c) 2016-2022 CentraleSupélec & EDF." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Copyright (c) 2016-2023 CentraleSupélec & EDF." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "All rights reserved. This program and the accompanying materials" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "are made available under the terms of the Eclipse Public License v2.0" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "which accompanies this distribution, and is available at" );
