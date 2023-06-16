@@ -186,9 +186,9 @@ public class RiseClipseValidatorSCL {
                 + "files ending with \".nsd\" are considered NS files, "
                 + "files ending with \".snsd\" are considered ServiceNS files, "
                 + "files ending with \".AppNS\" are considered ApplicableServiceNS files, "
-                + "files ending with \".nsdoc\" are considered NSDoc files "
+                + "files ending with \".nsdoc\" are considered NSDoc files, "
                 + "files ending with \".zip\" are decompressed and each file inside is taken into account "
-                + " (case is ignored for all these extensions), "
+                + "(case is ignored for all these extensions), "
                 + "all others are considered SCL files" );
         System.exit( -1 );
     }
