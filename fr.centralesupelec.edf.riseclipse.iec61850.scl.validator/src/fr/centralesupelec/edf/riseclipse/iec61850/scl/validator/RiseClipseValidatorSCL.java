@@ -890,7 +890,7 @@ public class RiseClipseValidatorSCL {
                 if(( data.size() == 2 ) && ( data.get( 1 ) instanceof RiseClipseMessage )) {
                     // Message from NSD validation added in diagnostic
                     @NonNull RiseClipseMessage message = ( RiseClipseMessage ) data.get( 1 );
-                    if( message.getSeverity().compareTo( Severity.ERROR ) >= 0 ) {
+                    if( message.getSeverity().compareTo( Severity.ERROR ) <= 0 ) {
                         returned_value = EXIT_FAILURE;
                     }
                     console.output( message );
@@ -903,7 +903,7 @@ public class RiseClipseValidatorSCL {
                     Severity severity = Severity.ERROR;
                     try {
                         severity = Severity.valueOf( parts[0] );
-                        if( severity.compareTo( Severity.ERROR ) >= 0 ) {
+                        if( severity.compareTo( Severity.ERROR ) <= 0 ) {
                             returned_value = EXIT_FAILURE;
                         }
                     }
@@ -920,7 +920,7 @@ public class RiseClipseValidatorSCL {
                     Severity severity = Severity.ERROR;
                     try {
                         severity = Severity.valueOf( parts[0] );
-                        if( severity.compareTo( Severity.ERROR ) >= 0 ) {
+                        if( severity.compareTo( Severity.ERROR ) <= 0 ) {
                             returned_value = EXIT_FAILURE;
                         }
                     }
