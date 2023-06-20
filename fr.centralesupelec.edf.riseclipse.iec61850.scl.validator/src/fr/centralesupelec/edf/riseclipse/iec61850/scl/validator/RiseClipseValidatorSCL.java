@@ -129,14 +129,14 @@ public class RiseClipseValidatorSCL {
     private static final String INFO_KEYWORD        = "INFO";
     private static final String DEBUG_KEYWORD       = "DEBUG";
 
-    public static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
+    public  static final String DIAGNOSTIC_SOURCE = "fr.centralesupelec.edf.riseclipse";
     
     private static final String DEFAULT_NAMESPACE_ID = "IEC 61850-7-4";
     private static final Integer DEFAULT_NAMESPACE_VERSION = Integer.valueOf( 2007 );
     private static final String DEFAULT_NAMESPACE_REVISION = "B";
     private static final Integer DEFAULT_NAMESPACE_RELEASE = Integer.valueOf( 1 );
     
-    public static final NsIdentification DEFAULT_NS_IDENTIFICATION = NsIdentification.of(
+    public  static final NsIdentification DEFAULT_NS_IDENTIFICATION = NsIdentification.of(
             DEFAULT_NAMESPACE_ID,
             DEFAULT_NAMESPACE_VERSION,
             DEFAULT_NAMESPACE_REVISION,
@@ -145,6 +145,9 @@ public class RiseClipseValidatorSCL {
     
     private static final String VALIDATOR_SCL_CATEGORY = "SCL/Validator";
     private static final String INFO_FORMAT_STRING = "%6$s%1$-8s%7$s: %4$s";
+    
+    private static final int EXIT_SUCCESS = 0;
+    private static final int EXIT_FAILURE = 1;
     
     private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
@@ -186,9 +189,9 @@ public class RiseClipseValidatorSCL {
                 + "files ending with \".nsd\" are considered NS files, "
                 + "files ending with \".snsd\" are considered ServiceNS files, "
                 + "files ending with \".AppNS\" are considered ApplicableServiceNS files, "
-                + "files ending with \".nsdoc\" are considered NSDoc files "
+                + "files ending with \".nsdoc\" are considered NSDoc files, "
                 + "files ending with \".zip\" are decompressed and each file inside is taken into account "
-                + " (case is ignored for all these extensions), "
+                + "(case is ignored for all these extensions), "
                 + "all others are considered SCL files" );
         System.exit( -1 );
     }
@@ -449,9 +452,13 @@ public class RiseClipseValidatorSCL {
         }
 
         prepare( displayNsdMessages );
+        int returned_value = EXIT_SUCCESS;
         for( int i = 0; i < sclFiles.size(); ++i ) {
-            run( makeExplicitLinks, sclFiles.get( i ));
+            if( run( makeExplicitLinks, sclFiles.get( i )) == EXIT_FAILURE ) {
+                returned_value = EXIT_FAILURE;
+            }
         }
+        System.exit( returned_value );
     }
 
     private static void getFiles( Path path, IRiseClipseConsole console ) {
@@ -742,7 +749,7 @@ public class RiseClipseValidatorSCL {
         Severity oldLevel = console.setLevel( Severity.INFO );
         String oldFormat = console.setFormatString( INFO_FORMAT_STRING );
         
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "Copyright (c) 2016-2022 CentraleSupélec & EDF." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Copyright (c) 2016-2023 CentraleSupélec & EDF." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "All rights reserved. This program and the accompanying materials" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "are made available under the terms of the Eclipse Public License v2.0" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "which accompanies this distribution, and is available at" );
@@ -809,7 +816,7 @@ public class RiseClipseValidatorSCL {
     }
 
     // public because used by ui
-    public static void run( boolean makeExplicitLinks, @NonNull String sclFile ) {
+    public static int run( boolean makeExplicitLinks, @NonNull String sclFile ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         if( xsdFile != null ) {
@@ -828,12 +835,14 @@ public class RiseClipseValidatorSCL {
             if( nsdValidator != null ) nsdValidator.reset();
             // Not needed for the OCL validator
             // if( oclValidator != null ) oclValidator.reset();  // NOSONAR
-            validate( resource, sclAdapter );
+            return validate( resource, sclAdapter );
         }
+        return EXIT_SUCCESS;
     }
 
-    private static void validate( @NonNull Resource resource, final AdapterFactory adapter ) {
-        if( resource.getContents().isEmpty() ) return;
+    private static int validate( @NonNull Resource resource, final AdapterFactory adapter ) {
+        int returned_value = EXIT_SUCCESS;
+        if( resource.getContents().isEmpty() ) return returned_value;
 
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
@@ -880,7 +889,11 @@ public class RiseClipseValidatorSCL {
                 List< ? > data = childDiagnostic.getData();
                 if(( data.size() == 2 ) && ( data.get( 1 ) instanceof RiseClipseMessage )) {
                     // Message from NSD validation added in diagnostic
-                    console.output( ( @NonNull RiseClipseMessage ) data.get( 1 ));
+                    @NonNull RiseClipseMessage message = ( RiseClipseMessage ) data.get( 1 );
+                    if( message.getSeverity().compareTo( Severity.ERROR ) >= 0 ) {
+                        returned_value = EXIT_FAILURE;
+                    }
+                    console.output( message );
                     continue;
                 }
                 String message = childDiagnostic.getMessage();
@@ -890,6 +903,9 @@ public class RiseClipseValidatorSCL {
                     Severity severity = Severity.ERROR;
                     try {
                         severity = Severity.valueOf( parts[0] );
+                        if( severity.compareTo( Severity.ERROR ) >= 0 ) {
+                            returned_value = EXIT_FAILURE;
+                        }
                     }
                     catch( IllegalArgumentException ex ) {}
                     int line = 0;
@@ -904,6 +920,9 @@ public class RiseClipseValidatorSCL {
                     Severity severity = Severity.ERROR;
                     try {
                         severity = Severity.valueOf( parts[0] );
+                        if( severity.compareTo( Severity.ERROR ) >= 0 ) {
+                            returned_value = EXIT_FAILURE;
+                        }
                     }
                     catch( IllegalArgumentException ex ) {}
                     int line = 0;
@@ -930,7 +949,9 @@ public class RiseClipseValidatorSCL {
                 }
                 */
             }
+            
         }
+        return returned_value;
     }
 
 }
