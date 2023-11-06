@@ -74,7 +74,7 @@ import org.eclipse.ocl.pivot.validation.ComposedEValidator;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.2.6-SNAPSHOT (23 March 2023)";
+    private static final String TOOL_VERSION = "1.2.6 (06 November 2023)";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
