@@ -933,7 +933,7 @@ public class RiseClipseValidatorSCL {
                     console.output( new RiseClipseMessage( severity, parts[1], parts[2], line, parts[4] ));
                 }
                 else {
-                    console.error( VALIDATOR_SCL_CATEGORY, 0, message );
+                    console.notice( VALIDATOR_SCL_CATEGORY, 0, message );
                 }
                 
                 // The following was used before, therefore it was considered useful.
