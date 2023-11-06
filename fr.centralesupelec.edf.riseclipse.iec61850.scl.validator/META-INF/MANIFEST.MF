@@ -6,7 +6,7 @@ Bundle-SymbolicName: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
 Bundle-Version: 1.2.5
 Automatic-Module-Name: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
 Export-Package: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.emf.ecore,
