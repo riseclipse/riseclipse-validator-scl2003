@@ -22,10 +22,7 @@ name: Release on DockerHub
 # This CD workflow builds and push a docker image of the RiseClipse Validator SCL CLI tool
 # with a specific tag for this git branch
 
-on:
-  workflow_dispatch
-  pull_request:
-    types: [opened]
+on: workflow_dispatch
 
 jobs:
   call-release-dockerhub-workflow:
