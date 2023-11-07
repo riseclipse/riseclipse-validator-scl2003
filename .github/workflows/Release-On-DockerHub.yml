@@ -27,7 +27,7 @@ on: workflow_dispatch
 jobs:
   call-release-dockerhub-workflow:
     name: Release on DockerHub
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-DockerHub.yml@iec61850-6-3
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-DockerHub.yml
     with:
       release_version: iec61850-6-3  
       docker_repository: riseclipse-validator-scl
