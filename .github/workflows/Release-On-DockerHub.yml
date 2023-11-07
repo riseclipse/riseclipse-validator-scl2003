@@ -1,5 +1,5 @@
 # *************************************************************************
-# **  Copyright (c) 2022 CentraleSupélec & EDF.
+# **  Copyright (c) 2023 CentraleSupélec & EDF.
 # **  All rights reserved. This program and the accompanying materials
 # **  are made available under the terms of the Eclipse Public License v2.0
 # **  which accompanies this distribution, and is available at
@@ -17,21 +17,22 @@
 # **      https://riseclipse.github.io
 # *************************************************************************
 
-name: Rollback if failure
+name: Release on DockerHub
 
-# This CD workflow rollbacks the Pre-Release and Prepare next development version
-# When a PR is closed (based on do_release and targeting master) or if the prepare-next-dev workflow fails
-# Proceeds to delete do_release branch, delete the pre-release and delete the tag
+# This CD workflow builds and push a docker image of the RiseClipse Validator SCL CLI tool
+# with a specific tag for this git branch
 
-on: 
-  workflow_dispatch:
-  pull_request:
-    types: [closed]
-    branches:    
-      - master
+on: workflow_dispatch
 
 jobs:
-  call-rollback-if-failure-workflow:
-    if: github.event.pull_request.merged == false && startsWith(github.head_ref, 'do_release')
-    name: Rollback if failure
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Rollback-If-Failure.yml@master
+  call-release-dockerhub-workflow:
+    name: Release on DockerHub
+    needs: [call-validate-release-workflow]
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-DockerHub.yml@iec61850-6-3
+    with:
+      release_version: iec61850-6-3  
+      docker_repository: riseclipse-validator-scl
+      release_latest: false
+    secrets:
+      DOCKER_USER: ${{ secrets.RISECLIPSE_DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.RISECLIPSE_DOCKER_ACCESS_TOKEN }}
