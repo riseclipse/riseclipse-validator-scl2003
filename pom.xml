@@ -34,7 +34,7 @@
   <parent>
     <groupId>io.github.riseclipse</groupId>
     <artifactId>fr.centralesupelec.edf.riseclipse.developer.maven</artifactId>
-    <version>1.2.9-SNAPSHOT</version>
+    <version>1.2.11-SNAPSHOT</version>
   </parent>
   
   <scm>
@@ -97,6 +97,11 @@
     </dependency>
     
     <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>org.eclipse.jdt.annotation</artifactId>
+    </dependency>
+    
+    <dependency>
        <groupId>org.eclipse.ocl</groupId>
        <artifactId>org.eclipse.ocl.pivot</artifactId>
     </dependency>
@@ -123,11 +128,6 @@
       
     <!-- RiseClipse dependencies not found automatically -->
     <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-    </dependency>
-    
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>org.apache.commons.lang3</artifactId>
     </dependency>
@@ -141,12 +141,12 @@
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.main</artifactId>
-      <version>1.2.8-SNAPSHOT</version>
+      <version>1.2.9-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.validation.ocl</artifactId>
-      <version>1.2.5-SNAPSHOT</version>
+      <version>1.2.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
