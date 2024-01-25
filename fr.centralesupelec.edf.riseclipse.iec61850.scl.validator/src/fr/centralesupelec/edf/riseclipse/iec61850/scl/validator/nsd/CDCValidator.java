@@ -21,6 +21,7 @@
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import java.util.IdentityHashMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
@@ -36,7 +37,6 @@ import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.NsdObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.SubDataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DA;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.DO;
@@ -110,14 +110,16 @@ public class CDCValidator {
     
     // Key is DataAttribute name (the corresponding DA has the same name)
     // Value is the TypeValidator given by the DataAttribute type
-    private IdentityHashMap< NsIdentificationName, TypeValidator > dataAttributeTypeValidatorMap;
+    private HashMap< String, TypeValidator > dataAttributeTypeValidatorMap;
     // Key is DataAttribute name (the corresponding DA has the same name)
     // Value is the FunctionalConstraintValidator given by the DataAttribute fc
     // TODO: not used?
-    private IdentityHashMap< NsIdentificationName, FunctionalConstraintValidator > dataAttributeFunctionalConstraintValidatorMap;
+    private HashMap< String, FunctionalConstraintValidator > dataAttributeFunctionalConstraintValidatorMap;
     // Key is SubDataObject name (the corresponding SDO has the same name)
     // Value is the CDCValidator given by the SubDataObject type
-    private IdentityHashMap< NsIdentificationObject, CDCValidator > subDataObjectValidatorMap;
+    // Up to 1.2.6, the key was an NsIdentificationObject (object was subDataObject.cdc) contrary to the comment above
+    // No comment about this choice, and I don't see any reason for because this CDCValidator is already specific to a namespace
+    private HashMap< String, CDCValidator > subDataObjectValidatorMap;
     
     private CDCValidator( NsIdentification nsIdentification, CDC cdc, IRiseClipseConsole console ) {
         String parameter = "";
@@ -139,9 +141,9 @@ public class CDCValidator {
         this.nsIdentification = nsIdentification;
         this.dataAttributePresenceConditionValidator = DataAttributePresenceConditionValidator.get( nsIdentification, cdc );
         this.subDataObjectPresenceConditionValidator = SubDataObjectPresenceConditionValidator.get( nsIdentification, cdc );
-        this.dataAttributeTypeValidatorMap = new IdentityHashMap<>();
-        this.dataAttributeFunctionalConstraintValidatorMap = new IdentityHashMap<>();
-        this.subDataObjectValidatorMap = new IdentityHashMap<>();
+        this.dataAttributeTypeValidatorMap = new HashMap<>();
+        this.dataAttributeFunctionalConstraintValidatorMap = new HashMap<>();
+        this.subDataObjectValidatorMap = new HashMap<>();
         
         for( DataAttribute da : cdc.getDataAttribute() ) {
             NsdObject type = da.getRefersToBasicType();
@@ -154,7 +156,9 @@ public class CDCValidator {
             if( type != null ) {
                 Pair< TypeValidator, NsIdentification > typeValidator = TypeValidator.get( this.nsIdentification, type );
                 if(( typeValidator != null ) && ( typeValidator.getLeft() != null )) {
-                    dataAttributeTypeValidatorMap.put( NsIdentificationName.of( typeValidator.getRight(), da.getName() ), typeValidator.getLeft() );
+                    // Up to 1.2.6, the namespace of the found TypeValidator (typeValidator.getRight()) was used here
+                    // No comment about this choice, and I don't see any reason for
+                    dataAttributeTypeValidatorMap.put( da.getName(), typeValidator.getLeft() );
                     console.info( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                                   "type validator for DataAttribute ", da.getName(), " found with type ", da.getType(),
                                   " in namespace \"", typeValidator.getRight(), "\"" );
@@ -173,7 +177,7 @@ public class CDCValidator {
             
             FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( FCEnum.getByName( da.getFc() ));
             if( fcValidator != null ) {
-                dataAttributeFunctionalConstraintValidatorMap.put( NsIdentificationName.of( this.nsIdentification, da.getName() ), fcValidator );
+                dataAttributeFunctionalConstraintValidatorMap.put( da.getName(), fcValidator );
                 console.info( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                               "Functional constraint validator for DataAttribute " + da.getName() + " found with fc " + da.getFc(),
                               " in namespace \"", this.nsIdentification, "\"" );
@@ -193,7 +197,10 @@ public class CDCValidator {
             }
             Pair< CDCValidator, NsIdentification > cdcValidator = CDCValidator.get( this.nsIdentification, sdo.getRefersToCDC() );
             if(( cdcValidator != null ) && ( cdcValidator.getLeft() != null )) {
-                subDataObjectValidatorMap.put( NsIdentificationObject.of( cdcValidator.getRight(), sdo.getRefersToCDC() ), cdcValidator.getLeft() );
+                // Up to 1.2.6, the namespace of the found CDCValidator (cdcValidator.getRight()) was used here
+                // No comment about this choice, and I don't see any reason for
+                // See also the comment above for subDataObjectValidatorMap
+                subDataObjectValidatorMap.put( sdo.getName(), cdcValidator.getLeft() );
                 console.info( CDC_SETUP_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(),
                               "CDC validator for SubDataObject ", sdo.getName(), " found with type ", sdo.getType(), " in namespace \"", cdcValidator.getRight(), "\"" );
             }
@@ -232,33 +239,15 @@ public class CDCValidator {
         doType
         .getSDO()
         .stream()
+        .filter( sdo -> ( sdo.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( sdo.getNamespace() ) ))
         .forEach( sdo -> {
-            if(( sdo.getNamespace() == null ) || nsIdentification.equals( NsIdentification.of( sdo.getNamespace() ))) {
-                subDataObjectPresenceConditionValidator.addModelData( sdo, sdo.getName(), diagnostics );
-            }
-            else {
-                RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(), 
-                        "Presence condition of SDO ", sdo.getName(),
-                        " is not checked because its namespace \"", sdo.getNamespace(),
-                        "\" is not the same as the namespace of its DOType \"", nsIdentification, "\"" );
-                diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
-                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                        0,
-                        warning.getMessage(),
-                        new Object[] { sdo, warning } ));
-            }
+            subDataObjectPresenceConditionValidator.addModelData( sdo, sdo.getName(), diagnostics );
         });
         
         res = subDataObjectPresenceConditionValidator.validate( doType, diagnostics ) && res;
         
         for( DA da : doType.getDA() ) {
-            TypeValidator typeValidator = null;
-            NsIdentification nsId = nsIdentification;
-            while(( typeValidator == null ) && ( nsId != null )) {
-                typeValidator = dataAttributeTypeValidatorMap.get( NsIdentificationName.of( nsId, da.getName() ));
-                nsId = nsId.getDependsOn();
-            }
+            TypeValidator typeValidator = dataAttributeTypeValidatorMap.get( da.getName() );
             if( typeValidator != null ) {
                 typeValidator.validateAbstractDataAttribute( da, diagnostics );
             }
@@ -293,22 +282,14 @@ public class CDCValidator {
         }
       
         for( SDO sdo : doType.getSDO() ) {
-            NsIdentification nsId = nsIdentification;
-            if( sdo.getNamespace() != null ) {
-                nsId = NsIdentification.of( sdo.getNamespace() );
-            }
-            CDCValidator cdcValidator = null;
-            while(( cdcValidator == null ) && ( nsId != null )) {
-                cdcValidator = subDataObjectValidatorMap.get( NsIdentificationObject.of( nsIdentification, sdo.getRefersToDOType() ));
-                nsId = nsId.getDependsOn();
-            }
+            CDCValidator cdcValidator = subDataObjectValidatorMap.get( sdo.getName() );
             if( cdcValidator != null ) {
                 if( sdo.getRefersToDOType() != null ) {
                     res = cdcValidator.validateDOType( sdo.getRefersToDOType(), diagnostics ) && res;
                 }
                 else {
                     RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                            "while validating DOType: DOType for SDO ", sdo.getName(), " not found in namespace \"", nsId, "\"" );
+                            "while validating DOType: DOType for SDO ", sdo.getName(), " not found in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -318,12 +299,8 @@ public class CDCValidator {
                 }
             }
             else {
-                nsId = nsIdentification;
-                if( sdo.getNamespace() != null ) {
-                    nsId = NsIdentification.of( sdo.getNamespace() );
-                }
                 RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                        "while validating DOType: validator for SDO ", sdo.getType(), " not found in namespace \"", nsId, "\"" );
+                        "while validating DOType: validator for SDO ", sdo.getType(), " not found in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,

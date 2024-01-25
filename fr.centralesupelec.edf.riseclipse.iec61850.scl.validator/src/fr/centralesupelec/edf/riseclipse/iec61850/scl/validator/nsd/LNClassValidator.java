@@ -149,42 +149,41 @@ public class LNClassValidator {
         console.debug( LNCLASS_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                        "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " in namespace \"", this.nsIdentification, "\"" );
         validatedLNodeType.add( lNodeType.getId() );
-
-        boolean isStatistic = lNodeType
-                .getDO()
-                .stream()
-                .anyMatch( d -> "ClcSrc".equals( d.getName() ));
-        DataObjectPresenceConditionValidator dataObjectPresenceConditionValidator = isStatistic  ? statisticalDataObjectPresenceConditionValidator : notStatisticalDataObjectPresenceConditionValidator;
         
-        boolean res = true;
-
-        // Each DO of an LNodeType must satisfy the presence condition of the corresponding DataObject (same name)
-        // Do with another namespace are not concerned by this rule
-        dataObjectPresenceConditionValidator.reset();
-        lNodeType
-        .getDO()
-        .stream()
-        .forEach( do_ -> {
-            // Take LNClass "LPHD" in IEC_61850-7-4_2007B4.nsd extended by IEC_61869-9_2016.nsd
-            // nsIdentification of this is "IEC 61850-7-4:2007B"
-            // For the DataObject "NamVariant", its namespace is "IEC 61869-9:2016"
-            // The presence of this DataObject cannot be checked by LNClass "LPHD" in namespace "IEC 61850-7-4:2007B"
-            // And "IEC 61850-7-4:2007B" does not depends on "IEC 61869-9:2016" (this is the reverse)
-            if(( do_.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( do_.getNamespace() ))) {
-                dataObjectPresenceConditionValidator.addDO( do_, diagnostics );
-            }
-            else {
-                RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                        "Presence condition of DO \"", do_.getName(),
-                        "\" is not checked because its namespace \"", do_.getNamespace(),
-                        "\" is not the same as the namespace of its LNodeType \"", nsIdentification, "\"" );
+        if( lNodeType.getNamespace() != null ) {
+            if( ! nsIdentification.dependsOn( NsIdentification.of( lNodeType.getNamespace() ) )) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
+                        "LNodeType id=\"", lNodeType.getId(), "\" is ignored because the namespace of the LN \"", this.nsIdentification,
+                        "\" does not depend on the namespace of the LNodeType \"", lNodeType.getNamespace(), "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
                         warning.getMessage(),
-                        new Object[] { do_, warning } ));
+                        new Object[] { lNodeType, warning } ));
+                return true;
             }
+        }
+
+        boolean isStatistic = lNodeType
+                .getDO()
+                .stream()
+                .anyMatch( d -> "ClcSrc".equals( d.getName() ));
+        DataObjectPresenceConditionValidator dataObjectPresenceConditionValidator =
+                isStatistic
+                    ? statisticalDataObjectPresenceConditionValidator
+                    : notStatisticalDataObjectPresenceConditionValidator;
+        
+        boolean res = true;
+
+        // Each DO of an LNodeType must satisfy the presence condition of the corresponding DataObject (same name)
+        dataObjectPresenceConditionValidator.reset();
+        lNodeType
+        .getDO()
+        .stream()
+        .filter( do_ -> ( do_.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( do_.getNamespace() )))
+        .forEach( do_ -> {
+            dataObjectPresenceConditionValidator.addDO( do_, diagnostics );
         });
       
         res = dataObjectPresenceConditionValidator.validate( lNodeType, diagnostics ) && res;
@@ -203,29 +202,13 @@ public class LNClassValidator {
                 //AbstractRiseClipseConsole.getConsole().error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
                 continue;
             }
-            // Same example as above
-            // "IEC 61869-9:2016" depends on "IEC 61850-7-4:2007B"
-            // Therefore, we can check DataObject "NamVariant"
-            if(( do_.getNamespace() == null ) || NsIdentification.of( do_.getNamespace() ).dependsOn( nsIdentification )) {
-                CDCValidator cdcValidator = dataObjectValidatorMap.get( names[0] );
-                if( cdcValidator != null ) {
-                    if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
-                        RiseClipseMessage error = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                                "DOType id = \"", do_.getRefersToDOType().getId(), "\" at line ", do_.getRefersToDOType().getLineNumber(),
-                                " used by DO \"", do_.getName(), "\" has wrong CDC \"", do_.getRefersToDOType().getCdc(),
-                                "\", it should be \"", cdcValidator.getName(), "\" in namespace \"", nsIdentification + "\"" );
-                        diagnostics.add( new BasicDiagnostic(
-                                Diagnostic.WARNING,
-                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                                0,
-                                error.getMessage(),
-                                new Object[] { do_, error } ));
-                    }
-                    res = cdcValidator.validateDO( do_, diagnostics ) && res;
-                }
-                else {
+            CDCValidator cdcValidator = dataObjectValidatorMap.get( names[0] );
+            if( cdcValidator != null ) {
+                if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                            "DO \"", do_.getName(), "\" cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
+                            "DOType id = \"", do_.getRefersToDOType().getId(), "\" at line ", do_.getRefersToDOType().getLineNumber(),
+                            " used by DO \"", do_.getName(), "\" has wrong CDC \"", do_.getRefersToDOType().getCdc(),
+                            "\", it should be \"", cdcValidator.getName(), "\" in namespace \"", nsIdentification + "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -233,17 +216,17 @@ public class LNClassValidator {
                             warning.getMessage(),
                             new Object[] { do_, warning } ));
                 }
+                res = cdcValidator.validateDO( do_, diagnostics ) && res;
             }
             else {
                 RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                        "DO \"", do_.getName(), "\" cannot be verified because there is no CDC validator for it in namespace \"" + do_.getNamespace() + "\"" );
+                        "DO \"", do_.getName(), "\" cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
                         warning.getMessage(),
                         new Object[] { do_, warning } ));
-                
             }
         }
         

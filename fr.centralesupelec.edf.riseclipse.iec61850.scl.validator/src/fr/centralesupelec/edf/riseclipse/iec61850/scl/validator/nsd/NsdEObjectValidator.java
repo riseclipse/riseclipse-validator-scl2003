@@ -117,38 +117,45 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseAnyLN( AnyLN anyLN ) {
-                AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, anyLN.getFilename(), anyLN.getLineNumber(),
-                                                              "NsdEObjectValidator.validate( type=\"", anyLN.getLnType(), "\" class=\"", anyLN.getLnClass(), "\" )" );
-                if( anyLN.getRefersToLNodeType() == null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, anyLN.getFilename(), anyLN.getLineNumber(),
-                            "AnyLN type=\"", anyLN.getLnType(), "\" class=\"", anyLN.getLnClass(), "\" has no associated LNodeType" );
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            warning.getMessage(),
-                            new Object[] { anyLN, warning } ));
-                    return true;
-                }
-                if(( anyLN.getNamespace() == null ) || ( anyLN.getNamespace().isEmpty() )) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, anyLN.getFilename(), anyLN.getLineNumber(),
+                String inNamespace = anyLN.getNamespace();
+                if(( inNamespace == null ) || ( inNamespace.isEmpty() ) ) {
+                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY,
+                            anyLN.getFilename(), anyLN.getLineNumber(),
                             "AnyLN type=\"", anyLN.getLnType(), "\" class=\"", anyLN.getLnClass(), "\" has no namespace" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
                             warning.getMessage(),
-                            new Object[] { anyLN, warning } ));
+                            new Object[] { anyLN, warning } ) );
                     return true;
                 }
-                NsIdentificationName nsId = NsIdentificationName.of( anyLN.getNamespace(), anyLN.getRefersToLNodeType().getId() );
-                if( validatedLNodeTypes.contains( nsId )) {
-                    AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, anyLN.getFilename(), anyLN.getLineNumber(),
-                            "LNodeType id=\"", anyLN.getRefersToLNodeType().getId(), "\" has already been validated in namespace \"", anyLN.getNamespace(), "\"" );
+
+                NsIdentification nsId = NsIdentification.of( inNamespace );
+                if( nsdResourceSet.getNS( nsId ) == null ) {
+                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY,
+                            anyLN.getFilename(), anyLN.getLineNumber(),
+                            "Cannot validate AnyLN type=\"", anyLN.getLnType(), "\" class=\"", anyLN.getLnClass(),
+                            "\" in namespace \"", inNamespace,
+                            "\" because this namespace is unknown" );
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            warning.getMessage(),
+                            new Object[] { anyLN, warning } ) );
                     return true;
                 }
-                validatedLNodeTypes.add( nsId );
-                return validateLNodeType( anyLN.getRefersToLNodeType(), anyLN.getNamespace(), diagnostics );
+
+                NsIdentificationName nsIdLnType = NsIdentificationName.of( inNamespace, anyLN.getLnType() );
+                LNodeType lNodeType = anyLN.getRefersToLNodeType();
+                if( validatedLNodeTypes.contains( nsIdLnType )) {
+                    AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
+                            "LNodeType id=\"", lNodeType.getId(), "\" has already been validated in namespace \"", inNamespace, "\"" );
+                    return true;
+                }
+                validatedLNodeTypes.add( nsIdLnType );
+                return validateLNodeType( lNodeType, nsId, diagnostics );
             }
 
             @Override
@@ -162,45 +169,34 @@ public class NsdEObjectValidator implements EValidator {
         return sw.doSwitch( eObject );
     }
 
+    protected boolean validateLNodeType( LNodeType lNodeType, NsIdentification inNamespace, DiagnosticChain diagnostics ) {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
+                "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), ")" );
+        
+        Pair< LNClassValidator, NsIdentification > lnClassValidator = LNClassValidator.get( inNamespace, lNodeType.getLnClass() );
+        
+        if( lnClassValidator.getLeft() == null ) {
+            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    "LNClassValidator ", lNodeType.getLnClass(), " not found for LNodeType in namespace \"", inNamespace, "\"" );
+            diagnostics.add( new BasicDiagnostic(
+                  Diagnostic.ERROR,
+                  RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                  0,
+                  error.getMessage(),
+                  new Object[] { lNodeType, error } ));
+            return false;
+        }
+
+        console.notice( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
+                           "LNClassValidator ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + lnClassValidator.getRight() + "\"" );
+
+        return lnClassValidator.getLeft().validateLNodeType( lNodeType, diagnostics );
+    }
+
     @Override
     public boolean validate( EDataType eDataType, Object value, DiagnosticChain diagnostics, Map< Object, Object > context ) {
         return true;
     }
 
-   private boolean validateLNodeType( LNodeType lNodeType, String namespace, DiagnosticChain diagnostics ) {
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-        console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
-                       "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), " in namespace ", namespace );
-
-        NsIdentification id = NsIdentification.of( namespace );
-        if( nsdResourceSet.getNS( id ) == null ) {
-            RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
-                      "Cannot validate LNodeType ", lNodeType.getId(), " in namespace \"", namespace, "\" because this namespace is unknown" );
-            diagnostics.add( new BasicDiagnostic(
-                    Diagnostic.WARNING,
-                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                    0,
-                    warning.getMessage(),
-                    new Object[] { lNodeType, warning } ));
-            return false;
-        }
-        // Check that LNodeType has a known LNClass in the given namespace
-        Pair< LNClassValidator, NsIdentification > lnClassValidator = LNClassValidator.get( id, lNodeType.getLnClass() );
-        if( lnClassValidator.getLeft() != null ) {
-            console.notice( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
-                           "LNClass ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + lnClassValidator.getRight() + "\"" );
-
-            return lnClassValidator.getLeft().validateLNodeType( lNodeType, diagnostics );
-        }
-        
-        RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
-                  "LNClass ", lNodeType.getLnClass(), " not found for LNodeType in namespace \"", namespace, "\"" );
-        diagnostics.add( new BasicDiagnostic(
-                Diagnostic.ERROR,
-                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                0,
-                error.getMessage(),
-                new Object[] { lNodeType, error } ));
-        return false;
-    }
 }
