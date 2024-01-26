@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2016-2023 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2024 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -71,10 +71,11 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.ocl.pivot.validation.ComposedEValidator;
+import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.2.7-SNAPSHOT (06 November 2023)";
+    private static final String TOOL_VERSION = "1.2.7-SNAPSHOT (26 January 2024)";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
@@ -149,6 +150,7 @@ public class RiseClipseValidatorSCL {
     private static final int EXIT_SUCCESS = 0;
     private static final int EXIT_FAILURE = 1;
     
+    private static ComposedEValidator composedValidator;
     private static OCLValidator oclValidator;
     private static SclItemProviderAdapterFactory sclAdapter;
     private static SclModelLoader sclLoader;
@@ -749,7 +751,7 @@ public class RiseClipseValidatorSCL {
         Severity oldLevel = console.setLevel( Severity.INFO );
         String oldFormat = console.setFormatString( INFO_FORMAT_STRING );
         
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "Copyright (c) 2016-2023 CentraleSupélec & EDF." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Copyright (c) 2016-2024 CentraleSupélec & EDF." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "All rights reserved. This program and the accompanying materials" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "are made available under the terms of the Eclipse Public License v2.0" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "which accompanies this distribution, and is available at" );
@@ -787,8 +789,8 @@ public class RiseClipseValidatorSCL {
             console.emergency( VALIDATOR_SCL_CATEGORY, 0, "SCL package not found" );
             return;
         }
-
-        ComposedEValidator validator = ComposedEValidator.install( sclPg );
+        
+        composedValidator = new ComposedEValidator( null );
 
         if(( oclFiles != null ) && ( ! oclFiles.isEmpty() )) {
             oclValidator = new OCLValidator( sclPg, console );
@@ -796,7 +798,8 @@ public class RiseClipseValidatorSCL {
             for( int i = 0; i < oclFiles.size(); ++i ) {
                 oclValidator.addOCLDocument( oclFiles.get( i ), console );
             }
-            oclValidator.prepare( validator, console );
+            oclValidator.prepare( console );
+            composedValidator.addChild( oclValidator );
         }
 
         if(( nsdFiles != null ) && ( ! nsdFiles.isEmpty() )) {
@@ -804,7 +807,8 @@ public class RiseClipseValidatorSCL {
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
             }
-            nsdValidator.prepare( validator, console, displayNsdMessages );
+            nsdValidator.prepare( console, displayNsdMessages );
+            composedValidator.addChild( nsdValidator );
         }
 
         sclLoader = new SclModelLoader();
@@ -840,7 +844,7 @@ public class RiseClipseValidatorSCL {
         return EXIT_SUCCESS;
     }
 
-    private static int validate( @NonNull Resource resource, final AdapterFactory adapter ) {
+    private static int validate( @NonNull Resource resource, final AdapterFactory sclAdapter ) {
         int returned_value = EXIT_SUCCESS;
         if( resource.getContents().isEmpty() ) return returned_value;
 
@@ -861,7 +865,7 @@ public class RiseClipseValidatorSCL {
             	// If a string is missing, this is MissingResourceException
                 // A NPE may also happen if eObject has no label provider (not an object of our metamodels)
             	try {
-            		IItemLabelProvider labelProvider = ( IItemLabelProvider ) adapter.adapt( eObject,
+            		IItemLabelProvider labelProvider = ( IItemLabelProvider ) sclAdapter.adapt( eObject,
             				IItemLabelProvider.class );
             		return labelProvider.getText( eObject );
             	}
@@ -876,14 +880,18 @@ public class RiseClipseValidatorSCL {
             }
         };
         context.put( EValidator.SubstitutionLabelProvider.class, substitutionLabelProvider );
-
+        
         // The resource should have only one root element, an SCL object.
         // If there are other objects, it means that something is wrong in the SCL file
         // and it is useless to try to validate them.
         if( resource.getContents().get( 0 ) instanceof SCL  ) {
-            Diagnostic diagnostic = Diagnostician.INSTANCE.validate( resource.getContents().get( 0 ), context );
+            @NonNull
+            ValidationRegistryAdapter adapter = ValidationRegistryAdapter.getAdapter( sclLoader.getResourceSet() );
+            adapter.put( SclPackage.eINSTANCE, composedValidator );
+            Diagnostician diagnostician = new Diagnostician( adapter );
+            Diagnostic diagnostics = diagnostician.validate( resource.getContents().get( 0 ), context );
 
-            for( Iterator< Diagnostic > i = diagnostic.getChildren().iterator(); i.hasNext(); ) {
+            for( Iterator< Diagnostic > i = diagnostics.getChildren().iterator(); i.hasNext(); ) {
                 Diagnostic childDiagnostic = i.next();
                 
                 List< ? > data = childDiagnostic.getData();
