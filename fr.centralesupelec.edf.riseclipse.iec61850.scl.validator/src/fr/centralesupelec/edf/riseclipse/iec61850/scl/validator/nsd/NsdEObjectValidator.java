@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2016-2022 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2024 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -35,7 +35,6 @@ import org.eclipse.emf.ecore.EValidator;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsdResourceSetImpl;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentificationName;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.AnyLN;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.LNodeType;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.util.SclSwitch;
@@ -47,7 +46,6 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 public class NsdEObjectValidator implements EValidator {
 
     private NsdResourceSetImpl nsdResourceSet;
-    private HashSet< NsIdentificationName > validatedLNodeTypes = new HashSet<>();  
 
     public NsdEObjectValidator( NsdResourceSetImpl nsdResourceSet, IRiseClipseConsole console ) {
         // We keep it to improve some error messages
@@ -146,16 +144,12 @@ public class NsdEObjectValidator implements EValidator {
                             new Object[] { anyLN, warning } ) );
                     return true;
                 }
+                
+                // Presence condition validation must be done using the namespace of DOI
+                HashMap< String, String > doiNamespaces = new HashMap<>(); 
+                anyLN.getDOI().stream().forEach( doi -> doiNamespaces.put( doi.getName(), doi.getNamespace() ));
 
-                NsIdentificationName nsIdLnType = NsIdentificationName.of( inNamespace, anyLN.getLnType() );
-                LNodeType lNodeType = anyLN.getRefersToLNodeType();
-                if( validatedLNodeTypes.contains( nsIdLnType )) {
-                    AbstractRiseClipseConsole.getConsole().debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
-                            "LNodeType id=\"", lNodeType.getId(), "\" has already been validated in namespace \"", inNamespace, "\"" );
-                    return true;
-                }
-                validatedLNodeTypes.add( nsIdLnType );
-                return validateLNodeType( lNodeType, nsId, diagnostics );
+                return validateLNodeType( anyLN.getRefersToLNodeType(), nsId, doiNamespaces, diagnostics );
             }
 
             @Override
@@ -169,7 +163,7 @@ public class NsdEObjectValidator implements EValidator {
         return sw.doSwitch( eObject );
     }
 
-    protected boolean validateLNodeType( LNodeType lNodeType, NsIdentification inNamespace, DiagnosticChain diagnostics ) {
+    protected boolean validateLNodeType( LNodeType lNodeType, NsIdentification inNamespace, Map< String, String > doNamespaces, DiagnosticChain diagnostics ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                 "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), ")" );
@@ -191,7 +185,7 @@ public class NsdEObjectValidator implements EValidator {
         console.notice( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                            "LNClassValidator ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + lnClassValidator.getRight() + "\"" );
 
-        return lnClassValidator.getLeft().validateLNodeType( lNodeType, diagnostics );
+        return lnClassValidator.getLeft().validateLNodeType( lNodeType, doNamespaces, diagnostics );
     }
 
     @Override

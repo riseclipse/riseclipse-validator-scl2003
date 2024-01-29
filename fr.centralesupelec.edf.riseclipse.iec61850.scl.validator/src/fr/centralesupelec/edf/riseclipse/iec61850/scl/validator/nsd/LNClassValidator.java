@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2024 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -21,8 +21,8 @@
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 
 import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -78,13 +78,13 @@ public class LNClassValidator {
     }
 
     private void reset() {
-        validatedLNodeType = new HashSet<>();
-        
         dataObjectValidatorMap.values().stream().forEach( v -> v.reset() );
     }
 
     private NsIdentification nsIdentification;
-    private HashSet< String > validatedLNodeType;
+    // For validation of presence conditions of DO, the namespace of the DOI must be taken into account.
+    // Therefore, we cannot remember that an LNodeType has already being validated
+    //private HashSet< String > validatedLNodeType;
 
     // An LNClass defines a set of DataObject, each has a name, a type (name of a CDC) and a presence condition
     // An LNClass is referenced by an LNodeType (lnClass attribute) 
@@ -142,29 +142,12 @@ public class LNClassValidator {
         reset();
     }
     
-    public boolean validateLNodeType( LNodeType lNodeType, DiagnosticChain diagnostics ) {
-        if( validatedLNodeType.contains( lNodeType.getId() )) return true;
+    public boolean validateLNodeType( LNodeType lNodeType, Map< String, String > doNamespaces, DiagnosticChain diagnostics ) {
         @NonNull
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.debug( LNCLASS_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                        "LNClassValidator.validateLNodeType( ", lNodeType.getId(), " in namespace \"", this.nsIdentification, "\"" );
-        validatedLNodeType.add( lNodeType.getId() );
         
-        if( lNodeType.getNamespace() != null ) {
-            if( ! nsIdentification.dependsOn( NsIdentification.of( lNodeType.getNamespace() ) )) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
-                        "LNodeType id=\"", lNodeType.getId(), "\" is ignored because the namespace of the LN \"", this.nsIdentification,
-                        "\" does not depend on the namespace of the LNodeType \"", lNodeType.getNamespace(), "\"" );
-                diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
-                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                        0,
-                        warning.getMessage(),
-                        new Object[] { lNodeType, warning } ));
-                return true;
-            }
-        }
-
         boolean isStatistic = lNodeType
                 .getDO()
                 .stream()
@@ -181,7 +164,7 @@ public class LNClassValidator {
         lNodeType
         .getDO()
         .stream()
-        .filter( do_ -> ( do_.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( do_.getNamespace() )))
+        .filter( do_ -> nsIdentification.dependsOn( NsIdentification.of( doNamespaces.get( do_.getName() ))))
         .forEach( do_ -> {
             dataObjectPresenceConditionValidator.addDO( do_, diagnostics );
         });
@@ -190,6 +173,21 @@ public class LNClassValidator {
         
         // The type of each DO must conform to the CDC of the corresponding DataObject
         for( DO do_ : lNodeType.getDO() ) {
+            // If the namespace given by the DOI is not the one used when building dataObjectValidatorMap,
+            // we cannot verify the DO
+            // TODO: which one is the right test?
+//            if( ! nsIdentification.dependsOn( NsIdentification.of( doNamespaces.get( do_.getName() )))) {
+            if( ! NsIdentification.of( doNamespaces.get( do_.getName() )).dependsOn( nsIdentification )) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                        "DO \"", do_.getName(), "\" cannot be validated because its DOI namespace \"", doNamespaces.get( do_.getName() ), "\"is not compatible with theLNClass namespace \"", nsIdentification, "\"" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        warning.getMessage(),
+                        new Object[] { do_, warning } ));
+                return res;
+            }
             String[] names;
             if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
                 names = do_.getName().split( "(?=\\d)", 2 );
