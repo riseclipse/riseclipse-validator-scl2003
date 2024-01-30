@@ -46,6 +46,7 @@
         </executions>
         <configuration>
           <finalName>${toolName}-${project.version}</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
         </configuration>
       </plugin>
     </plugins>
