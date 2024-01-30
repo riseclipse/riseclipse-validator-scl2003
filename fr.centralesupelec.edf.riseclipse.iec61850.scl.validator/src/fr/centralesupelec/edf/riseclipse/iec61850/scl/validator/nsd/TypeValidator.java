@@ -38,6 +38,7 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 
 public abstract class TypeValidator {
 
+    // There is only one map for all TypeValidator, therefore the namespace is used in the key
     // ServiceConstructedAttribute may be parameterized, therefore the name is not an identifier
     // private static IdentityHashMap< NsIdentificationName, TypeValidator > validators = new IdentityHashMap<>();
     private static IdentityHashMap< NsIdentificationObject, TypeValidator > validators = new IdentityHashMap<>();

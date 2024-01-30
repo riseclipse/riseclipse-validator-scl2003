@@ -170,7 +170,7 @@ public class EnumerationValidator extends TypeValidator {
             if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
             RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, daOrDai.getFilename(), daOrDai.getLineNumber(), 
                                       "value \"", value, "\" of DA/BDA/DAI \"", name, "\" is not valid for EnumType \"",
-                                      enumType.getId(), "\" (line = ", enumType.getLineNumber(), ") in namespace \"", nsIdentification, "\"" );
+                                      enumType.getId(), "\" line = ", enumType.getLineNumber(), " in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -203,8 +203,8 @@ public class EnumerationValidator extends TypeValidator {
             
             if( ! literals.containsKey( enumVal.getOrd() )) {
                 RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
-                                          "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType (id = ", enumType.getId(),
-                                          ") is not defined as LiteralVal in standard Enumeration ", getName(), " in namespace \"", nsIdentification, "\"" );
+                                          "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType id = ", enumType.getId(),
+                                          " is not defined as LiteralVal in standard Enumeration ", getName(), " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -217,8 +217,8 @@ public class EnumerationValidator extends TypeValidator {
                 // while the supported positive value of the enumeration items shall be used by the implementation.
                 if( ! literals.get( enumVal.getOrd() ).equals( enumVal.getValue() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
-                                              "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType (id = " , enumType.getId(),
-                                              ") has incorrect name (\"", enumVal.getValue(), "\" instead of \"", literals.get( enumVal.getOrd() ), "\" in standard enumeration ",
+                                              "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType id = " , enumType.getId(),
+                                              " has incorrect name \"", enumVal.getValue(), "\" instead of \"", literals.get( enumVal.getOrd() ), "\" in standard enumeration ",
                                               getName(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,

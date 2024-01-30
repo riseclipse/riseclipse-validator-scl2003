@@ -846,7 +846,7 @@ public class DataObjectPresenceConditionValidator {
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) == null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
-                                              "DO \"", name, "\" is mandatory in LNodeType ( id=", lNodeType.getId(), " ) with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
+                                              "DO \"", name, "\" is mandatory in LNodeType id=", lNodeType.getId(), " with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1888,7 +1888,7 @@ public class DataObjectPresenceConditionValidator {
         // TODO: same as "MOlnNs" ?
         if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional2 != null ) {
             console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
-                           "validation of presence condition \"MONamPlt\" on LNodeType ( id=", lNodeType.getId(), " ) in namespace \"", nsIdentification, "\"" );
+                           "validation of presence condition \"MONamPlt\" on LNodeType id=", lNodeType.getId(), " in namespace \"", nsIdentification, "\"" );
             
             for( AnyLN ln : lNodeType.getReferredByAnyLN() ) {
                 String lnNs = ln.getNamespace();
@@ -1910,8 +1910,8 @@ public class DataObjectPresenceConditionValidator {
                         if( presentDO.get( name ) == null ) {
                             RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                       "DO \"", name, "\" is mandatory in LNodeType with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"",
-                                                      " because the name space of its logical node (\"", lnNs,
-                                                      "\") deviates from the name space of the containing logical device (\"", ldNs, "\")" );
+                                                      " because the name space of its logical node \"", lnNs,
+                                                      "\" deviates from the name space of the containing logical device \"", ldNs, "\"" );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
                                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
