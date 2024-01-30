@@ -1,4 +1,8 @@
 
+## 1.2.7 (2024/01/30)
+- Update to Eclipse 2023-12
+- Complete review of NSD validation
+
 ## 1.2.6 (2023/11/06)
 - Update to Eclipse 2023-09, Java 17 is now required
 - deployment is now also done on [EDF RiseClipse Web](https://rise-clipse.pam-retd.fr)
