@@ -21,9 +21,12 @@
 
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -351,96 +354,125 @@ public class RiseClipseValidatorSCL {
     }
     
     public static void main( @NonNull String[] args ) {
+        // Do everything in a big try/catch bloc to avoid displaying stack traces on unexpected exceptions
+        try {
+            if( args.length == 0 ) {
+                usage();
+            }
 
-        if( args.length == 0 ) {
-            usage();
-        }
+            setOptionsFromEnvironmentVariables();
 
-        setOptionsFromEnvironmentVariables();
-
-        int posFiles = 0;
-        for( int i = 0; i < args.length; ++i ) {
-            if( args[i].startsWith( "--" ) ) {
-                posFiles = i + 1;
-                if( HELP_OPTION.equals( args[i] )) {
-                    help();
-                }
-                else if( HELP_ENVIRONMENT_OPTION.equals( args[i] )) {
-                    helpEnvironment();
-                }
-                else if( ERROR_OPTION.equals( args[i] )) {
-                    consoleLevel = Severity.ERROR;
-                }
-                else if( WARNING_OPTION.equals( args[i] )) {
-                    consoleLevel = Severity.WARNING;
-                }
-                else if( NOTICE_OPTION.equals( args[i] )) {
-                    consoleLevel = Severity.NOTICE;
-                }
-                else if( INFO_OPTION.equals( args[i] )) {
-                    consoleLevel = Severity.INFO;
-                }
-                else if( DEBUG_OPTION.equals( args[i] )) {
-                    consoleLevel = Severity.DEBUG;
-                }
-                else if( OUTPUT_OPTION.equals( args[i] )) {
-                    if( ++i < args.length ) {
-                        outputFile = args[i];
-                        ++posFiles;
+            int posFiles = 0;
+            for( int i = 0; i < args.length; ++i ) {
+                if( args[i].startsWith( "--" ) ) {
+                    posFiles = i + 1;
+                    if( HELP_OPTION.equals( args[i] )) {
+                        help();
                     }
-                    else usage();
-                }
-                else if( XSD_OPTION.equals( args[i] )) {
-                    if( ++i < args.length ) {
-                        xsdFile = args[i];
-                        ++posFiles;
+                    else if( HELP_ENVIRONMENT_OPTION.equals( args[i] )) {
+                        helpEnvironment();
                     }
-                    else usage();
-                }
-                else if( MAKE_EXPLICIT_LINKS_OPTION.equals( args[i] )) {
-                    makeExplicitLinks = true;
-                }
-                else if( FORMAT_OPTION.equals( args[i] )) {
-                    if( ++i < args.length ) {
-                        formatString = args[i];
-                        ++posFiles;
+                    else if( ERROR_OPTION.equals( args[i] )) {
+                        consoleLevel = Severity.ERROR;
                     }
-                    else usage();
-                }
-                else if( USE_COLOR_OPTION.equals( args[i] )) {
-                    useColor = true;
-                }
-                else if( DO_NOT_DISPLAY_COPYRIGHT_OPTION.equals( args[i] )) {
-                    displayCopyright = false;
-                }
-                else if( DISPLAY_NSD_MESSAGES_OPTION.equals( args[i] )) {
-                    displayNsdMessages = true;
-                }
-                else if( USE_FILENAMES_STARTING_WITH_DOT_OPTION.equals( args[i] )) {
-                    keepDotFiles = true;
-                }
-                else if( "--hidden-door".equals( args[i] ) ) {
-                    hiddenDoor  = true;
-                }
-                else {
-                    AbstractRiseClipseConsole.getConsole().error( VALIDATOR_SCL_CATEGORY, 0, "Unrecognized option " + args[i] );
-                    usage();
+                    else if( WARNING_OPTION.equals( args[i] )) {
+                        consoleLevel = Severity.WARNING;
+                    }
+                    else if( NOTICE_OPTION.equals( args[i] )) {
+                        consoleLevel = Severity.NOTICE;
+                    }
+                    else if( INFO_OPTION.equals( args[i] )) {
+                        consoleLevel = Severity.INFO;
+                    }
+                    else if( DEBUG_OPTION.equals( args[i] )) {
+                        consoleLevel = Severity.DEBUG;
+                    }
+                    else if( OUTPUT_OPTION.equals( args[i] )) {
+                        if( ++i < args.length ) {
+                            outputFile = args[i];
+                            ++posFiles;
+                        }
+                        else usage();
+                    }
+                    else if( XSD_OPTION.equals( args[i] )) {
+                        if( ++i < args.length ) {
+                            xsdFile = args[i];
+                            ++posFiles;
+                        }
+                        else usage();
+                    }
+                    else if( MAKE_EXPLICIT_LINKS_OPTION.equals( args[i] )) {
+                        makeExplicitLinks = true;
+                    }
+                    else if( FORMAT_OPTION.equals( args[i] )) {
+                        if( ++i < args.length ) {
+                            formatString = args[i];
+                            ++posFiles;
+                        }
+                        else usage();
+                    }
+                    else if( USE_COLOR_OPTION.equals( args[i] )) {
+                        useColor = true;
+                    }
+                    else if( DO_NOT_DISPLAY_COPYRIGHT_OPTION.equals( args[i] )) {
+                        displayCopyright = false;
+                    }
+                    else if( DISPLAY_NSD_MESSAGES_OPTION.equals( args[i] )) {
+                        displayNsdMessages = true;
+                    }
+                    else if( USE_FILENAMES_STARTING_WITH_DOT_OPTION.equals( args[i] )) {
+                        keepDotFiles = true;
+                    }
+                    else if( "--hidden-door".equals( args[i] ) ) {
+                        hiddenDoor  = true;
+                    }
+                    else {
+                        AbstractRiseClipseConsole.getConsole().error( VALIDATOR_SCL_CATEGORY, 0, "Unrecognized option " + args[i] );
+                        usage();
+                    }
                 }
             }
-        }
-        
-        IRiseClipseConsole console = ( outputFile == null ) ? new TextRiseClipseConsole( useColor ) : new FileRiseClipseConsole( outputFile );
-        if( formatString != null ) console.setFormatString( formatString );
-        AbstractRiseClipseConsole.changeConsole( console );
-        console.setLevel( consoleLevel );
+            
+            IRiseClipseConsole console = ( outputFile == null ) ? new TextRiseClipseConsole( useColor ) : new FileRiseClipseConsole( outputFile );
+            if( formatString != null ) console.setFormatString( formatString );
+            AbstractRiseClipseConsole.changeConsole( console );
+            console.setLevel( consoleLevel );
 
-        if( displayCopyright ) {
-            Severity level = console.setLevel( Severity.INFO );
-            displayLegal();
-            console.setLevel( level );
+            if( displayCopyright ) {
+                Severity level = console.setLevel( Severity.INFO );
+                displayLegal();
+                console.setLevel( level );
+            }
+            
+            //console.doNotDisplayIdenticalMessages();  // NOSONAR
+            doValidation( args, posFiles );
         }
-        
-        //console.doNotDisplayIdenticalMessages();  // NOSONAR
+        catch( Exception unexpected ) {
+            IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
+            
+            try {
+                File logFile = File.createTempFile( "RiseClipseUnexpectedException", ".log" );
+                try( PrintWriter pw = new PrintWriter( new BufferedWriter( new FileWriter( logFile )))) {
+                    pw.write( "An unexpected Java exception has occured.\n" );
+                    pw.write( "Here is the stack trace:\n" );
+                    unexpected.printStackTrace( pw );
+                    pw.close();
+                    
+                    console.emergency( VALIDATOR_SCL_CATEGORY, 0, "An unexpected Java exception has occured, the stack trace is available in ", logFile.getAbsolutePath() );
+                }
+                catch( IOException e ) {
+                    console.emergency( VALIDATOR_SCL_CATEGORY, 0, "An unexpected Java exception has occured: ", unexpected.getMessage(), " followed by an IOException: ", e.getMessage() );
+                }
+                
+            }
+            catch( IOException e ) {
+                console.emergency( VALIDATOR_SCL_CATEGORY, 0, "An unexpected Java exception has occured: ", unexpected.getMessage(), " followed by an IOException: ", e.getMessage() );
+            }
+        }
+    }
+
+    private static void doValidation( @NonNull String[] args, int posFiles ) {
+        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
 
         oclFiles = new ArrayList<>();
         nsdFiles = new ArrayList<>();
@@ -954,7 +986,7 @@ public class RiseClipseValidatorSCL {
                     console.output( new RiseClipseMessage( severity, parts[1], parts[2], line, parts[4] ));
                 }
                 else {
-                    console.warning( VALIDATOR_SCL_CATEGORY, 0, "the structure of the following message was not recognized" );
+                    console.warning( VALIDATOR_SCL_CATEGORY, 0, "The structure of the following diagnostic message was not recognized by RiseClipseValidatorSCL" );
                     console.warning( VALIDATOR_SCL_CATEGORY, 0, message );
                 }
                 
