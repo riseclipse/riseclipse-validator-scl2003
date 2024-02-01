@@ -3,12 +3,12 @@
   <parent>
     <artifactId>riseclipse-validator-scl2003</artifactId>
     <groupId>io.github.riseclipse</groupId>
-    <version>1.2.7-SNAPSHOT</version>
+    <version>1.2.7</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.riseclipse</groupId>
   <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui</artifactId>
-  <version>1.2.7-SNAPSHOT</version>
+  <version>1.2.7</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -46,7 +46,6 @@
         </executions>
         <configuration>
           <finalName>${toolName}-${project.version}</finalName>
-          <appendAssemblyId>false</appendAssemblyId>
         </configuration>
       </plugin>
     </plugins>
