@@ -147,7 +147,14 @@ public class NsdEObjectValidator implements EValidator {
                 
                 // Presence condition validation must be done using the namespace of DOI
                 HashMap< String, String > doiNamespaces = new HashMap<>(); 
-                anyLN.getDOI().stream().forEach( doi -> doiNamespaces.put( doi.getName(), doi.getNamespace() ));
+                anyLN.getDOI().stream().forEach(
+                    doi -> doiNamespaces.put( doi.getName(), doi.getNamespace() )
+                );
+                // But all DO of the LNodeType may not be present as DOI
+                // The anyLN namespace will be used for them
+                anyLN.getRefersToLNodeType().getDO().stream().forEach(
+                    do_ -> doiNamespaces.putIfAbsent( do_.getName(), anyLN.getNamespace() )
+                );
 
                 return validateLNodeType( anyLN.getRefersToLNodeType(), nsId, doiNamespaces, diagnostics );
             }
