@@ -53,7 +53,6 @@
         <configuration>
           <!-- set the name of the resulting runnable jar -->
           <finalName>${toolName}-${project.version}</finalName>
-          <appendAssemblyId>false</appendAssemblyId>
         </configuration>
         <executions>
           <execution>

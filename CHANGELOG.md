@@ -1,7 +1,19 @@
 
+## 1.2.7 (2024/02/01)
+- update to Eclipse 2023-12
+- complete review of NSD validation
+- recognized IEC WG10-OCL-TF formatted OCL messages
+- catch all Java exceptions to avoid them being printed
+
+## 1.2.6 (2023/11/06)
+- update to Eclipse 2023-09, Java 17 is now required
+- deployment is now also done on [EDF RiseClipse Web](https://rise-clipse.pam-retd.fr)
+- The validator exits now with a non zero return code (EXIT_FAILURE = 1) if any validation error is detected (issue riseclipse/riseclipse-validator-scl2003#112)
+- The docker image use now Eclipse Temurin (issue riseclipse/riseclipse-validator-scl2003#113)
+
 ## 1.2.5 (2023/03/23)
-- support for zip files given on the command line
-- use lastest components
+- support for zip files given on the command line (issue riseclipse/riseclipse-validator-scl2003#105)
+- update to Eclipse 2023-03
 
 ## 1.2.4 (2022/07/12)
 - support for extensions LNClasses (used in IEC 61869-9:2016)
