@@ -179,7 +179,7 @@ public class LNClassValidator {
 //            if( ! nsIdentification.dependsOn( NsIdentification.of( doNamespaces.get( do_.getName() )))) {
             if( ! NsIdentification.of( doNamespaces.get( do_.getName() )).dependsOn( nsIdentification )) {
                 RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                        "DO \"", do_.getName(), "\" cannot be validated because its DOI namespace \"", doNamespaces.get( do_.getName() ), "\"is not compatible with theLNClass namespace \"", nsIdentification, "\"" );
+                        "DO \"", do_.getName(), "\" cannot be validated because its DOI namespace \"", doNamespaces.get( do_.getName() ), "\"is not compatible with the LNClass namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
