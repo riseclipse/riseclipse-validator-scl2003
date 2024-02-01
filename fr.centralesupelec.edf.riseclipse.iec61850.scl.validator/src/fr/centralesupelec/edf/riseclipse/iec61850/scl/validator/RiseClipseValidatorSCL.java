@@ -75,7 +75,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.2.7-SNAPSHOT (30 January 2024)";
+    private static final String TOOL_VERSION = "1.2.7-SNAPSHOT (1 February 2024)";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
@@ -906,8 +906,7 @@ public class RiseClipseValidatorSCL {
                 }
                 String message = childDiagnostic.getMessage();
                 String[] parts = message.split( ";" );
-                if(( parts.length == 4 ) && ( parts[1].startsWith( "OCL" ))) {
-                    // This should be an OCL message with the new format
+                if( parts.length == 4 ) {
                     Severity severity = Severity.ERROR;
                     try {
                         severity = Severity.valueOf( parts[0] );
@@ -916,15 +915,29 @@ public class RiseClipseValidatorSCL {
                         }
                     }
                     catch( IllegalArgumentException ex ) {}
-                    int line = 0;
-                    try {
-                        line = Integer.valueOf( parts[2] );
+                    if( parts[1].startsWith( "OCL" )) {
+                        // This should be a standard RiseClipse OCL message without the filename
+                        // (before 15 April 2022)
+                        int line = 0;
+                        try {
+                            line = Integer.valueOf( parts[2] );
+                        }
+                        catch( NumberFormatException ex ) {}
+                        console.output( new RiseClipseMessage( severity, parts[1], line, parts[3] ));
                     }
-                    catch( NumberFormatException ex ) {}
-                    console.output( new RiseClipseMessage( severity, parts[1], line, parts[3] ));
+                    else {
+                        // This should be an IEC WG10-OCL-TF formatted message
+                        int line = 0;
+                        try {
+                            line = Integer.valueOf( parts[3].substring( "line_".length() ));
+                        }
+                        catch( NumberFormatException ex ) {}
+                        console.output( new RiseClipseMessage( severity, parts[1], line, parts[2] ));
+                    }
                 }
                 else if(( parts.length == 5 ) && ( parts[1].startsWith( "OCL" ))) {
-                    // This should be an OCL message with the added filename
+                    // This should be a standard RiseClipse OCL message with the added filename
+                    // (after 15 April 2022)
                     Severity severity = Severity.ERROR;
                     try {
                         severity = Severity.valueOf( parts[0] );
@@ -941,7 +954,8 @@ public class RiseClipseValidatorSCL {
                     console.output( new RiseClipseMessage( severity, parts[1], parts[2], line, parts[4] ));
                 }
                 else {
-                    console.notice( VALIDATOR_SCL_CATEGORY, 0, message );
+                    console.warning( VALIDATOR_SCL_CATEGORY, 0, "the structure of the following message was not recognized" );
+                    console.warning( VALIDATOR_SCL_CATEGORY, 0, message );
                 }
                 
                 // The following was used before, therefore it was considered useful.
