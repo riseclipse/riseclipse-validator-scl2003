@@ -32,7 +32,7 @@ jobs:
     with:
       # tag is specific to this branch, but also related to the version of the validator
       # (see https://github.com/riseclipse/riseclipse-validator-scl2003/pull/122)
-      release_version: ec61850-6-3-${{ needs.call-validate-release-workflow.outputs.release_version }}  
+      release_version: ec61850-6-3-${{ needs.call-validate-release-workflow.outputs.release_version }}rc
       docker_repository: riseclipse-validator-scl
       release_latest: false
     secrets:
