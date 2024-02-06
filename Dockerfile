@@ -22,11 +22,7 @@ FROM eclipse-temurin:17 as jre-build
 # Create a custom Java runtime
 RUN                                         \
      $JAVA_HOME/bin/jlink                   \
-         --add-modules                      \
-            java.base,                      \
-            java.desktop,                   \
-            java.logging,                   \
-            java.xml                        \
+         --add-modules java.base,java.desktop,java.logging,java.xml \
          --strip-debug                      \
          --no-man-pages                     \
          --no-header-files                  \
