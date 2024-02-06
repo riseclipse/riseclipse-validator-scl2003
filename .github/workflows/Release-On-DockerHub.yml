@@ -27,12 +27,11 @@ on: workflow_dispatch
 jobs:
   call-release-dockerhub-workflow:
     name: Release on DockerHub
-    needs: [call-validate-release-workflow]
     uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-DockerHub.yml@master
     with:
       # tag is specific to this branch, but also related to the version of the validator
       # (see https://github.com/riseclipse/riseclipse-validator-scl2003/pull/122)
-      release_version: ec61850-6-3-${{ needs.call-validate-release-workflow.outputs.release_version }}rc
+      release_version: ec61850-6-3-v1.2.7rc
       docker_repository: riseclipse-validator-scl
       release_latest: false
     secrets:
