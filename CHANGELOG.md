@@ -1,9 +1,10 @@
 
-## 1.2.7 (2024/02/01)
+## 1.2.7 (2024/02/14)
 - update to Eclipse 2023-12
 - complete review of NSD validation
 - recognized IEC WG10-OCL-TF formatted OCL messages
 - catch all Java exceptions to avoid them being printed
+- a new command line option allows different exit codes according to the severity of validation messages (issue riseclipse/riseclipse-validator-scl2003#134)
 
 ## 1.2.6 (2023/11/06)
 - update to Eclipse 2023-09, Java 17 is now required
