@@ -460,6 +460,14 @@ public class RiseClipseValidatorSCL {
             }
             
             IRiseClipseConsole console = ( outputFile == null ) ? new TextRiseClipseConsole( useColor ) : new FileRiseClipseConsole( outputFile );
+
+            if( displayCopyright ) {
+                Severity level = console.setLevel( Severity.INFO );
+                displayLegal();
+                console.setLevel( level );
+            }
+            
+
             if( formatString != null ) {
                 try {
                     // This is done in branch develop of riseclipse-main, but not yet available on Maven Central 
@@ -475,12 +483,6 @@ public class RiseClipseValidatorSCL {
             AbstractRiseClipseConsole.changeConsole( console );
             console.setLevel( consoleLevel );
 
-            if( displayCopyright ) {
-                Severity level = console.setLevel( Severity.INFO );
-                displayLegal();
-                console.setLevel( level );
-            }
-            
             //console.doNotDisplayIdenticalMessages();  // NOSONAR
             doValidation( args, posFiles );
         }
