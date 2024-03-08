@@ -33,7 +33,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Formatter;
 import java.util.HashMap;
+import java.util.IllegalFormatException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -458,7 +460,18 @@ public class RiseClipseValidatorSCL {
             }
             
             IRiseClipseConsole console = ( outputFile == null ) ? new TextRiseClipseConsole( useColor ) : new FileRiseClipseConsole( outputFile );
-            if( formatString != null ) console.setFormatString( formatString );
+            if( formatString != null ) {
+                try {
+                    // This is done in branch develop of riseclipse-main, but not yet available on Maven Central 
+                    Formatter f = new Formatter();
+                    f.format( formatString, Severity.WARNING, "", 0, "", "", "", "" );
+                    f.close();
+                    console.setFormatString( formatString );
+                }
+                catch( IllegalFormatException e ) {
+                    AbstractRiseClipseConsole.getConsole().warning( VALIDATOR_SCL_CATEGORY, 0, "The format string '" + formatString + "' is invalid, it is ignored" );
+                }
+            }
             AbstractRiseClipseConsole.changeConsole( console );
             console.setLevel( consoleLevel );
 
