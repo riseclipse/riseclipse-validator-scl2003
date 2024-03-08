@@ -911,7 +911,11 @@ public class RiseClipseValidatorSCL {
         sclAdapter = new SclItemProviderAdapterFactory();
 
         if( xsdFile != null ) {
-            XSDValidator.prepare( xsdFile );
+            if( ! XSDValidator.prepare( xsdFile )) {
+                // Problem with given xsd file, do not do XSD validation
+                console.warning( VALIDATOR_SCL_CATEGORY, 0, "XSD validation will not be done, because of problems with XSD file: " + xsdFile );
+                xsdFile = null;
+            }
         }
     }
 
