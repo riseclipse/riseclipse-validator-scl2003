@@ -178,14 +178,14 @@ public class LNClassValidator {
             // TODO: which one is the right test?
 //            if( ! nsIdentification.dependsOn( NsIdentification.of( doNamespaces.get( do_.getName() )))) {
             if( ! NsIdentification.of( doNamespaces.get( do_.getName() )).dependsOn( nsIdentification )) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                        "DO \"", do_.getName(), "\" cannot be validated because its DOI namespace \"", doNamespaces.get( do_.getName() ), "\"is not compatible with the LNClass namespace \"", nsIdentification, "\"" );
+                RiseClipseMessage notice = RiseClipseMessage.notice( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                        "DO \"", do_.getName(), "\" namespace \"", doNamespaces.get( do_.getName() ), "\" is different from the LNClass namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { do_, warning } ));
+                        notice.getMessage(),
+                        new Object[] { do_, notice } ));
                 return res;
             }
             String[] names;
