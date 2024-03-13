@@ -1349,17 +1349,17 @@ public class DataObjectPresenceConditionValidator {
                         .map( p -> p.toString() )
                         .orElse( null );
 
-                RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                             "DO \"", entry.getKey(), "\" is mandatory in LNodeType with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"",
                                             " if textual condition number " + entry.getValue(), " (not evaluated) is true, else optional. It is ",
                                             ( presentDO.get( entry.getKey() ) == null ? "absent." : "present." ),
                                             ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ));
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { lNodeType, warning } ));
+                        notice.getMessage(),
+                        new Object[] { lNodeType, notice } ));
             }
         }
         
@@ -1385,17 +1385,17 @@ public class DataObjectPresenceConditionValidator {
                         .map( p -> p.toString() )
                         .orElse( null );
 
-                RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                             "DO \"", entry.getKey(), "\" is mandatory in LNodeType with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"",
                                             " if textual condition number " + entry.getValue(), " (not evaluated) is true, else forbidden. It is ",
                                             ( presentDO.get( entry.getKey() ) == null ? "absent." : "present." ),
                                             ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ));
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { lNodeType, warning } ));
+                        notice.getMessage(),
+                        new Object[] { lNodeType, notice } ));
             }
         }
         
@@ -1421,17 +1421,17 @@ public class DataObjectPresenceConditionValidator {
                         .map( p -> p.toString() )
                         .orElse( null );
 
-                RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                             "DO \"", entry.getKey(), "\" is optional in LNodeType with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"",
                                             " if textual condition number " + entry.getValue(), " (not evaluated) is true, else forbidden. It is ",
                                             ( presentDO.get( entry.getKey() ) == null ? "absent." : "present." ),
                                             ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ));
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { lNodeType, warning } ));
+                        notice.getMessage(),
+                        new Object[] { lNodeType, notice } ));
             }
         }
         
