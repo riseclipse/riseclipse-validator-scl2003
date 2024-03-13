@@ -253,7 +253,7 @@ public class DataObjectPresenceConditionValidator {
             // TODO: what does it mean ? what do we have to check ?
             // DONE: if used by statistics presence condition, no need to display message
             if( ! isStatistic ) {
-                console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+                console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"na\" in non statistic PresenceCondition" );
             }
             if( notApplicable == null ) notApplicable = new HashSet<>();
@@ -502,7 +502,7 @@ public class DataObjectPresenceConditionValidator {
         case "MFsubst" :
             // Element is mandatory if substitution is supported (for substitution, see IEC 61850-7-3), otherwise forbidden
             // TODO: how do we know if substitution is supported ?
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MFsubst\" in PresenceCondition" );
             if( mandatoryIfSubstitutionElseForbidden == null ) mandatoryIfSubstitutionElseForbidden = new HashSet<>();
             mandatoryIfSubstitutionElseForbidden.add( name );
@@ -520,7 +520,7 @@ public class DataObjectPresenceConditionValidator {
         case "MOlnNs" :
             // Element is mandatory if the name space of its logical node deviates from the name space of the containing
             // logical device, otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MOlnNs\" in PresenceCondition" );
             if( mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional == null ) mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional = new HashSet<>();
             mandatoryIfNameSpaceOfLogicalNodeDeviatesElseOptional.add( name );
@@ -528,7 +528,7 @@ public class DataObjectPresenceConditionValidator {
         case "MOdataNs" :
             // Element is mandatory if the name space of its data object deviates from the name space of its logical node,
             // otherwise optional. See IEC 61850-7-1 for use of name space
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MOdataNs\" in PresenceCondition" );
             if( mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional == null ) mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional = new HashSet<>();
             mandatoryIfNameSpaceOfDataObjectDeviatesElseOptional.add( name );
@@ -537,7 +537,7 @@ public class DataObjectPresenceConditionValidator {
             // Element is mandatory* if any sibling elements of type AnalogueValue include 'i' as a child, otherwise forbidden.
             // *Even though devices without floating point capability cannot exchange floating point values through ACSI services,
             // the description of scaling remains mandatory for their (SCL) configuration
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MFscaledAV\" in PresenceCondition" );
             if( mandatoryIfAnalogValueIncludesIElseForbidden == null ) mandatoryIfAnalogValueIncludesIElseForbidden = new HashSet<>();
             mandatoryIfAnalogValueIncludesIElseForbidden.add( name );
@@ -545,7 +545,7 @@ public class DataObjectPresenceConditionValidator {
         case "MFscaledMagV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'mag' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MFscaledMagV\" in PresenceCondition" );
             if( mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden = new HashSet<>();
             mandatoryIfVectorSiblingIncludesIAsChildMagElseForbidden.add( name );
@@ -553,7 +553,7 @@ public class DataObjectPresenceConditionValidator {
         case "MFscaledAngV" :
             // Element is mandatory* if any sibling elements of type Vector include 'i' as a child of their 'ang' attribute, otherwise forbidden.
             // *See MFscaledAV
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MFscaledAngV\" in PresenceCondition" );
             if( mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden == null ) mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden = new HashSet<>();
             mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden.add( name );
@@ -561,7 +561,7 @@ public class DataObjectPresenceConditionValidator {
         case "MOrms" :
             // Element is mandatory if the harmonic values in the context are calculated as a ratio to RMS value
             // (value of data attribute 'hvRef' is 'rms'), optional otherwise
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MOrms\" in PresenceCondition" );
             if( mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional == null ) mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional = new HashSet<>();
             mandatoryIfHarmonicValuesCalculatedAsRatioElseOptional.add( name );
@@ -573,7 +573,7 @@ public class DataObjectPresenceConditionValidator {
             break;
         case "MOoperTm" :
             // Element is mandatory if at least one controlled object on the IED supports time activation service; otherwise it is optional
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MOoperTm\" in PresenceCondition" );
             if( mandatoryIfControlSupportsTimeElseOptional == null ) mandatoryIfControlSupportsTimeElseOptional = new HashSet<>();
             mandatoryIfControlSupportsTimeElseOptional.add( name );
@@ -581,7 +581,7 @@ public class DataObjectPresenceConditionValidator {
         case "MmultiF" :
             // Parameter sibling: sibling element name.
             // One or more elements must be present if sibling element is present, otherwise forbidden
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MmultiF\" in PresenceCondition" );
             if( oneOrMoreIfSiblingPresentElseForbidden == null ) oneOrMoreIfSiblingPresentElseForbidden = new HashMap<>();
             oneOrMoreIfSiblingPresentElseForbidden.put( name, presCondArgs );
@@ -589,7 +589,7 @@ public class DataObjectPresenceConditionValidator {
         case "MOsbo" :
             // Element is mandatory if declared control model supports 'sbo-with-normal-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MOsbo\" in PresenceCondition" );
             if( mandatoryIfControlSupportsSecurity1ElseOptional == null ) mandatoryIfControlSupportsSecurity1ElseOptional = new HashSet<>();
             mandatoryIfControlSupportsSecurity1ElseOptional.add( name );
@@ -597,7 +597,7 @@ public class DataObjectPresenceConditionValidator {
         case "MOenhanced" :
             // Element is mandatory if declared control model supports 'direct-with-enhanced-security' or 'sbo-with-enhanced-security',
             // otherwise optional and value is of no impact
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MOenhanced\" in PresenceCondition" );
             if( mandatoryIfControlSupportsSecurity2ElseOptional == null ) mandatoryIfControlSupportsSecurity2ElseOptional = new HashSet<>();
             mandatoryIfControlSupportsSecurity2ElseOptional.add( name );
@@ -618,14 +618,14 @@ public class DataObjectPresenceConditionValidator {
         case "MORange" :
             // Element is mandatory if the measured value associated (amplitude respectively angle) exposes the range eventing
             // (with the attribute range respectively rangeAng)
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"MORange\" in PresenceCondition" );
             if( mandatoryIfMeasuredValueExposesRange == null ) mandatoryIfMeasuredValueExposesRange = new HashSet<>();
             mandatoryIfMeasuredValueExposesRange.add( name );
             break;
         case "OMSynPh" :
             // This attribute is optional if value of 'phsRef'' is Synchrophasor otherwise Mandatory]]></Doc>
-            console.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
+            console.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, filename, lineNumber,
                              "NOT IMPLEMENTED: DataObject \"", name, "\" declared as \"OMSynPh\" in PresenceCondition" );
             if( optionalIfPhsRefIsSynchrophasorElseMandatory == null ) optionalIfPhsRefIsSynchrophasorElseMandatory = new HashSet<>();
             optionalIfPhsRefIsSynchrophasorElseMandatory.add( name );
