@@ -470,10 +470,6 @@ public class RiseClipseValidatorSCL {
 
             if( formatString != null ) {
                 try {
-                    // This is done in branch develop of riseclipse-main, but not yet available on Maven Central 
-                    Formatter f = new Formatter();
-                    f.format( formatString, Severity.WARNING, "", 0, "", "", "", "" );
-                    f.close();
                     console.setFormatString( formatString );
                 }
                 catch( IllegalFormatException e ) {
