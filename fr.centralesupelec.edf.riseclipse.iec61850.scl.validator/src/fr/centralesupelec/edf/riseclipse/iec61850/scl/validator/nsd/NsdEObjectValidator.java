@@ -116,16 +116,16 @@ public class NsdEObjectValidator implements EValidator {
             @Override
             public Boolean caseAnyLN( AnyLN anyLN ) {
                 String inNamespace = anyLN.getNamespace();
-                if(( inNamespace == null ) || ( inNamespace.isEmpty() ) ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY,
+                if(( inNamespace == null ) || ( inNamespace.isEmpty() )) {
+                    RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY,
                             anyLN.getFilename(), anyLN.getLineNumber(),
                             "AnyLN type=\"", anyLN.getLnType(), "\" class=\"", anyLN.getLnClass(), "\" has no namespace" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { anyLN, warning } ) );
+                            error.getMessage(),
+                            new Object[] { anyLN, error } ) );
                     return true;
                 }
 
