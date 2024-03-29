@@ -188,14 +188,16 @@ public class LNClassValidator {
                         new Object[] { do_, notice } ));
                 return res;
             }
-
+            
+            // Look for first with the full name, keeping potential ending digits
             CDCValidator cdcValidator = dataObjectValidatorMap.get( do_.getName() );
             if( cdcValidator == null ) {
                 if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
-                    // TODO: only when presence condition is Omulti or Mmulti
+                    // TODO: a suffix number may be added only when presence condition is Mmulti or Omulti
                     cdcValidator = dataObjectValidatorMap.get( do_.getName().split( "(?=\\d)", 2 )[0] );
                 }
             }
+
             if( cdcValidator != null ) {
                 if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
