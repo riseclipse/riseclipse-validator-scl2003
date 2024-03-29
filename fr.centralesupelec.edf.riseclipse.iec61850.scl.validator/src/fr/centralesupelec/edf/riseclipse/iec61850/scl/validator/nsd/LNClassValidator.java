@@ -188,19 +188,14 @@ public class LNClassValidator {
                         new Object[] { do_, notice } ));
                 return res;
             }
-            String[] names;
-            if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
-                names = do_.getName().split( "(?=\\d)", 2 );
+
+            CDCValidator cdcValidator = dataObjectValidatorMap.get( do_.getName() );
+            if( cdcValidator == null ) {
+                if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
+                    // TODO: only when presence condition is Omulti or Mmulti
+                    cdcValidator = dataObjectValidatorMap.get( do_.getName().split( "(?=\\d)", 2 )[0] );
+                }
             }
-            else {
-                names = new String[] { do_.getName() };
-            }
-            if( names.length == 0 ) {
-                // error should have been already displayed
-                //AbstractRiseClipseConsole.getConsole().error( "[NSD validation] Unexpected DO name " + do_.getName() + " in LNodeType (line " + do_.getParentLNodeType().getLineNumber() );
-                continue;
-            }
-            CDCValidator cdcValidator = dataObjectValidatorMap.get( names[0] );
             if( cdcValidator != null ) {
                 if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
