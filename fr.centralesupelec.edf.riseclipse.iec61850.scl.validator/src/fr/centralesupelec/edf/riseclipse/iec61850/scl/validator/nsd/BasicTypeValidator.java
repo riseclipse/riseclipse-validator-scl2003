@@ -624,15 +624,15 @@ public abstract class BasicTypeValidator extends TypeValidator {
         String name = "";
         if( daOrDai instanceof AbstractDataAttribute ) name = (( AbstractDataAttribute ) daOrDai ).getName();
         if( daOrDai instanceof DAI                   ) name = (( DAI ) daOrDai ).getName();
-        RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, daOrDai.getFilename(), daOrDai.getLineNumber(), 
+        RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, daOrDai.getFilename(), daOrDai.getLineNumber(), 
                                     "verification of value \"", value, "\" of Val in DA/BDA/DAI \"", name,
                                     "\" is not implemented for BasicType \"", getName(), "\"" );
         diagnostics.add( new BasicDiagnostic(
-                Diagnostic.WARNING,
+                Diagnostic.INFO,
                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                 0,
-                warning.getMessage(),
-                new Object[] { daOrDai, warning } ));
+                notice.getMessage(),
+                new Object[] { daOrDai, notice } ));
         return true;
     }
 

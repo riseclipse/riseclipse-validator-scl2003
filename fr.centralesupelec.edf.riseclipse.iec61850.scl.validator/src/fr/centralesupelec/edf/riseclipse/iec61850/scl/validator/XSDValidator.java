@@ -50,7 +50,7 @@ public class XSDValidator {
     
     private static Validator xsdValidator;
 
-    public static void prepare( String xsdFile ) {
+    public static boolean prepare( String xsdFile ) {
         
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
@@ -64,7 +64,7 @@ public class XSDValidator {
         }
         catch( SAXException e ) {
             console.error( VALIDATION_XSD_CATEGORY, 0, "SAXException: ", e.getMessage() );
-            return;
+            return false;
         }
         
         xsdValidator.setErrorHandler( new ErrorHandler() {
@@ -90,6 +90,7 @@ public class XSDValidator {
             }
         } );
 
+        return true;
     }
 
     public static void validate( String sclFile ) {

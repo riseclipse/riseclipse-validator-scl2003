@@ -169,6 +169,13 @@ public class CDCValidator {
                                      " in namespace \"", this.nsIdentification, "\"" );
                 }
             }
+            // Type is missing if CDC is parameterized
+            // TODO: do we have to look for name in getParameterizedDataAttributeNames()?
+            else if( cdc.isEnumParameterized() || cdc.isTypeKindParameterized() ) {
+                console.info( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
+                        "Type not found for DataAttribute ", da.getName(),
+                        " in namespace \"", this.nsIdentification, "\", but CDC is parameterized" );
+            }
             else {
                 console.warning( CDC_SETUP_NSD_CATEGORY, da.getFilename(), da.getLineNumber(),
                                  "Type not found for DataAttribute ", da.getName(),

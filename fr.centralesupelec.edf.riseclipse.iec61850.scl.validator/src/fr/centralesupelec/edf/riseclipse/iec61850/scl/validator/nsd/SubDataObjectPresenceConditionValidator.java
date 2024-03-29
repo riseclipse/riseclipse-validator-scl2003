@@ -120,16 +120,16 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     protected boolean validateMFln0( DOType sclModel, DiagnosticChain diagnostics ) {
         for( String name : mandatoryInLLN0ElseForbidden ) {
             if( presentSclComponent.get( name ) != null ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"MFln0\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
                                             getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                             " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { sclModel, warning } ));
+                        notice.getMessage(),
+                        new Object[] { sclModel, notice } ));
             }
         }
         return true;
@@ -139,16 +139,16 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
     protected boolean validateMOln0( DOType sclModel, DiagnosticChain diagnostics ) {
         for( String name : mandatoryInLLN0ElseOptional ) {
             if( presentSclComponent.get( name ) != null ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"MOln0\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
                                             getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                             " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { sclModel, warning } ));
+                        notice.getMessage(),
+                        new Object[] { sclModel, notice } ));
             }
         }
         return true;
