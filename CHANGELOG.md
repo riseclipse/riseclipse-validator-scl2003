@@ -1,5 +1,5 @@
 
-## 1.2.7 (2024/03/29)
+## 1.2.7 (2024/05/16)
 - update to Eclipse 2024-03
 - complete review of NSD validation
 - recognized IEC WG10-OCL-TF formatted OCL messages
