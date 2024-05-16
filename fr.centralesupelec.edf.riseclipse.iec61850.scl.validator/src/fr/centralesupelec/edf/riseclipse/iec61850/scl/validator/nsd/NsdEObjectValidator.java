@@ -151,9 +151,8 @@ public class NsdEObjectValidator implements EValidator {
                     doi -> doiNamespaces.put( doi.getName(), doi.getNamespace() )
                 );
                 // But all DO of the LNodeType may not be present as DOI
-                // The anyLN namespace will be used for them
                 anyLN.getRefersToLNodeType().getDO().stream().forEach(
-                    do_ -> doiNamespaces.putIfAbsent( do_.getName(), anyLN.getNamespace() )
+                    do_ -> doiNamespaces.putIfAbsent( do_.getName(), do_.getNamespace() == null ? anyLN.getNamespace() : do_.getNamespace() )
                 );
 
                 return validateLNodeType( anyLN.getRefersToLNodeType(), nsId, doiNamespaces, diagnostics );
