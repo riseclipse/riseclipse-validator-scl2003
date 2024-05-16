@@ -31,7 +31,7 @@ jobs:
     with:
       # tag is specific to this branch, but also related to the version of the validator
       # (see https://github.com/riseclipse/riseclipse-validator-scl2003/pull/122)
-      release_version: ec61850-6-3-v1.2.7rc
+      release_version: ec61850-6-3-v1.2.7
       docker_repository: riseclipse-validator-scl
       release_latest: false
     secrets:
