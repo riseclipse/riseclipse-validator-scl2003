@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.IllegalFormatException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.2.7-SNAPSHOT (1 February 2024)";
+    private static final String TOOL_VERSION = "1.2.8-SNAPSHOT (16 May 2024)";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
@@ -110,6 +111,7 @@ public class RiseClipseValidatorSCL {
     private static final String DISPLAY_NSD_MESSAGES_OPTION            = "--display-nsd-messages";
     private static final String DO_NOT_DISPLAY_COPYRIGHT_OPTION        = "--do-not-display-copyright";
     private static final String USE_FILENAMES_STARTING_WITH_DOT_OPTION = "--use-filenames-starting-with-dot";
+    private static final String USE_DIFFERENT_EXIT_CODES_OPTION        = "--use-different-exit-codes";
     
     private static final String RISECLIPSE_VARIABLE_PREFIX                    = "RISECLIPSE_";
     private static final String CONSOLE_LEVEL_VARIABLE_NAME                   = RISECLIPSE_VARIABLE_PREFIX + "CONSOLE_LEVEL";
@@ -121,6 +123,7 @@ public class RiseClipseValidatorSCL {
     private static final String DO_NOT_DISPLAY_COPYRIGHT_VARIABLE_NAME        = RISECLIPSE_VARIABLE_PREFIX + "DO_NOT_DISPLAY_COPYRIGHT";
     private static final String USE_FILENAMES_STARTING_WITH_DOT_VARIABLE_NAME = RISECLIPSE_VARIABLE_PREFIX + "USE_FILENAMES_STARTING_WITH_DOT";
     private static final String FORMAT_STRING_VARIABLE_NAME                   = RISECLIPSE_VARIABLE_PREFIX + "FORMAT_STRING";
+    private static final String USE_DIFFERENT_EXIT_CODES_VARIABLE_NAME        = RISECLIPSE_VARIABLE_PREFIX + "USE_DIFFERENT_EXIT_CODES";
 
     private static final String FALSE_VARIABLE_VALUE = "FALSE";
 
@@ -151,7 +154,12 @@ public class RiseClipseValidatorSCL {
     private static final String INFO_FORMAT_STRING = "%6$s%1$-8s%7$s: %4$s";
     
     private static final int EXIT_SUCCESS = 0;
+    // Values specified in https://github.com/riseclipse/riseclipse-validator-scl2003/issues/134
+    // with the added value for NOTICE
     private static final int EXIT_FAILURE = 1;
+    private static final int EXIT_WARNING = 2;
+    private static final int EXIT_NOTICE  = 3;
+    private static final int EXIT_INFO    = 4;
     
     private static ComposedEValidator composedValidator;
     private static OCLValidator oclValidator;
@@ -165,6 +173,7 @@ public class RiseClipseValidatorSCL {
     private static boolean displayCopyright = true;
     private static boolean displayNsdMessages = false;
     private static boolean keepDotFiles = false;
+    private static boolean useDifferentExitCodes = false;
     private static Severity consoleLevel = Severity.WARNING;
     private static String outputFile = null;
     private static String xsdFile = null;
@@ -173,6 +182,7 @@ public class RiseClipseValidatorSCL {
     private static List< @NonNull String> oclFiles;
     private static List< @NonNull String > nsdFiles;
     private static List< @NonNull String > sclFiles;
+
 
     private static void usage() {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
@@ -237,18 +247,21 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_COLOR_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tcolors (using ANSI escape sequences) are used when displaying messages." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + MAKE_EXPLICIT_LINKS_OPTION );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, 
-                  "\t\tImplicit links in SCL files are made explicit, this is usually needed for complete validation. "
-                + "Warnings are displayed when problems are detected. Infos are displayed about explicit links being made. "
-                + "Verbosity is about how explicit links are made." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tImplicit links in SCL files are made explicit, this is usually needed for complete validation." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tWarnings are displayed when problems are detected. Infos are displayed about explicit links being made." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tVerbosity is about how explicit links are made." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + DISPLAY_NSD_MESSAGES_OPTION );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, 
-                  "\t\tOnly errors detected in NSD files are displayed by default. "
-                + "This option allows for other messages to be displayed (according to the chosen level).");
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tOnly errors detected in NSD files are displayed by default." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tThis option allows for other messages to be displayed (according to the chosen level)." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + DO_NOT_DISPLAY_COPYRIGHT_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tThe tool information is not displayed at the beginning." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_FILENAMES_STARTING_WITH_DOT_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tFiles whose name begins with a dot are not ignored." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_DIFFERENT_EXIT_CODES_OPTION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tNormal exit code of validator is 1 if there is any validation error, 0 otherwise." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tIf this option is used, exit code is 1 if there is any validation error," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\t2 if there is any warning but no error, 3 if there is any notice message but no warning or error," );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\t4 if there is any info message but no notice or warning or error, 0 otherwise." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + HELP_ENVIRONMENT_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tEnvironment variables used are displayed." );
         System.exit( 0 );
@@ -283,6 +296,8 @@ public class RiseClipseValidatorSCL {
                     + "(ignoring case), it is equivalent to the use of " + DO_NOT_DISPLAY_COPYRIGHT_OPTION + " option." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_FILENAMES_STARTING_WITH_DOT_VARIABLE_NAME + ": if its value is not equal to FALSE "
                     + "(ignoring case), it is equivalent to the use of " + USE_FILENAMES_STARTING_WITH_DOT_OPTION + " option." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + USE_DIFFERENT_EXIT_CODES_VARIABLE_NAME + ": if its value is not equal to FALSE "
+                + "(ignoring case), it is equivalent to the use of " + USE_DIFFERENT_EXIT_CODES_OPTION + " option." );
         System.exit( 0 );
     }
     
@@ -349,6 +364,13 @@ public class RiseClipseValidatorSCL {
         if( s != null ) {
             if( ! s.equalsIgnoreCase( FALSE_VARIABLE_VALUE )) {
                 keepDotFiles = true;
+            }
+        }
+        
+        s = System.getenv( USE_DIFFERENT_EXIT_CODES_OPTION );
+        if( s != null ) {
+            if( ! s.equalsIgnoreCase( FALSE_VARIABLE_VALUE )) {
+                useDifferentExitCodes = true;
             }
         }
     }
@@ -423,6 +445,9 @@ public class RiseClipseValidatorSCL {
                     else if( USE_FILENAMES_STARTING_WITH_DOT_OPTION.equals( args[i] )) {
                         keepDotFiles = true;
                     }
+                    else if( USE_DIFFERENT_EXIT_CODES_OPTION.equals( args[i] )) {
+                        useDifferentExitCodes = true;
+                    }
                     else if( "--hidden-door".equals( args[i] ) ) {
                         hiddenDoor  = true;
                     }
@@ -434,9 +459,6 @@ public class RiseClipseValidatorSCL {
             }
             
             IRiseClipseConsole console = ( outputFile == null ) ? new TextRiseClipseConsole( useColor ) : new FileRiseClipseConsole( outputFile );
-            if( formatString != null ) console.setFormatString( formatString );
-            AbstractRiseClipseConsole.changeConsole( console );
-            console.setLevel( consoleLevel );
 
             if( displayCopyright ) {
                 Severity level = console.setLevel( Severity.INFO );
@@ -444,6 +466,18 @@ public class RiseClipseValidatorSCL {
                 console.setLevel( level );
             }
             
+
+            if( formatString != null ) {
+                try {
+                    console.setFormatString( formatString );
+                }
+                catch( IllegalFormatException e ) {
+                    AbstractRiseClipseConsole.getConsole().warning( VALIDATOR_SCL_CATEGORY, 0, "The format string '" + formatString + "' is invalid, it is ignored" );
+                }
+            }
+            AbstractRiseClipseConsole.changeConsole( console );
+            console.setLevel( consoleLevel );
+
             //console.doNotDisplayIdenticalMessages();  // NOSONAR
             doValidation( args, posFiles );
         }
@@ -470,6 +504,33 @@ public class RiseClipseValidatorSCL {
             }
         }
     }
+    
+    private static int update_returned_value( int current_value, int new_value ) {
+        if( new_value != EXIT_SUCCESS ) {
+            if( useDifferentExitCodes ) {
+                if( current_value == EXIT_SUCCESS ) current_value = new_value;
+                else current_value = new_value < current_value ? new_value : current_value; 
+            }
+            else if( new_value == EXIT_FAILURE ) {
+                current_value = new_value;
+            }
+        }
+        return current_value;
+    }
+
+    private static int update_returned_value( int current_value, Severity severity ) {
+        int new_value = switch( severity ) {
+            case EMERGENCY -> EXIT_FAILURE;
+            case ALERT     -> EXIT_FAILURE;
+            case CRITICAL  -> EXIT_FAILURE;
+            case ERROR     -> EXIT_FAILURE;
+            case WARNING   -> EXIT_WARNING;
+            case NOTICE    -> EXIT_NOTICE;
+            case INFO      -> EXIT_INFO;
+            case DEBUG     -> EXIT_SUCCESS;
+        };
+        return update_returned_value( current_value, new_value );
+    }
 
     private static void doValidation( @NonNull String[] args, int posFiles ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
@@ -488,9 +549,9 @@ public class RiseClipseValidatorSCL {
         prepare( displayNsdMessages );
         int returned_value = EXIT_SUCCESS;
         for( int i = 0; i < sclFiles.size(); ++i ) {
-            if( run( makeExplicitLinks, sclFiles.get( i )) == EXIT_FAILURE ) {
-                returned_value = EXIT_FAILURE;
-            }
+            returned_value = update_returned_value(
+                returned_value,
+                run( makeExplicitLinks, sclFiles.get( i )));
         }
         System.exit( returned_value );
     }
@@ -847,7 +908,11 @@ public class RiseClipseValidatorSCL {
         sclAdapter = new SclItemProviderAdapterFactory();
 
         if( xsdFile != null ) {
-            XSDValidator.prepare( xsdFile );
+            if( ! XSDValidator.prepare( xsdFile )) {
+                // Problem with given xsd file, do not do XSD validation
+                console.warning( VALIDATOR_SCL_CATEGORY, 0, "XSD validation will not be done, because of problems with XSD file: " + xsdFile );
+                xsdFile = null;
+            }
         }
     }
 
@@ -930,9 +995,7 @@ public class RiseClipseValidatorSCL {
                 if(( data.size() == 2 ) && ( data.get( 1 ) instanceof RiseClipseMessage )) {
                     // Message from NSD validation added in diagnostic
                     @NonNull RiseClipseMessage message = ( RiseClipseMessage ) data.get( 1 );
-                    if( message.getSeverity().compareTo( Severity.ERROR ) <= 0 ) {
-                        returned_value = EXIT_FAILURE;
-                    }
+                    returned_value = update_returned_value( returned_value, message.getSeverity() );
                     console.output( message );
                     continue;
                 }
@@ -942,9 +1005,7 @@ public class RiseClipseValidatorSCL {
                     Severity severity = Severity.ERROR;
                     try {
                         severity = Severity.valueOf( parts[0] );
-                        if( severity.compareTo( Severity.ERROR ) <= 0 ) {
-                            returned_value = EXIT_FAILURE;
-                        }
+                        returned_value = update_returned_value( returned_value, severity );
                     }
                     catch( IllegalArgumentException ex ) {}
                     if( parts[1].startsWith( "OCL" )) {
@@ -972,10 +1033,7 @@ public class RiseClipseValidatorSCL {
                     // (after 15 April 2022)
                     Severity severity = Severity.ERROR;
                     try {
-                        severity = Severity.valueOf( parts[0] );
-                        if( severity.compareTo( Severity.ERROR ) <= 0 ) {
-                            returned_value = EXIT_FAILURE;
-                        }
+                        returned_value = update_returned_value( returned_value, Severity.valueOf( parts[0] ));
                     }
                     catch( IllegalArgumentException ex ) {}
                     int line = 0;

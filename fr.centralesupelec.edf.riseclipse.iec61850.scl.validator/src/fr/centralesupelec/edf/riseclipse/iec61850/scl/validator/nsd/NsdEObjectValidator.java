@@ -116,16 +116,16 @@ public class NsdEObjectValidator implements EValidator {
             @Override
             public Boolean caseAnyLN( AnyLN anyLN ) {
                 String inNamespace = anyLN.getNamespace();
-                if(( inNamespace == null ) || ( inNamespace.isEmpty() ) ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY,
+                if(( inNamespace == null ) || ( inNamespace.isEmpty() )) {
+                    RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY,
                             anyLN.getFilename(), anyLN.getLineNumber(),
                             "AnyLN type=\"", anyLN.getLnType(), "\" class=\"", anyLN.getLnClass(), "\" has no namespace" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { anyLN, warning } ) );
+                            error.getMessage(),
+                            new Object[] { anyLN, error } ) );
                     return true;
                 }
 
@@ -151,9 +151,8 @@ public class NsdEObjectValidator implements EValidator {
                     doi -> doiNamespaces.put( doi.getName(), doi.getNamespace() )
                 );
                 // But all DO of the LNodeType may not be present as DOI
-                // The anyLN namespace will be used for them
                 anyLN.getRefersToLNodeType().getDO().stream().forEach(
-                    do_ -> doiNamespaces.putIfAbsent( do_.getName(), anyLN.getNamespace() )
+                    do_ -> doiNamespaces.putIfAbsent( do_.getName(), do_.getNamespace() == null ? anyLN.getNamespace() : do_.getNamespace() )
                 );
 
                 return validateLNodeType( anyLN.getRefersToLNodeType(), nsId, doiNamespaces, diagnostics );

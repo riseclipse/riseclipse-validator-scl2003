@@ -1,9 +1,14 @@
 
-## 1.2.7 (2024/02/01)
-- update to Eclipse 2023-12
+## 1.2.7 (2024/05/16)
+- update to Eclipse 2024-03
 - complete review of NSD validation
 - recognized IEC WG10-OCL-TF formatted OCL messages
 - catch all Java exceptions to avoid them being printed
+- a new command line option allows different exit codes according to the severity of validation messages (issue riseclipse/riseclipse-validator-scl2003#134)
+- add an explicit link from an LN to a supervised ControlWithIEDName (issue riseclipse/riseclipse-metamodel-scl2003#38)
+- improve naming of elements when SCL metamodel is used as an Eclipse plugin (issue riseclipse/riseclipse-metamodel-scl2003#39)
+- add new naming attributes (issue riseclipse/riseclipse-metamodel-scl2003#40)
+- change the level of some messages to improve lisibility of output
 
 ## 1.2.6 (2023/11/06)
 - update to Eclipse 2023-09, Java 17 is now required

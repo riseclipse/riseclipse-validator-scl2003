@@ -218,16 +218,16 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
     protected boolean validateOMSynPh( DOType doType, DiagnosticChain diagnostics ) {
         for( String name : optionalIfPhsRefIsSynchrophasorElseMandatory ) {
             if( presentSclComponent.get( name ) != null ) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                                             "verification of PresenceCondition \"OMSynPh\" for ", getSclComponentClassName(),
                                             " is not implemented in ", getSclModelClassName(), ") with ", getNsdModelClassName(),
                                             " \"", getNsdModelName(), "\" in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { doType, warning } ));
+                        notice.getMessage(),
+                        new Object[] { doType, notice } ));
             }
         }
         return true;
