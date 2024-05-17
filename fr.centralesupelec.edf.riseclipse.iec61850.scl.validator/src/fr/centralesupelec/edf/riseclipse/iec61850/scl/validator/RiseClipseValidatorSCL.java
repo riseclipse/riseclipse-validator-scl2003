@@ -539,6 +539,7 @@ public class RiseClipseValidatorSCL {
         nsdFiles = new ArrayList<>();
         sclFiles = new ArrayList<>();
         for( int i = posFiles; i < args.length; ++i ) {
+            if( args[i].length() == 0 ) continue;
             getFiles( Paths.get( args[i] ), console );
         }
         
