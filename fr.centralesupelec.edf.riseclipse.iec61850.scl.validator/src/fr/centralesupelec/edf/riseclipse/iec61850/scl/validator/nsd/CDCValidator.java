@@ -289,6 +289,18 @@ public class CDCValidator {
         }
       
         for( SDO sdo : doType.getSDO() ) {
+            // SDO.name shall be a combination of the abbreviations listed in 7-4 NSD file
+            if( ! DONameValidator.validateName( sdo.getName() )) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(), 
+                        "SDO name \"", sdo.getName(), "\" is not composed using standardised abbreviations" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        warning.getMessage(),
+                        new Object[] { sdo, warning } ));
+            }
+            
             CDCValidator cdcValidator = subDataObjectValidatorMap.get( sdo.getName() );
             if( cdcValidator != null ) {
                 if( sdo.getRefersToDOType() != null ) {
