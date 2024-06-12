@@ -1158,17 +1158,19 @@ public class DataObjectPresenceConditionValidator {
                     }
                 }
             }
-            if( groupNumber == 0 ) {
-                RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
-                                          "no group in LNodeType with LNClass \"", anyLNClassName, "\" has all elements in namespace \"", nsIdentification, "\"" );
-                diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.ERROR,
-                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                        0,
-                        error.getMessage(),
-                        new Object[] { lNodeType, error } ));
-                res = false;
-            }
+            // Issue https://github.com/riseclipse/riseclipse-validator-scl2003/issues/149
+            // the presence condition "AllOnlyOneGroup" does not imply that one of the groups should be present
+//            if( groupNumber == 0 ) {
+//                RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+//                                          "no group in LNodeType with LNClass \"", anyLNClassName, "\" has all elements in namespace \"", nsIdentification, "\"" );
+//                diagnostics.add( new BasicDiagnostic(
+//                        Diagnostic.ERROR,
+//                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+//                        0,
+//                        error.getMessage(),
+//                        new Object[] { lNodeType, error } ));
+//                res = false;
+//            }
         }
         
         // presCond: "AllAtLeastOneGroup" :
