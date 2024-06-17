@@ -334,7 +334,22 @@ public class CDCValidator {
                                 error.getMessage(),
                                 new Object[] { da, error } ));
                     }
-
+                }
+                
+                // Issue #153
+                // DA is allowed to contain a "count" attribute, only if the corresponding DA in NSD of 7-3 has CDC / DataAttribute isArray = "true"
+                if( da.isSetCount() ) {
+                    if( ! dataAttribute.isSetIsArray() ) {
+                        RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                                "DA " + da.getName(), " has a count attribute while the corresponding DataAttribute has not isArray=\"true\"",
+                                " in namespace \"", nsIdentification, "\"" );
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.ERROR,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                error.getMessage(),
+                                new Object[] { da, error } ));
+                    }
                 }
             });
         }
@@ -378,6 +393,29 @@ public class CDCValidator {
                         warning.getMessage(),
                         new Object[] { doType, warning } ));
             }
+
+            // Issue #153
+            // SDO is allowed to contain a "count" attribute, only if the corresponding SDO in NSD of 7-3 has CDC / SubDataObject isArray = "true"
+            if( sdo.isSetCount() ) {
+                cdc
+                .getSubDataObject()
+                .stream()
+                .filter( d -> sdo.getName().equals( d.getName() ))
+                .findAny()
+                .ifPresent( subDataObject -> {
+                    if( ! subDataObject.isSetIsArray() ) {
+                        RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(), 
+                                "SDO " + sdo.getName(), " has a count attribute while the corresponding SubDataObject has not isArray=\"true\"",
+                                " in namespace \"", nsIdentification, "\"" );
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.ERROR,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                error.getMessage(),
+                                new Object[] { sdo, error } ));
+                    }
+                });
+            }
         }
 
         return res;
@@ -402,5 +440,4 @@ public class CDCValidator {
         }
         return validateDOType( doType, diagnostics );
     }
-    
 }
