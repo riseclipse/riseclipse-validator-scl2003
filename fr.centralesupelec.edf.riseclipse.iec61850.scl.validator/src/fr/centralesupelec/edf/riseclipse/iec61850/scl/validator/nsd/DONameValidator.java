@@ -33,7 +33,13 @@ public class DONameValidator {
         abrevStream.forEach( a -> abreviations.add( a.getName() ));
     }
 
-    public static boolean validateName( String name ) {
+    public static boolean validateSdoName( String name ) {
+        // SDO name start with a lower letter
+        Character first = name.charAt( 0 );
+        return validateDoName( first.toString().toUpperCase() + name.substring( 1 ));
+    }
+    
+    public static boolean validateDoName( String name ) {
         if( name.length() == 0 ) return false;
         int start = 0;
         int end = name.length();
@@ -42,7 +48,9 @@ public class DONameValidator {
             if( abreviations.contains( name.substring( start, end ))) {
                 if( end == name.length() ) return true;
                 start = end;
-                end = name.length();;
+                end = name.length();
+                // if only digits are left, it's OK
+                if( name.substring( start, end ).matches( "\\d+" )) return true;
             }
             else {
                 end = end - 1;
@@ -52,4 +60,5 @@ public class DONameValidator {
         }
     }
 
+    private DONameValidator() {}
 }

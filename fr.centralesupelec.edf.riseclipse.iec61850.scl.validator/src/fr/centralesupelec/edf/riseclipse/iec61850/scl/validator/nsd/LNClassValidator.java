@@ -175,7 +175,7 @@ public class LNClassValidator {
         for( DO do_ : lNodeType.getDO() ) {
             // DO.Name shall be a combination of the abbreviations listed in 7-4 NSD file
             // This must be verified even if we don't know the CDC
-            if( ! DONameValidator.validateName( do_.getName() )) {
+            if( ! DONameValidator.validateDoName( do_.getName() )) {
                 RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                         "DO name \"", do_.getName(), "\" is not composed using standardised abbreviations" );
                 diagnostics.add( new BasicDiagnostic(

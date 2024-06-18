@@ -356,7 +356,7 @@ public class CDCValidator {
       
         for( SDO sdo : doType.getSDO() ) {
             // SDO.name shall be a combination of the abbreviations listed in 7-4 NSD file
-            if( ! DONameValidator.validateName( sdo.getName() )) {
+            if( ! DONameValidator.validateSdoName( sdo.getName() )) {
                 RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(), 
                         "SDO name \"", sdo.getName(), "\" is not composed using standardised abbreviations" );
                 diagnostics.add( new BasicDiagnostic(
