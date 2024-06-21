@@ -92,6 +92,15 @@ public class NsdEObjectValidator implements EValidator {
                     nsdResourceSet.getLNClassStream( nsIdentification, false ),
                     console );
         }
+        
+        // Issue https://github.com/riseclipse/riseclipse-validator-scl2003/issues/145
+        // DO/SDO names should be composed of standardised abbreviations listed in IEC 61850-7-4
+        // No need to look for the namespace to find the correct version of 7-4 to apply : just use the latest one available
+        
+        // We take all abbreviations of all namespaces, and use a singleton validator implemented with static 
+        for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList( console )) {
+            DONameValidator.addFrom( nsdResourceSet.getAbbreviationStream( nsIdentification, false ));
+        }
     }
 
     /*

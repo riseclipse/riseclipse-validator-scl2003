@@ -168,6 +168,7 @@ public class DataObjectPresenceConditionValidator {
             atLeastOne = ( HashMap< Integer, HashSet< String > > ) base.atLeastOne.clone();
             // We also need to add corresponding keys in presentDO
             for( Integer group : atLeastOne.keySet() ) {
+                atLeastOne.put( group, ( HashSet< String > ) base.atLeastOne.get( group ).clone() );
                 for( String name : atLeastOne.get( group )) {
                     presentDO.put( name, null );
                 }
@@ -180,6 +181,7 @@ public class DataObjectPresenceConditionValidator {
 
             allOrNonePerGroup = ( HashMap< Integer, HashSet< String > > ) base.allOrNonePerGroup.clone();
             for( Integer group : allOrNonePerGroup.keySet() ) {
+                allOrNonePerGroup.put( group, ( HashSet< String > ) base.allOrNonePerGroup.get( group ).clone() );
                 for( String name : allOrNonePerGroup.get( group )) {
                     presentDO.put( name, null );
                 }
@@ -187,6 +189,7 @@ public class DataObjectPresenceConditionValidator {
             
             allOnlyOneGroup = ( HashMap< Integer, HashSet< String > > ) base.allOnlyOneGroup.clone();
             for( Integer group : allOnlyOneGroup.keySet() ) {
+                allOnlyOneGroup.put( group, ( HashSet< String > ) base.allOnlyOneGroup.get( group ).clone() );
                 for( String name : allOnlyOneGroup.get( group )) {
                     presentDO.put( name, null );
                 }
@@ -194,6 +197,7 @@ public class DataObjectPresenceConditionValidator {
             
             allAtLeastOneGroup = ( HashMap< Integer, HashSet< String > > ) base.allAtLeastOneGroup.clone();
             for( Integer group : allAtLeastOneGroup.keySet() ) {
+                allAtLeastOneGroup.put( group, ( HashSet< String > ) base.allAtLeastOneGroup.get( group ).clone() );
                 for( String name : allAtLeastOneGroup.get( group )) {
                     presentDO.put( name, null );
                 }
@@ -1154,17 +1158,19 @@ public class DataObjectPresenceConditionValidator {
                     }
                 }
             }
-            if( groupNumber == 0 ) {
-                RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
-                                          "no group in LNodeType with LNClass \"", anyLNClassName, "\" has all elements in namespace \"", nsIdentification, "\"" );
-                diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.ERROR,
-                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                        0,
-                        error.getMessage(),
-                        new Object[] { lNodeType, error } ));
-                res = false;
-            }
+            // Issue https://github.com/riseclipse/riseclipse-validator-scl2003/issues/149
+            // the presence condition "AllOnlyOneGroup" does not imply that one of the groups should be present
+//            if( groupNumber == 0 ) {
+//                RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+//                                          "no group in LNodeType with LNClass \"", anyLNClassName, "\" has all elements in namespace \"", nsIdentification, "\"" );
+//                diagnostics.add( new BasicDiagnostic(
+//                        Diagnostic.ERROR,
+//                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+//                        0,
+//                        error.getMessage(),
+//                        new Object[] { lNodeType, error } ));
+//                res = false;
+//            }
         }
         
         // presCond: "AllAtLeastOneGroup" :
