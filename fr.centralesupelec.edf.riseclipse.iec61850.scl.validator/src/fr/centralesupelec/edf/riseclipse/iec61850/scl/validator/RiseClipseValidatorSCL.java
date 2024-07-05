@@ -79,7 +79,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.2.8-SNAPSHOT (16 May 2024)";
+    private static final String TOOL_VERSION = "1.2.8-SNAPSHOT (5 July 2024)";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
@@ -539,6 +539,7 @@ public class RiseClipseValidatorSCL {
         nsdFiles = new ArrayList<>();
         sclFiles = new ArrayList<>();
         for( int i = posFiles; i < args.length; ++i ) {
+            if( args[i].length() == 0 ) continue;
             getFiles( Paths.get( args[i] ), console );
         }
         
@@ -1018,15 +1019,16 @@ public class RiseClipseValidatorSCL {
                         catch( NumberFormatException ex ) {}
                         console.output( new RiseClipseMessage( severity, parts[1], line, parts[3] ));
                     }
-                    else {
-                        // This should be an IEC WG10-OCL-TF formatted message
-                        int line = 0;
-                        try {
-                            line = Integer.valueOf( parts[3].substring( "line_".length() ));
-                        }
-                        catch( NumberFormatException ex ) {}
-                        console.output( new RiseClipseMessage( severity, parts[1], line, parts[2] ));
-                    }
+// This is no more true, see issue #155
+//                    else {
+//                        // This should be an IEC WG10-OCL-TF formatted message
+//                        int line = 0;
+//                        try {
+//                            line = Integer.valueOf( parts[3].substring( "line_".length() ));
+//                        }
+//                        catch( NumberFormatException ex ) {}
+//                        console.output( new RiseClipseMessage( severity, parts[1], line, parts[2] ));
+//                    }
                 }
                 else if(( parts.length == 5 ) && ( parts[1].startsWith( "OCL" ))) {
                     // This should be a standard RiseClipse OCL message with the added filename
@@ -1042,6 +1044,21 @@ public class RiseClipseValidatorSCL {
                     }
                     catch( NumberFormatException ex ) {}
                     console.output( new RiseClipseMessage( severity, parts[1], parts[2], line, parts[4] ));
+                }
+                else if( parts.length == 6 ) {
+                    // Error message from standard IEC 61850-6-3 (issue #155)
+                    Severity severity = Severity.ERROR;
+                    try {
+                        severity = Severity.valueOf( parts[0] );
+                        returned_value = update_returned_value( returned_value, severity );
+                    }
+                    catch( IllegalArgumentException ex ) {}
+                    int line = 0;
+                    try {
+                        line = Integer.valueOf( parts[5].substring( "line_".length() ));
+                    }
+                    catch( NumberFormatException ex ) {}
+                    console.output( new RiseClipseMessage( severity, parts[1] + "/" + parts[2], parts[3], line, parts[4] ));
                 }
                 else {
                     console.warning( VALIDATOR_SCL_CATEGORY, 0, "The structure of the following diagnostic message was not recognized by RiseClipseValidatorSCL" );
