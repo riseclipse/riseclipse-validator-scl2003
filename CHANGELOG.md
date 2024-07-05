@@ -1,4 +1,14 @@
 
+## 1.2.8 (2024/07/05)
+- Created links between LDevices are also built when setSrcRef value is in DataTypeTemplates 
+  (issue riseclipse/riseclipse-metamodel-scl2003#43)
+- Add some missing default values 
+  (issue riseclipse/riseclipse-metamodel-scl2003#45)
+- Names of DO and SDO are verified against abbreviations (issue riseclipse/riseclipse-validator-scl2003#145)
+- Attributes dchg, qchg and dupd are ckecked (issue riseclipse/riseclipse-validator-scl2003#146)
+- Attribute count is ckecked (issue riseclipse/riseclipse-validator-scl2003#153)
+- recognized IEC 61850-6-3 formatted OCL messages (issue riseclipse/riseclipse-validator-scl2003#155)
+
 ## 1.2.7 (2024/05/16)
 - update to Eclipse 2024-03
 - complete review of NSD validation
