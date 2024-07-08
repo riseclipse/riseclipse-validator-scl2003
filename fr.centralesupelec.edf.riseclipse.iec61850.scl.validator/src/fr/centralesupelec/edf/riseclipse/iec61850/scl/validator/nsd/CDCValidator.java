@@ -294,46 +294,40 @@ public class CDCValidator {
            .filter( d -> da.getName().equals( d.getName() ))
            .findAny()
            .ifPresent( dataAttribute -> {
-                if( da.getDchg() ) {
-                    if( ! dataAttribute.isDchg() ) {
-                        RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
-                                "Attribute dchg of DA " + da.getName(), " is true while the corresponding one in DataAttribute is false or absent",
-                                " in namespace \"", nsIdentification, "\"" );
-                        diagnostics.add( new BasicDiagnostic(
-                                Diagnostic.ERROR,
-                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                                0,
-                                error.getMessage(),
-                                new Object[] { da, error } ));
-                    }
+                if(( Boolean.TRUE.equals( da.getDchg() )) && ( ! dataAttribute.isDchg() )) {
+                    RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                            "Attribute dchg of DA " + da.getName(), " is true while the corresponding one in DataAttribute is false or absent",
+                            " in namespace \"", nsIdentification, "\"" );
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.ERROR,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            error.getMessage(),
+                            new Object[] { da, error } ));
                 }
 
-                if( da.getQchg() ) {
-                    if( ! dataAttribute.isQchg() ) {
-                        RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
-                                "Attribute qchg of DA " + da.getName(), " is true while the corresponding one in DataAttribute is false or absent",
-                                " in namespace \"", nsIdentification, "\"" );
-                        diagnostics.add( new BasicDiagnostic(
-                                Diagnostic.ERROR,
-                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                                0,
-                                error.getMessage(),
-                                new Object[] { da, error } ));
-                    }
+                if(( Boolean.TRUE.equals( da.getQchg() )) && ( ! dataAttribute.isQchg() )) {
+                    RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                            "Attribute qchg of DA " + da.getName(), " is true while the corresponding one in DataAttribute is false or absent",
+                            " in namespace \"", nsIdentification, "\"" );
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.ERROR,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            error.getMessage(),
+                            new Object[] { da, error } ));
                 }
 
-                if( da.getDupd() ) {
-                    if( ! dataAttribute.isDupd() ) {
-                        RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
-                                "Attribute dupd of DA " + da.getName(), " is true while the corresponding one in DataAttribute is false or absent",
-                                " in namespace \"", nsIdentification, "\"" );
-                        diagnostics.add( new BasicDiagnostic(
-                                Diagnostic.ERROR,
-                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                                0,
-                                error.getMessage(),
-                                new Object[] { da, error } ));
-                    }
+                if(( Boolean.TRUE.equals( da.getDupd() )) && ( ! dataAttribute.isDupd() )) {
+                    RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                            "Attribute dupd of DA " + da.getName(), " is true while the corresponding one in DataAttribute is false or absent",
+                            " in namespace \"", nsIdentification, "\"" );
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.ERROR,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            error.getMessage(),
+                            new Object[] { da, error } ));
                 }
                 
                 // Issue #153
