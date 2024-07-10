@@ -23,6 +23,7 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -106,6 +107,7 @@ public class LNClassValidator {
     // Key is DataObject name (the corresponding DO has the same name)
     // Value is the CDCValidator given by the DataObject type
     private HashMap< String, CDCValidator > dataObjectValidatorMap = new HashMap<>();
+    private HashSet< LNodeType > doNamesOfLNodeTypeVerified = new HashSet<>();;
 
     private LNClassValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass, IRiseClipseConsole console ) {
         console.debug( LNCLASS_SETUP_NSD_CATEGORY, anyLNClass.getFilename(), anyLNClass.getLineNumber(),
@@ -171,11 +173,18 @@ public class LNClassValidator {
       
         res = dataObjectPresenceConditionValidator.validate( lNodeType, diagnostics ) && res;
         
+        // The check of DO.name do not depend on doNamespaces, so we will remember to have done it
+        // so that we do not do it twice
+        boolean doNameAlreadyVerified = doNamesOfLNodeTypeVerified.contains( lNodeType );
+        if( ! doNameAlreadyVerified ) {
+            doNamesOfLNodeTypeVerified .add( lNodeType );
+        }
+        
         // The type of each DO must conform to the CDC of the corresponding DataObject
         for( DO do_ : lNodeType.getDO() ) {
-            // DO.Name shall be a combination of the abbreviations listed in 7-4 NSD file
+            // DO.name shall be a combination of the abbreviations listed in 7-4 NSD file
             // This must be verified even if we don't know the CDC
-            if( ! DONameValidator.validateDoName( do_.getName() )) {
+            if(( ! doNameAlreadyVerified ) && ( ! DONameValidator.validateDoName( do_.getName() ))) {
                 RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                         "DO name \"", do_.getName(), "\" is not composed using standardised abbreviations" );
                 diagnostics.add( new BasicDiagnostic(
