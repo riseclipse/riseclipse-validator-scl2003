@@ -49,13 +49,14 @@ public class EnumerationValidator extends TypeValidator {
     static final String ENUMERATION_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/Enumeration";
     static final String ENUMERATION_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/Enumeration";
 
-    private HashSet< String > validatedEnumType;
+    private HashSet< String > validatedEnumType = new HashSet<>();
 
     // Name of EnumVal may be empty, so we use LiteralVal as key
     private HashMap< Integer, String > literals = new HashMap<>();
     private Enumeration enumeration;
     private boolean isMultiplierKind;
     private NsIdentification nsIdentification;
+    private HashSet< String > deprecatedLiterals = new HashSet<>();
 
     public EnumerationValidator( Enumeration enumeration, NsIdentification nsIdentification, IRiseClipseConsole console ) {
         console.debug( ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getLineNumber(),
@@ -82,7 +83,10 @@ public class EnumerationValidator extends TypeValidator {
          enumeration
         .getLiteral()
         .stream()
-        .forEach( e -> literals.put( e.getLiteralVal(), e.getName() ));
+        .forEach( e -> {
+            literals.put( e.getLiteralVal(), e.getName() );
+            if( e.isDeprecated() ) deprecatedLiterals.add( e.getName() );
+        });
         
         // the positive range of values is reserved for standardized value of enumerations,
         // except for the IEC 61850-7-3 multiplierKind that standardizes also values in the negative range,
@@ -102,6 +106,7 @@ public class EnumerationValidator extends TypeValidator {
     @Override
     public void reset() {
         validatedEnumType = new HashSet<>();
+        deprecatedLiterals = new HashSet<>();
     }
 
     @Override
@@ -226,6 +231,20 @@ public class EnumerationValidator extends TypeValidator {
                             0,
                             error.getMessage(),
                             new Object[] { enumVal, error } ));
+                    res = false;
+                }
+                // Check for deprecated literal, only if correct name is used
+                else if( deprecatedLiterals.contains( enumVal.getValue() )) {
+                    RiseClipseMessage warning = RiseClipseMessage.warning( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
+                            "EnumVal with name \"", enumVal.getValue(), "\" in EnumType id = " , enumType.getId(),
+                            " is deprecated in standard enumeration ",
+                            getName(), " in namespace \"", nsIdentification, "\"" );
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            warning.getMessage(),
+                            new Object[] { enumVal, warning } ));
                     res = false;
                 }
             }
