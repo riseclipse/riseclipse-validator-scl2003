@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IllegalFormatException;
 import java.util.Iterator;
 import java.util.List;
@@ -166,6 +167,8 @@ public class RiseClipseValidatorSCL {
     private static SclItemProviderAdapterFactory sclAdapter;
     private static SclModelLoader sclLoader;
     private static NsdValidator nsdValidator;
+    
+    private static HashSet< RiseClipseMessage > outputtedMessages = new HashSet<>();
 
     private static boolean hiddenDoor = false;
     private static boolean makeExplicitLinks = false;
@@ -921,6 +924,8 @@ public class RiseClipseValidatorSCL {
     public static int run( boolean makeExplicitLinks, @NonNull String sclFile ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
+        outputtedMessages = new HashSet<>();
+        
         if( xsdFile != null ) {
             XSDValidator.validate( sclFile );
         }
@@ -996,12 +1001,15 @@ public class RiseClipseValidatorSCL {
                 if(( data.size() == 2 ) && ( data.get( 1 ) instanceof RiseClipseMessage )) {
                     // Message from NSD validation added in diagnostic
                     @NonNull RiseClipseMessage message = ( RiseClipseMessage ) data.get( 1 );
-                    returned_value = update_returned_value( returned_value, message.getSeverity() );
-                    console.output( message );
+                    if( ! outputtedMessages.contains( message )) {
+                        returned_value = update_returned_value( returned_value, message.getSeverity() );
+                        console.output( message );
+                        outputtedMessages.add( message );
+                    }
                     continue;
                 }
-                String message = childDiagnostic.getMessage();
-                String[] parts = message.split( ";" );
+                String diagMessage = childDiagnostic.getMessage();
+                String[] parts = diagMessage.split( ";" );
                 if( parts.length == 4 ) {
                     Severity severity = Severity.ERROR;
                     try {
@@ -1017,7 +1025,11 @@ public class RiseClipseValidatorSCL {
                             line = Integer.valueOf( parts[2] );
                         }
                         catch( NumberFormatException ex ) {}
-                        console.output( new RiseClipseMessage( severity, parts[1], line, parts[3] ));
+                        RiseClipseMessage message = new RiseClipseMessage( severity, parts[1], line, parts[3] );
+                        if( ! outputtedMessages.contains( message )) {
+                            console.output( message);
+                            outputtedMessages.add( message );
+                        }
                     }
 // This is no more true, see issue #155
 //                    else {
@@ -1043,7 +1055,11 @@ public class RiseClipseValidatorSCL {
                         line = Integer.valueOf( parts[3] );
                     }
                     catch( NumberFormatException ex ) {}
-                    console.output( new RiseClipseMessage( severity, parts[1], parts[2], line, parts[4] ));
+                    RiseClipseMessage message = new RiseClipseMessage( severity, parts[1], parts[2], line, parts[4] );
+                    if( ! outputtedMessages.contains( message )) {
+                        console.output( message);
+                        outputtedMessages.add( message );
+                    }
                 }
                 else if( parts.length == 6 ) {
                     // Error message from standard IEC 61850-6-3 (issue #155)
@@ -1058,11 +1074,15 @@ public class RiseClipseValidatorSCL {
                         line = Integer.valueOf( parts[5].substring( "line_".length() ));
                     }
                     catch( NumberFormatException ex ) {}
-                    console.output( new RiseClipseMessage( severity, parts[1] + "/" + parts[2], parts[3], line, parts[4] ));
+                    RiseClipseMessage message = new RiseClipseMessage( severity, parts[1] + "/" + parts[2], parts[3], line, parts[4] );
+                    if( ! outputtedMessages.contains( message )) {
+                        console.output( message);
+                        outputtedMessages.add( message );
+                    }
                 }
                 else {
                     console.warning( VALIDATOR_SCL_CATEGORY, 0, "The structure of the following diagnostic message was not recognized by RiseClipseValidatorSCL" );
-                    console.warning( VALIDATOR_SCL_CATEGORY, 0, message );
+                    console.warning( VALIDATOR_SCL_CATEGORY, 0, diagMessage );
                 }
                 
                 // The following was used before, therefore it was considered useful.
