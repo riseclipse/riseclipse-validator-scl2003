@@ -133,6 +133,7 @@ public class DataObjectPresenceConditionValidator {
     private final IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
     private NsIdentification nsIdentification;
     private boolean isStatistic;
+    private HashSet< String > deprecatedDOs = new HashSet<>();
     
     @SuppressWarnings( "unchecked" )        // cast of HashMap.clone() result
     private DataObjectPresenceConditionValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass, boolean isStatistic ) {
@@ -214,6 +215,9 @@ public class DataObjectPresenceConditionValidator {
             }
             else {
                 addSpecification( d.getName(), d.getPresCond(), d.getPresCondArgs(), d.getLineNumber(), d.getFilename() );
+            }
+            if( d.isDeprecated() ) {
+                deprecatedDOs .add( d.getName() );
             }
         } );
         
@@ -764,6 +768,17 @@ public class DataObjectPresenceConditionValidator {
                     new Object[] { do_, error } ));
             return false;
         }
+        
+        if( deprecatedDOs.contains( names[0] )) {
+            RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getFilename(), do_.getParentLNodeType().getLineNumber(), 
+                    "DO \"", do_.getName(), "\" in LNodeType id \"", do_.getParentLNodeType().getId(), "\" is deprecated in \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.WARNING,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    warning.getMessage(),
+                    new Object[] { do_, warning } ));
+        }
 
         if( names.length == 1 ) {
             if( presentDO.get( do_.getName() ) != null ) {
@@ -829,9 +844,17 @@ public class DataObjectPresenceConditionValidator {
     private boolean validate( LNodeType lNodeType, String anyLNClassName, boolean asSuperclass, DiagnosticChain diagnostics ) {
         boolean res = true;
         
-        @NonNull
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-
+        if( anyLNClass.isDeprecated() ) {
+            RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    "LNodeType \"", lNodeType.getId(), " refers to deprecated LNClass \"", anyLNClass.getName(), "\" in namespace \"", nsIdentification, "\"" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.WARNING,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    warning.getMessage(),
+                    new Object[] { lNodeType, warning } ));
+        }
+        
         // Some presence conditions must only be checked by the final LNClass, not by any superLNClass.
         // For example, for atLeastOne, the group contains all the DataObject of the full hierarchy,
         // so only the final LNClass can do the check.

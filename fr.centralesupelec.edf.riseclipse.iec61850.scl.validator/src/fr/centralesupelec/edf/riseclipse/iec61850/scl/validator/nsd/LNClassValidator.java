@@ -33,6 +33,7 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.jdt.annotation.NonNull;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AnyLNClass;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
@@ -118,12 +119,15 @@ public class LNClassValidator {
         AnyLNClass lnClass = anyLNClass;
         while( lnClass != null ) {
             for( DataObject do_ : lnClass.getDataObject() ) {
-                if( do_.getRefersToCDC() == null ) {
-                    console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
-                            "CDC unknown for DataObject \"", do_.getName(), "\" in namespace \"", this.nsIdentification, "\"" );
+                CDC cdc = do_.getRefersToCDC();
+                if( cdc == null ) {
+                    // Not an NSD error
+//                    console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+//                            "CDC unknown for DataObject \"", do_.getName(), "\" in namespace \"", this.nsIdentification, "\"" );
                     continue;
                 }
-                Pair< CDCValidator, NsIdentification > res = CDCValidator.get( this.nsIdentification, do_.getRefersToCDC() );
+                
+                Pair< CDCValidator, NsIdentification > res = CDCValidator.get( this.nsIdentification, cdc );
                 CDCValidator cdcValidator = res.getLeft();
                 if( cdcValidator != null ) {
                     dataObjectValidatorMap.put( do_.getName(), cdcValidator );
