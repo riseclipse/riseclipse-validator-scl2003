@@ -142,6 +142,17 @@ public class ConstructedAttributeValidator extends TypeValidator {
                        "ConstructedAttributeValidator.validateDAType( ", daType.getId(), " ) in namespace \"", nsIdentification, "\"" );
         validatedDAType.add( daType.getId() );
         
+        if( constructedAttribute.isDeprecated() ) {
+            RiseClipseMessage warning = RiseClipseMessage.warning( CA_VALIDATION_NSD_CATEGORY, daType.getFilename(), daType.getLineNumber(), 
+                    "DAType \"", daType.getId(), " refers to deprecated ConstructedAttribute \"", constructedAttribute.getName(), "\" in namespace \"", nsIdentification, "\"" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.WARNING,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    warning.getMessage(),
+                    new Object[] { daType, warning } ));
+        }
+        
         subDataAttributePresenceConditionValidator.resetModelData();
         
         daType

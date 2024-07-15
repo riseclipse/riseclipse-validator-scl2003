@@ -435,14 +435,14 @@ public class CDCValidator {
         }
         
         if( cdc.isDeprecated() ) {
-            RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+            RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                     "DOType \"", doType.getId(), " refers to deprecated CDC \"", cdc.getName(), "\" in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.WARNING,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                     0,
                     warning.getMessage(),
-                    new Object[] { do_, warning } ));
+                    new Object[] { doType, warning } ));
         }
 
         return validateDOType( doType, diagnostics );
