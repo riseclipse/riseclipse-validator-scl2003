@@ -844,9 +844,17 @@ public class DataObjectPresenceConditionValidator {
     private boolean validate( LNodeType lNodeType, String anyLNClassName, boolean asSuperclass, DiagnosticChain diagnostics ) {
         boolean res = true;
         
-        @NonNull
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
-
+        if( anyLNClass.isDeprecated() ) {
+            RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    "LNodeType \"", lNodeType.getId(), " refers to deprecated LNClass \"", anyLNClass.getName(), "\" in namespace \"", nsIdentification, "\"" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.WARNING,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    warning.getMessage(),
+                    new Object[] { lNodeType, warning } ));
+        }
+        
         // Some presence conditions must only be checked by the final LNClass, not by any superLNClass.
         // For example, for atLeastOne, the group contains all the DataObject of the full hierarchy,
         // so only the final LNClass can do the check.

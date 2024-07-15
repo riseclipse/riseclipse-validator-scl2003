@@ -33,7 +33,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.Doc;
-import fr.centralesupelec.edf.riseclipse.iec61850.nsd.NsdObject;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DocumentedClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.IDNaming;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.SclObject;
@@ -42,7 +42,7 @@ import fr.centralesupelec.edf.riseclipse.util.AbstractRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 
-public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObject, SclModel extends IDNaming, @Nullable SclComponent extends SclObject > {
+public abstract class GenericPresenceConditionValidator< NsdModel extends DocumentedClass, SclModel extends IDNaming, @Nullable SclComponent extends SclObject > {
     
     // Name of the NsdComponent/SclComponent, SclComponent
     protected HashMap< String, SclComponent > presentSclComponent = new HashMap<>();
@@ -99,7 +99,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     protected NsIdentification nsIdentification;
     protected NsdModel nsdModel;
     
-    public GenericPresenceConditionValidator( NsIdentification nsIdentification, NsdModel nsdModel ) {
+    protected GenericPresenceConditionValidator( NsIdentification nsIdentification, NsdModel nsdModel ) {
         this.nsIdentification = nsIdentification;
         this.nsdModel = nsdModel;
     }
@@ -679,12 +679,21 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends NsdObj
     }
     
     public boolean validate( @NonNull SclModel sclModel, DiagnosticChain diagnostics ) {
-        @NonNull
-        IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
                 getPresenceConditionValidatorName(), ".validate( ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" ) in namespace \"", nsIdentification, "\"" );
 
         boolean res = true;
+        
+        if( nsdModel.isDeprecated() ) {
+            RiseClipseMessage warning = RiseClipseMessage.warning( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
+                    getSclComponentClassName(), "\"", sclModel.getId(), " refers to deprecated ", getNsdModelClassName(), " \"", getNsdModelName(), "\" in namespace \"", nsIdentification, "\"" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.WARNING,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    warning.getMessage(),
+                    new Object[] { sclModel, warning } ));
+        }
         
         // presCond: "M"
         // Element is mandatory
