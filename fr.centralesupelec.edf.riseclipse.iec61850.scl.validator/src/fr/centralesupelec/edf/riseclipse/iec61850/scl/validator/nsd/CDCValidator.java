@@ -432,6 +432,18 @@ public class CDCValidator {
                     new Object[] { do_, error } ));
             return false;
         }
+        
+        if( cdc.isDeprecated() ) {
+            RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                    "DOType for DO \"", do_.getName(), " refers to deprecated CDC \"", cdc.getName(), "\" in namespace \"", nsIdentification, "\"" );
+            diagnostics.add( new BasicDiagnostic(
+                    Diagnostic.WARNING,
+                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                    0,
+                    warning.getMessage(),
+                    new Object[] { do_, warning } ));
+        }
+
         return validateDOType( doType, diagnostics );
     }
 }
