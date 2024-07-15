@@ -99,6 +99,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
     protected NsIdentification nsIdentification;
     protected NsdModel nsdModel;
     
+    protected HashSet< String > deprecated = new HashSet<>();
+
     protected GenericPresenceConditionValidator( NsIdentification nsIdentification, NsdModel nsdModel ) {
         this.nsIdentification = nsIdentification;
         this.nsdModel = nsdModel;
@@ -700,6 +702,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( mandatory != null ) {
             for( String name : this.mandatory ) {
+                if( deprecated.contains( name )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
                 console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
                         "validation of presence condition \"M\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
                         sclModel.getId(), "\" with ", getNsdModelClassName(),
@@ -740,6 +746,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
         // Usage in standard NSD files (version 2007B): DataObject
         if( forbidden != null ) {
             for( String name : this.forbidden ) {
+                if( deprecated.contains( name )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
                 console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
                         "validation of presence condition \"F\" for ", getSclComponentClassName(), " \"", name, "\" in ", getSclModelClassName(), " id = \"",
                         sclModel.getId(), "\" with ", getNsdModelClassName(),
@@ -1041,6 +1051,10 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfSiblingPresentElseForbidden != null ) {
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
+                if( deprecated.contains( entry.getKey() )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
                 console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
                         "validation of presence condition \"MF\" for ", getSclComponentClassName(), " element \"", entry.getKey(), "\" sibling \"", entry.getValue(),
                         "\" in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
@@ -1084,7 +1098,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryIfSiblingPresentElseOptional != null ) {
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
-                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                if( deprecated.contains( entry.getKey() )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
+                 console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
                         "validation of presence condition \"MO\" for ", getSclComponentClassName(), " element \"", entry.getKey(), "\" sibling \"", entry.getValue(),
                         "\" in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
                         " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
@@ -1112,7 +1130,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
         // Usage in standard NSD files (version 2007B): None
         if( optionalIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > entry : optionalIfSiblingPresentElseMandatory.entrySet() ) {
-                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                if( deprecated.contains( entry.getKey() )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
+                 console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
                         "validation of presence condition \"OM\" for ", getSclComponentClassName(), " element \"", entry.getKey(), "\" sibling \"", entry.getValue(),
                         "\" in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
                         " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
@@ -1140,7 +1162,11 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
         // Usage in standard NSD files (version 2007B): None
         if( forbiddenIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > entry : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
-                console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
+                if( deprecated.contains( entry.getKey() )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
+                 console.debug( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(),
                         "validation of presence condition \"FM\" for ", getSclComponentClassName(), " element \"", entry.getKey(), "\" sibling \"", entry.getValue(),
                         "\" in ", getSclModelClassName(), " id = \"", sclModel.getId(), "\" with ", getNsdModelClassName(),
                         " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );

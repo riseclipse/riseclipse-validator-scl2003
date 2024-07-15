@@ -94,6 +94,8 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
             // For presence condition "MFscaledMagV" and "MFscaledAngV", we need to know which DataAttribute is of type Vector
             if( "AnalogueValue".equals( da.getType() )) analogueValues.add( da.getName() );
             if( "Vector"       .equals( da.getType() )) vectors       .add( da.getName() );
+            
+            if( da.isDeprecated() ) deprecated.add( da.getName() );
         });
     }
 

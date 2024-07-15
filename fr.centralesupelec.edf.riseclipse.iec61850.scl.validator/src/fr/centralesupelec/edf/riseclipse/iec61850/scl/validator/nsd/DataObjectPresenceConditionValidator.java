@@ -868,6 +868,10 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject and DataAttribute and SubDataAttribute
         if( mandatory != null ) {
             for( String name : this.mandatory ) {
+                if( deprecatedDOs.contains( name )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
                 console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                         "validation of presence condition \"M\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
@@ -925,6 +929,10 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( forbidden != null ) {
             for( String name : this.forbidden ) {
+                if( deprecatedDOs.contains( name )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
                 console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                         "validation of presence condition \"F\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
@@ -984,6 +992,10 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition \"Mmulti\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) == null ) {
+                    if( deprecatedDOs.contains( name )) {
+                        // No errors for deprecated elements
+                        continue;
+                    }
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getLineNumber(), 
                                               "At least one DO \"", name, "\" is mandatory in LNodeType with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
@@ -1236,6 +1248,10 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataObject
         if( mandatoryIfSiblingPresentElseForbidden != null ) {
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseForbidden.entrySet() ) {
+                if( deprecatedDOs.contains( entry.getKey() )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
                 console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                         "validation of presence condition \"MF\" for DO \"", entry.getKey(), "\" sibling \"", entry.getValue(), "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
@@ -1274,6 +1290,10 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): DataAttribute
         if( mandatoryIfSiblingPresentElseOptional != null ) {
             for( Entry< String, String > entry : mandatoryIfSiblingPresentElseOptional.entrySet() ) {
+                if( deprecatedDOs.contains( entry.getKey() )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
                 if( presentDO.get( entry.getValue() ) != null ) {
                     console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                             "validation of presence condition \"MO\" for DO \"", entry.getKey(), "\" sibling \"", entry.getValue(), "\" in LNodeType id = \"",
@@ -1299,6 +1319,10 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): None
         if( optionalIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > entry : optionalIfSiblingPresentElseMandatory.entrySet() ) {
+                if( deprecatedDOs.contains( entry.getKey() )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
                 console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                         "validation of presence condition \"OM\" for DO \"", entry.getKey(), "\" sibling \"", entry.getValue(), "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
@@ -1324,6 +1348,10 @@ public class DataObjectPresenceConditionValidator {
         // Usage in standard NSD files (version 2007B): None
         if( forbiddenIfSiblingPresentElseMandatory != null ) {
             for( Entry< String, String > entry : forbiddenIfSiblingPresentElseMandatory.entrySet() ) {
+                if( deprecatedDOs.contains( entry.getKey() )) {
+                    // No errors for deprecated elements
+                    continue;
+                }
                 console.debug( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                         "validation of presence condition \"FM\" for DO \"", entry.getKey(), "\" sibling \"", entry.getValue(), "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
@@ -1474,6 +1502,10 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition \"MmultiRange\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) == null ) {
+                    if( deprecatedDOs.contains( name )) {
+                        // No errors for deprecated elements
+                        continue;
+                    }
                     RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                               "At least one DO \"", name, "\" is mandatory in LNodeType with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(

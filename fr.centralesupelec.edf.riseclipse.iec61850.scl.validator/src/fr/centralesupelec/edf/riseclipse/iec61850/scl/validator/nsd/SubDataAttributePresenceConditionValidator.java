@@ -73,7 +73,11 @@ public class SubDataAttributePresenceConditionValidator extends GenericPresenceC
         nsdModel
         .getSubDataAttribute()
         .stream()
-        .forEach( sda -> addSpecification( sda.getName(), sda.getPresCond(), sda.getPresCondArgs(), sda.getRefersToPresCondArgsDoc(), sda.getLineNumber(), sda.getFilename() )); 
+        .forEach( sda -> {
+            addSpecification( sda.getName(), sda.getPresCond(), sda.getPresCondArgs(), sda.getRefersToPresCondArgsDoc(), sda.getLineNumber(), sda.getFilename() );
+            
+            if( sda.isDeprecated() ) deprecated.add( sda.getName() );
+        }); 
     }
     
     @Override
