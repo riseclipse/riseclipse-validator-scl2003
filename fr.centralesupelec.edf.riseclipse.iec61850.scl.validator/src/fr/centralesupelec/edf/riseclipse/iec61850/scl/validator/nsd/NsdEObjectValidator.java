@@ -124,6 +124,12 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseAnyLN( AnyLN anyLN ) {
+                // Check first for existing LNodeType
+                if( anyLN.getRefersToLNodeType() == null ) {
+                    // This is not an NSD error, should be detected elsewhere (OCL)
+                    return false;
+                }
+                
                 String inNamespace = anyLN.getNamespace();
                 if(( inNamespace == null ) || ( inNamespace.isEmpty() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY,
