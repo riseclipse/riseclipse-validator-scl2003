@@ -422,20 +422,21 @@ public class CDCValidator {
                 "CDCValidator( ", getName(), " ).validateDO( ", do_.getName(), " ) in namespace \"", nsIdentification, "\"" );
         DOType doType = do_.getRefersToDOType();
         if( doType == null ) {
-            RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                    "DOType for DO \"", do_.getName(), " not found in namespace \"", nsIdentification, "\"" );
-            diagnostics.add( new BasicDiagnostic(
-                    Diagnostic.ERROR,
-                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                    0,
-                    error.getMessage(),
-                    new Object[] { do_, error } ));
+            // Not an NSD error
+//            RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+//                    "DOType for DO \"", do_.getName(), " not found in namespace \"", nsIdentification, "\"" );
+//            diagnostics.add( new BasicDiagnostic(
+//                    Diagnostic.ERROR,
+//                    RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+//                    0,
+//                    error.getMessage(),
+//                    new Object[] { do_, error } ));
             return false;
         }
         
         if( cdc.isDeprecated() ) {
             RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                    "DOType for DO \"", do_.getName(), " refers to deprecated CDC \"", cdc.getName(), "\" in namespace \"", nsIdentification, "\"" );
+                    "DOType \"", doType.getId(), " refers to deprecated CDC \"", cdc.getName(), "\" in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.WARNING,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
