@@ -106,7 +106,6 @@ public class EnumerationValidator extends TypeValidator {
     @Override
     public void reset() {
         validatedEnumType = new HashSet<>();
-        deprecatedLiterals = new HashSet<>();
     }
 
     @Override
