@@ -11,6 +11,7 @@
 - add an attribute for the position of an FCDA in a DataSet (issue riseclipse/riseclipse-metamodel-scl2003#53)
 - warn about deprecated elements (issue riseclipse/riseclipse-validator-scl2003#163)
 - avoid duplicated messages (issue riseclipse/riseclipse-validator-scl2003#164)
+- check reuse of standard DO names (issue riseclipse/riseclipse-validator-scl2003#161)
 
 ## 1.2.7 (2024/05/16)
 - update to Eclipse 2024-03
