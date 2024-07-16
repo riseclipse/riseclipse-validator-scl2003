@@ -23,6 +23,7 @@ package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.nsd;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,6 +34,7 @@ import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.jdt.annotation.NonNull;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.AnyLNClass;
+import fr.centralesupelec.edf.riseclipse.iec61850.nsd.CDC;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DataObject;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.LNClass;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.util.NsIdentification;
@@ -106,6 +108,7 @@ public class LNClassValidator {
     // Key is DataObject name (the corresponding DO has the same name)
     // Value is the CDCValidator given by the DataObject type
     private HashMap< String, CDCValidator > dataObjectValidatorMap = new HashMap<>();
+    private HashSet< String > doWithInstanceNumber = new HashSet<>();
 
     private LNClassValidator( NsIdentification nsIdentification, AnyLNClass anyLNClass, IRiseClipseConsole console ) {
         console.debug( LNCLASS_SETUP_NSD_CATEGORY, anyLNClass.getFilename(), anyLNClass.getLineNumber(),
@@ -118,21 +121,28 @@ public class LNClassValidator {
         AnyLNClass lnClass = anyLNClass;
         while( lnClass != null ) {
             for( DataObject do_ : lnClass.getDataObject() ) {
-                if( do_.getRefersToCDC() == null ) {
-                    console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
-                            "CDC unknown for DataObject \"", do_.getName(), "\" in namespace \"", this.nsIdentification, "\"" );
+                CDC cdc = do_.getRefersToCDC();
+                if( cdc == null ) {
+                    // Not an NSD error
+//                    console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+//                            "CDC unknown for DataObject \"", do_.getName(), "\" in namespace \"", this.nsIdentification, "\"" );
                     continue;
                 }
-                Pair< CDCValidator, NsIdentification > res = CDCValidator.get( this.nsIdentification, do_.getRefersToCDC() );
+                
+                Pair< CDCValidator, NsIdentification > res = CDCValidator.get( this.nsIdentification, cdc );
                 CDCValidator cdcValidator = res.getLeft();
                 if( cdcValidator != null ) {
                     dataObjectValidatorMap.put( do_.getName(), cdcValidator );
-                    console.notice( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                    console.info( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
                                     "CDC for DataObject \"", do_.getName(), "\" found with type ", do_.getType() );
                 }
                 else {
                     console.warning( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
                                      "CDC not found for DataObject \"", do_.getName(), "\" in namespace \"", this.nsIdentification, "\"" );
+                }
+                if( "Mmulti"     .equals( do_.getPresCond() ) || "Omulti"     .equals( do_.getPresCond() )
+                 || "MmultiRange".equals( do_.getPresCond() ) || "OmultiRange".equals( do_.getPresCond() )) {
+                    doWithInstanceNumber.add( do_.getName() );
                 }
             }
 
@@ -188,8 +198,6 @@ public class LNClassValidator {
             
             // If the namespace given by the DOI is not the one used when building dataObjectValidatorMap,
             // we cannot verify the DO
-            // TODO: which one is the right test?
-//            if( ! nsIdentification.dependsOn( NsIdentification.of( doNamespaces.get( do_.getName() )))) {
             if( ! NsIdentification.of( doNamespaces.get( do_.getName() )).dependsOn( nsIdentification )) {
                 RiseClipseMessage notice = RiseClipseMessage.notice( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                         "DO \"", do_.getName(), "\" namespace \"", doNamespaces.get( do_.getName() ), "\" is different from the LNClass namespace \"", nsIdentification, "\"" );
@@ -199,15 +207,29 @@ public class LNClassValidator {
                         0,
                         notice.getMessage(),
                         new Object[] { do_, notice } ));
-                return res;
+                res = false;
+                continue;
             }
             
             // Look for first with the full name, keeping potential ending digits
             CDCValidator cdcValidator = dataObjectValidatorMap.get( do_.getName() );
             if( cdcValidator == null ) {
                 if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
-                    // TODO: a suffix number may be added only when presence condition is Mmulti or Omulti
-                    cdcValidator = dataObjectValidatorMap.get( do_.getName().split( "(?=\\d)", 2 )[0] );
+                    String name = do_.getName().split( "(?=\\d)", 2 )[0];
+                    if( ! doWithInstanceNumber.contains( name )) {
+                        RiseClipseMessage error = RiseClipseMessage.error( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                                "DO name \"", do_.getName(), "\" has an instance number, it shouldn't because the presCond of its corresponding DataObject is not multi" );
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.ERROR,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                error.getMessage(),
+                                new Object[] { do_, error } ));
+                        res = false;
+                        continue;
+                    }
+                    cdcValidator = dataObjectValidatorMap.get( name );
+
                 }
             }
 

@@ -124,6 +124,12 @@ public class NsdEObjectValidator implements EValidator {
 
             @Override
             public Boolean caseAnyLN( AnyLN anyLN ) {
+                // Check first for existing LNodeType
+                if( anyLN.getRefersToLNodeType() == null ) {
+                    // This is not an NSD error, should be detected elsewhere (OCL)
+                    return false;
+                }
+                
                 String inNamespace = anyLN.getNamespace();
                 if(( inNamespace == null ) || ( inNamespace.isEmpty() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY,
@@ -197,7 +203,7 @@ public class NsdEObjectValidator implements EValidator {
             return false;
         }
 
-        console.notice( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
+        console.info( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                            "LNClassValidator ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + lnClassValidator.getRight() + "\"" );
 
         return lnClassValidator.getLeft().validateLNodeType( lNodeType, doNamespaces, diagnostics );
