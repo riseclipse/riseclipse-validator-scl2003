@@ -133,7 +133,7 @@ public class LNClassValidator {
                 CDCValidator cdcValidator = res.getLeft();
                 if( cdcValidator != null ) {
                     dataObjectValidatorMap.put( do_.getName(), cdcValidator );
-                    console.notice( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
+                    console.info( LNCLASS_SETUP_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(),
                                     "CDC for DataObject \"", do_.getName(), "\" found with type ", do_.getType() );
                 }
                 else {

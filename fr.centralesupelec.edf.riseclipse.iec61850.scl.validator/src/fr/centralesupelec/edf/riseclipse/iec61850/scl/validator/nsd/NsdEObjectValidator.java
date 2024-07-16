@@ -203,7 +203,7 @@ public class NsdEObjectValidator implements EValidator {
             return false;
         }
 
-        console.notice( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
+        console.info( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                            "LNClassValidator ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + lnClassValidator.getRight() + "\"" );
 
         return lnClassValidator.getLeft().validateLNodeType( lNodeType, doNamespaces, diagnostics );
