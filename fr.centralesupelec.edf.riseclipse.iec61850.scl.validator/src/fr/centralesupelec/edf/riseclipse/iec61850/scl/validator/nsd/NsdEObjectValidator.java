@@ -101,6 +101,15 @@ public class NsdEObjectValidator implements EValidator {
         for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList( console )) {
             DONameValidator.addFrom( nsdResourceSet.getAbbreviationStream( nsIdentification, false ));
         }
+        
+        // Issue https://github.com/riseclipse/riseclipse-validator-scl2003/issues/161
+        // We need the « standard » DataObjects
+        for( NsIdentification nsIdentification : nsdResourceSet.getNsIdentificationOrderedList( console )) {
+            // TODO: what is a standard namespace?
+            if( nsIdentification.getId().startsWith( "IEC" )) {
+                StandardDOValidator.addFrom( nsdResourceSet.getLNClassStream( nsIdentification, false ));
+            }
+        }
     }
 
     /*
@@ -140,24 +149,26 @@ public class NsdEObjectValidator implements EValidator {
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
                             error.getMessage(),
-                            new Object[] { anyLN, error } ) );
-                    return true;
+                            new Object[] { anyLN, error } ));
+                    inNamespace = null;
                 }
 
-                NsIdentification nsId = NsIdentification.of( inNamespace );
-                if( nsdResourceSet.getNS( nsId ) == null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY,
-                            anyLN.getFilename(), anyLN.getLineNumber(),
-                            "Cannot validate AnyLN type=\"", anyLN.getLnType(), "\" class=\"", anyLN.getLnClass(),
-                            "\" in namespace \"", inNamespace,
-                            "\" because this namespace is unknown" );
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            warning.getMessage(),
-                            new Object[] { anyLN, warning } ) );
-                    return true;
+                NsIdentification nsId = null;
+                if( inNamespace != null ) {
+                    nsId = NsIdentification.of( inNamespace );
+                    if( nsdResourceSet.getNS( nsId ) == null ) {
+                        RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY,
+                                anyLN.getFilename(), anyLN.getLineNumber(),
+                                "AnyLN type=\"", anyLN.getLnType(), "\" class=\"", anyLN.getLnClass(),
+                                "\" is in an unknown namespace \"", inNamespace,
+                                "\", only partial validation will be done" );
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.WARNING,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                warning.getMessage(),
+                                new Object[] { anyLN, warning } ) );
+                    }
                 }
                 
                 // Presence condition validation must be done using the namespace of DOI
@@ -184,22 +195,75 @@ public class NsdEObjectValidator implements EValidator {
         return sw.doSwitch( eObject );
     }
 
-    protected boolean validateLNodeType( LNodeType lNodeType, NsIdentification inNamespace, Map< String, String > doNamespaces, DiagnosticChain diagnostics ) {
+    protected boolean validateLNodeType( LNodeType lNodeType, NsIdentification nsIdentification, Map< String, String > doNamespaces, DiagnosticChain diagnostics ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         console.debug( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
                 "NsdEObjectValidator.validateLNodeType( ", lNodeType.getId(), ")" );
         
-        Pair< LNClassValidator, NsIdentification > lnClassValidator = LNClassValidator.get( inNamespace, lNodeType.getLnClass() );
+        // Part of validation that can be done even if the LNClass is unknown
+        lNodeType
+        .getDO()
+        .stream()
+        .forEach( do_ -> {
+            // DO.Name shall be a combination of the abbreviations listed in 7-4 NSD file
+            // This must be verified even for an unknown namespace
+            if( ! DONameValidator.validateDoName( do_.getName() )) {
+                RiseClipseMessage warning = RiseClipseMessage.warning( LNClassValidator.LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                        "DO name \"", do_.getName(), "\" is not composed using standardised abbreviations" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.WARNING,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        warning.getMessage(),
+                        new Object[] { do_, warning } ));
+            }
+            
+            // If the DO use a standard name, it must use the same CDC and respect the multi presence condition
+            // The check should be OK for standard namespace, so let's do it for all
+            if( StandardDOValidator.isStandardDoName( do_.getName() )) {
+                if( do_.getRefersToDOType() != null ) {
+                    if( ! StandardDOValidator.validateCdcOfExtendedDO( do_.getName(), do_.getRefersToDOType().getCdc() )) {
+                        RiseClipseMessage warning = RiseClipseMessage.warning( LNClassValidator.LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                                "DO name \"", do_.getName(), "\" use a standard name, but not the standard CDC, it is ", do_.getRefersToDOType().getCdc(),
+                                ", it should be ", StandardDOValidator.getStandardCdcOfDataObject( do_.getName() ));
+                        diagnostics.add( new BasicDiagnostic(
+                                Diagnostic.WARNING,
+                                RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                                0,
+                                warning.getMessage(),
+                                new Object[] { do_, warning } ));
+                    }
+                }
+                
+                if( ! StandardDOValidator.isStandardDoMulti( do_.getName() ) && do_.getName().matches( "[a-zA-Z]+\\d+" )) {
+                    RiseClipseMessage warning = RiseClipseMessage.warning( LNClassValidator.LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                            "DO name \"", do_.getName(), "\" use a standard name, but is instantiated while the standard one is not" );
+                    diagnostics.add( new BasicDiagnostic(
+                            Diagnostic.WARNING,
+                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                            0,
+                            warning.getMessage(),
+                            new Object[] { do_, warning } ));
+                }
+            }
+        });
+        
+        if( nsIdentification == null ) return false;
+        
+        Pair< LNClassValidator, NsIdentification > lnClassValidator = LNClassValidator.get( nsIdentification, lNodeType.getLnClass() );
         
         if( lnClassValidator.getLeft() == null ) {
-            RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
-                    "LNClassValidator ", lNodeType.getLnClass(), " not found for LNodeType in namespace \"", inNamespace, "\"" );
-            diagnostics.add( new BasicDiagnostic(
-                  Diagnostic.ERROR,
-                  RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                  0,
-                  error.getMessage(),
-                  new Object[] { lNodeType, error } ));
+            // Message already displayed for unknown namespaces
+            if( nsdResourceSet.getNS( nsIdentification ) != null ) {
+                RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                        "LNClassValidator ", lNodeType.getLnClass(), " not found for LNodeType in namespace \"", nsIdentification, "\"" );
+                diagnostics.add( new BasicDiagnostic(
+                      Diagnostic.ERROR,
+                      RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                      0,
+                      error.getMessage(),
+                      new Object[] { lNodeType, error } ));
+            }
             return false;
         }
 

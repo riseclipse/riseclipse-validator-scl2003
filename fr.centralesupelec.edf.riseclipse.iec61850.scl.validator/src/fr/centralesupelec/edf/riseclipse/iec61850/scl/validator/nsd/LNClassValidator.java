@@ -49,7 +49,7 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 public class LNClassValidator {
     
     private static final String LNCLASS_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/LNClass";
-    private static final String LNCLASS_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/LNClass";
+            static final String LNCLASS_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/LNClass";
 
     // The name of an LNClass in a namespace is unique
     private static IdentityHashMap< NsIdentificationName, LNClassValidator > validators = new IdentityHashMap<>();
@@ -183,18 +183,6 @@ public class LNClassValidator {
         
         // The type of each DO must conform to the CDC of the corresponding DataObject
         for( DO do_ : lNodeType.getDO() ) {
-            // DO.Name shall be a combination of the abbreviations listed in 7-4 NSD file
-            // This must be verified even if we don't know the CDC
-            if( ! DONameValidator.validateDoName( do_.getName() )) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                        "DO name \"", do_.getName(), "\" is not composed using standardised abbreviations" );
-                diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
-                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                        0,
-                        warning.getMessage(),
-                        new Object[] { do_, warning } ));
-            }
             
             // If the namespace given by the DOI is not the one used when building dataObjectValidatorMap,
             // we cannot verify the DO
