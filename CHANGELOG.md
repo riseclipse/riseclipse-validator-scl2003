@@ -12,6 +12,7 @@
 - warn about deprecated elements (issue riseclipse/riseclipse-validator-scl2003#163)
 - avoid duplicated messages (issue riseclipse/riseclipse-validator-scl2003#164)
 - check reuse of standard DO names (issue riseclipse/riseclipse-validator-scl2003#161)
+- the list of warning and error messages is available (issue riseclipse/riseclipse-validator-scl2003#175)
 
 ## 1.2.7 (2024/05/16)
 - update to Eclipse 2024-03
