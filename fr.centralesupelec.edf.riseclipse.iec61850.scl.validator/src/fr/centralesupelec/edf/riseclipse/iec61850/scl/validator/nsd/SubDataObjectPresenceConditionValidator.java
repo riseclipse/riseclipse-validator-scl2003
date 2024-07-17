@@ -173,7 +173,7 @@ public class SubDataObjectPresenceConditionValidator extends GenericPresenceCond
             EList< Val > vals = phsRef.get().getVal();
             if( vals.size() == 0 ) {
                 RiseClipseMessage warning = RiseClipseMessage.warning( SDO_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                                            "verification of PresenceCondition \"OMSynPh\" for SDO \"", sdoName, "\" for DOType: no value for phsRef",
+                                            "verification of PresenceCondition \"OMSynPh\" for SDO \"", sdoName, "\" for DOType: no value for \"phsRef\"",
                                             " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,

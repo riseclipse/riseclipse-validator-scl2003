@@ -259,16 +259,16 @@ public class CDCValidator {
                 typeValidator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                String daType = ( da.getType() == null ) ? ( " of bType " + da.getBType() ) : ( " of type " + da.getType() );
-                RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
-                        "DA ", da.getName(), daType,
-                        " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
+                String daType = ( da.getType() == null ) ? ( "\" of bType \"" + da.getBType() ) : ( "\" of type \"" + da.getType() );
+                RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                        "DA \"", da.getName(), daType,
+                        "\" cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.ERROR,
+                        Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        error.getMessage(),
-                        new Object[] { da, error } ));
+                        warning.getMessage(),
+                        new Object[] { da, warning } ));
             }
 
             FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( da.getFc() );
@@ -276,15 +276,15 @@ public class CDCValidator {
                 fcValidator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                RiseClipseMessage error = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
-                        "FunctionalConstraint ", da.getFc(), " of DA " + da.getName(),
+                RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                        "FunctionalConstraint ", da.getFc(), " of DA ", da.getName(),
                         " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.ERROR,
+                        Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        error.getMessage(),
-                        new Object[] { da, error } ));
+                        warning.getMessage(),
+                        new Object[] { da, warning } ));
             }
             
             // Issue #146: check dchg, qchg, dupd
@@ -296,7 +296,7 @@ public class CDCValidator {
            .ifPresent( dataAttribute -> {
                 if(( Boolean.TRUE.equals( da.getDchg() )) && ( ! dataAttribute.isDchg() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
-                            "Attribute dchg of DA " + da.getName(), " is true while the corresponding one in DataAttribute is false or absent",
+                            "attribute dchg of DA \"", da.getName(), "\" is true while the corresponding one in DataAttribute is false or absent",
                             " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
@@ -308,7 +308,7 @@ public class CDCValidator {
 
                 if(( Boolean.TRUE.equals( da.getQchg() )) && ( ! dataAttribute.isQchg() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
-                            "Attribute qchg of DA " + da.getName(), " is true while the corresponding one in DataAttribute is false or absent",
+                            "attribute qchg of DA \"", da.getName(), "\" is true while the corresponding one in DataAttribute is false or absent",
                             " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
@@ -320,7 +320,7 @@ public class CDCValidator {
 
                 if(( Boolean.TRUE.equals( da.getDupd() )) && ( ! dataAttribute.isDupd() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
-                            "Attribute dupd of DA " + da.getName(), " is true while the corresponding one in DataAttribute is false or absent",
+                            "attribute dupd of DA \"", da.getName(), "\" is true while the corresponding one in DataAttribute is false or absent",
                             " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
@@ -335,7 +335,7 @@ public class CDCValidator {
                 if( da.isSetCount() ) {
                     if( ! dataAttribute.isSetIsArray() ) {
                         RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
-                                "DA " + da.getName(), " has a count attribute while the corresponding DataAttribute has not isArray=\"true\"",
+                                "DA \"", da.getName(), "\" has a count attribute while the corresponding DataAttribute has not isArray=\"true\"",
                                 " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
@@ -399,7 +399,7 @@ public class CDCValidator {
                 .ifPresent( subDataObject -> {
                     if( ! subDataObject.isSetIsArray() ) {
                         RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(), 
-                                "SDO " + sdo.getName(), " has a count attribute while the corresponding SubDataObject has not isArray=\"true\"",
+                                "SDO \"", sdo.getName(), "\" has a count attribute while the corresponding SubDataObject has not isArray=\"true\"",
                                 " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
@@ -436,7 +436,7 @@ public class CDCValidator {
         
         if( cdc.isDeprecated() ) {
             RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
-                    "DOType \"", doType.getId(), " refers to deprecated CDC \"", cdc.getName(), "\" in namespace \"", nsIdentification, "\"" );
+                    "DOType id = \"", doType.getId(), " refers to deprecated CDC \"", cdc.getName(), "\" in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.WARNING,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,

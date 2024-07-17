@@ -145,8 +145,8 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                     for( String attribute : mandatoryInLLN0ElseOptional ) {
                         DA da = presentSclComponent.get( attribute );
                         if( da == null ) {
-                            RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
-                                                      getSclComponentClassName(), " ", attribute, " is mandatory in ", getSclModelClassName(),
+                            RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
+                                                      getSclComponentClassName(), " \"", attribute, "\" is mandatory in ", getSclModelClassName(),
                                                       " with LNClass LLN0", " in namespace \"", nsIdentification, "\"" );
                             diagnostics.add( new BasicDiagnostic(
                                     Diagnostic.ERROR,
@@ -177,7 +177,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                     for( String attribute : mandatoryInLLN0ElseForbidden ) {
                         DA da = presentSclComponent.get( attribute );
                         if( da == null ) {
-                            RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getLineNumber(), 
+                            RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                                                       getSclComponentClassName(), " \"", attribute, "\" is mandatory in ", getSclModelClassName(),
                                                       " with LNClass LLN0", " in namespace \"", nsIdentification, "\"" );
                             diagnostics.add( new BasicDiagnostic(
@@ -300,7 +300,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
         return validateMFscaledMagOrAngV( doType, "ang", mandatoryIfVectorSiblingIncludesIAsChildAngElseForbidden, diagnostics );
     }
 
-    private boolean validateMFscaledMagOrAngV( DOType doType, String marOrAng, Set< String> toTest, DiagnosticChain diagnostics ) {
+    private boolean validateMFscaledMagOrAngV( DOType doType, String magOrAng, Set< String> toTest, DiagnosticChain diagnostics ) {
         boolean res = true;
         boolean iIsPresent = false;
         for( DA da : doType.getDA() ) {
@@ -310,7 +310,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
                          .getRefersToDAType()
                          .getBDA()
                          .stream()
-                         .filter( bda -> marOrAng.equals( bda.getName() ))
+                         .filter( bda -> magOrAng.equals( bda.getName() ))
                          .findAny();
                 if( magBDA.isPresent() ) {
                     boolean iFound = 
@@ -331,7 +331,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
             if( iIsPresent && ( presentSclComponent.get( name ) == null )) {
                 RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                         getSclComponentClassName(), " \"", name, "\" is mandatory in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
-                        " because there are sibling elements of type Vector which includes 'i' as a child of their " + marOrAng + " attribute" );
+                        " because there are sibling elements of type Vector which includes 'i' as a child of their \"", magOrAng, "\" attribute" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -343,7 +343,7 @@ public class DataAttributePresenceConditionValidator extends GenericPresenceCond
             else if( ! iIsPresent && ( presentSclComponent.get( name ) != null )) {
                 RiseClipseMessage error = RiseClipseMessage.error( DA_VALIDATION_NSD_CATEGORY, doType.getFilename(), doType.getLineNumber(), 
                         getSclComponentClassName(), " \"", name, "\" is forbidden in ", getSclModelClassName(), " in namespace \"", nsIdentification, "\"",
-                        " because there are no sibling element of type Vector which includes 'i' as a child of their " + marOrAng + " attribute" );
+                        " because there are no sibling element of type Vector which includes 'i' as a child of their \"", magOrAng, "\" attribute" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
