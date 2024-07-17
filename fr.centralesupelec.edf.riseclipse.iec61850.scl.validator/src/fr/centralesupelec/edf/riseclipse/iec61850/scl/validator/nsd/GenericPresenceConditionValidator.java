@@ -654,7 +654,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
         if( ! presentSclComponent.containsKey( sclComponentName )) {
             RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclComponent.getFilename(), sclComponent.getLineNumber(), 
                                       getSclComponentClassName(), " \"", sclComponentName, "\" not expected in ", getNsdModelClassName(), " \"", getNsdModelName(),
-                                      "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                                      " in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -667,7 +667,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
         if( presentSclComponent.get( sclComponentName ) != null ) {
             RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclComponent.getFilename(), sclComponent.getLineNumber(), 
                                       getSclComponentClassName(), " \"", sclComponentName, "\" already present in ", getNsdModelClassName(), " \"", getNsdModelName(),
-                                      "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                                       " in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.ERROR,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -688,7 +688,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
         
         if( nsdModel.isDeprecated() ) {
             RiseClipseMessage warning = RiseClipseMessage.warning( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                    getSclComponentClassName(), "\"", sclModel.getId(), " refers to deprecated ", getNsdModelClassName(), " \"", getNsdModelName(), "\" in namespace \"", nsIdentification, "\"" );
+                    getSclModelClassName(), " id = \"", sclModel.getId(), "\" refers to deprecated ", getNsdModelClassName(), " \"", getNsdModelName(), "\" in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.WARNING,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -713,8 +713,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) == null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
                                               getSclComponentClassName(), " \"", name, "\" is mandatory in ", getSclModelClassName(), " id = \"",
-                                              sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ",
-                                              getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                                              sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -757,8 +756,7 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
                             getSclComponentClassName(), " \"", name, "\" is forbidden in ", getSclModelClassName(), " id = \"",
-                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ",
-                            getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                           Diagnostic.ERROR,
                           RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -783,7 +781,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"na\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -807,7 +806,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"Mmulti\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -831,7 +831,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"Mmulti\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -865,9 +866,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 atLeastOneOf += ")";
                 if( ! groupOK ) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                              "group ", e1.getKey(), " has no elements in ", getSclModelClassName(), " with ", getNsdModelClassName(),
-                                              " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
-                                              atLeastOneOf, " in namespace \"", nsIdentification, "\"" );
+                                              "group ", e1.getKey(), " has no elements in ", getSclModelClassName(), " id = \"",
+                                              sclModel.getId(), "\" with ", getNsdModelClassName(),
+                                              " \"", getNsdModelName(), " in namespace \"", nsIdentification, "\"", atLeastOneOf );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -898,8 +899,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
             atMostOneOf += ")";
             if( count > 1 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                          getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(),
-                                          "\" has more than one element marked AtMostOne", atMostOneOf, " in namespace \"", nsIdentification, "\"" );
+                                          getSclModelClassName(), " id = \"",
+                                          sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(),
+                                          "\" has more than one element marked AtMostOne in namespace \"", nsIdentification, "\"", atMostOneOf );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -932,8 +934,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if(( groupCount > 0 ) && ( groupCount < e1.getValue().size() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
                                               "group ", e1.getKey(), " has neither none nor all elements in ", getSclModelClassName(),
-                                              " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
-                                              expectedMembers, " in namespace \"", nsIdentification, "\"" );
+                                              " id = \"",
+                                              sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(),
+                                              " in namespace \"", nsIdentification, "\"", expectedMembers );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -968,7 +971,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if(( groupCount > 0 ) && ( groupCount < e1.getValue().size() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
                                               "group ", e1.getKey(), " has neither none nor all elements in ", getSclModelClassName(),
-                                              " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                              " id = \"",
+                                              sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                               expectedMembers, " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
@@ -984,7 +988,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                     }
                     else {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                                  getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(),
+                                                  getSclModelClassName(), " id = \"",
+                                                  sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(),
                                                   "\" has several groups with all elements", " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
@@ -998,7 +1003,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
             }
             if( groupNumber == 0 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                          "no group in ", getSclModelClassName(), " with ", getNsdModelClassName(), " \"",
+                                          "no group in ", getSclModelClassName(), " id = \"",
+                                          sclModel.getId(), "\" with ", getNsdModelClassName(), " \"",
                                           getNsdModelName(), "\" has all elements", " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
@@ -1033,7 +1039,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
             }
             if( groupNumber == 0 ) {
                 RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                          "no group in ", getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(),
+                                          "no group in ", getSclModelClassName(), " id = \"",
+                                          sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(),
                                           "\" has all elements", " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
@@ -1062,8 +1069,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( entry.getValue() ) != null ) {
                     if( presentSclComponent.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                                  getSclComponentClassName(), " ", entry.getKey() + " is mandatory in ", getSclModelClassName(), " with ",
-                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling ", entry.getValue(), " is present"
+                                                  getSclComponentClassName(), " ", entry.getKey() + " is mandatory in ", getSclModelClassName(), " id = \"",
+                                                  sclModel.getId(), "\" with ",
+                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling \"", entry.getValue(), "\" is present"
                                                   , " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
@@ -1077,8 +1085,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 else {
                     if( presentSclComponent.get( entry.getKey() ) != null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                                  getSclComponentClassName(), " ", entry.getKey() + " is forbidden in ", getSclModelClassName(), " with ",
-                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling ", entry.getValue(), " is not present",
+                                                  getSclComponentClassName(), " ", entry.getKey() + " is forbidden in ", getSclModelClassName(), " id = \"",
+                                                  sclModel.getId(), "\" with ",
+                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling \"", entry.getValue(), "\" is not present",
                                                   " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
@@ -1109,8 +1118,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( entry.getValue() ) != null ) {
                     if( presentSclComponent.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                                  getSclComponentClassName(), " ", entry.getKey() + " is mandatory in ", getSclModelClassName(), " with ",
-                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling ", entry.getValue(), " is present"
+                                                  getSclComponentClassName(), " ", entry.getKey() + " is mandatory in ", getSclModelClassName(), " id = \"",
+                                                  sclModel.getId(), "\" with ",
+                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling \"", entry.getValue(), "\" is present"
                                                   , " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
@@ -1141,8 +1151,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( entry.getValue() ) == null ) {
                     if( presentSclComponent.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                                  getSclComponentClassName(), " ", entry.getKey() + " is mandatory in ", getSclModelClassName(), " with ",
-                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling ", entry.getValue(), " is not present",
+                                                  getSclComponentClassName(), " ", entry.getKey() + " is mandatory in ", getSclModelClassName(), " id = \"",
+                                                  sclModel.getId(), "\" with ",
+                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling \"", entry.getValue(), "\" is not present",
                                                   " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
@@ -1173,8 +1184,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( entry.getValue() ) != null ) {
                     if( presentSclComponent.get( entry.getKey() ) != null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                                  getSclComponentClassName(), " ", entry.getKey() + " is forbidden in ", getSclModelClassName(), " with ",
-                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling ", entry.getValue(), " is present"
+                                                  getSclComponentClassName(), " ", entry.getKey() + " is forbidden in ", getSclModelClassName(), " id = \"",
+                                                  sclModel.getId(), "\" with ",
+                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling \"", entry.getValue(), "\" is present"
                                                   , " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
@@ -1188,8 +1200,9 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 else {
                     if( presentSclComponent.get( entry.getKey() ) == null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                                  getSclComponentClassName(), " ", entry.getKey() + " is mandatory in ", getSclModelClassName(), " with ",
-                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling ", entry.getValue(), " is not present",
+                                                  getSclComponentClassName(), " ", entry.getKey() + " is mandatory in ", getSclModelClassName(), " id = \"",
+                                                  sclModel.getId(), "\" with ",
+                                                  getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling \"", entry.getValue(), "\" is not present",
                                                   " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.ERROR,
@@ -1216,17 +1229,18 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                         " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 String doc = mandatoryIfTextConditionElseOptionalDoc.get( entry.getKey() );
 
-                RiseClipseMessage warning = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                          getSclComponentClassName(), " ", entry.getKey(), " is mandatory in ", getSclModelClassName(), " with ",
+                RiseClipseMessage notice = RiseClipseMessage.notice( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
+                                          getSclComponentClassName(), " ", entry.getKey(), " is mandatory in ", getSclModelClassName(), " id = \"",
+                                          sclModel.getId(), "\" with ",
                                           getNsdModelClassName(), " \"", getNsdModelName(), "\" if textual condition number ", entry.getValue(), " (not evaluated) is true, else optional. It is ",
                                           ( presentSclComponent.get( entry.getKey() ) == null ? "absent." : "present." ), ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                                           " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { sclModel, warning } ));
+                        notice.getMessage(),
+                        new Object[] { sclModel, notice } ));
             }
         }
         
@@ -1243,17 +1257,18 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                         " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 String doc = mandatoryIfTextConditionElseForbiddenDoc.get( entry.getKey() );
 
-                RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                          getSclComponentClassName(), " ", entry.getKey(), " is mandatory in ", getSclModelClassName(), " with ",
+                RiseClipseMessage notice = RiseClipseMessage.notice( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
+                                          getSclComponentClassName(), " ", entry.getKey(), " is mandatory in ", getSclModelClassName(), " id = \"",
+                                          sclModel.getId(), "\" with ",
                                           getNsdModelClassName(), " \"", getNsdModelName(), "\" if textual condition number ", entry.getValue(), " (not evaluated) is true, else forbidden. It is ",
                                           ( presentSclComponent.get( entry.getKey() ) == null ? "absent." : "present." ), ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" ),
                                           " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        error.getMessage(),
-                        new Object[] { sclModel, error } ));
+                        notice.getMessage(),
+                        new Object[] { sclModel, notice } ));
             }
         }
         
@@ -1270,17 +1285,18 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                         " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                 String doc = optionalIfTextConditionElseForbiddenDoc.get( entry.getKey() );
 
-                RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                          getSclComponentClassName(), " ", entry.getKey(), " is optional in ", getSclModelClassName(), " with ",
+                RiseClipseMessage notice = RiseClipseMessage.notice( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
+                                          getSclComponentClassName(), " ", entry.getKey(), " is optional in ", getSclModelClassName(), " id = \"",
+                                          sclModel.getId(), "\" with ",
                                           getNsdModelClassName(), " \"", getNsdModelName(), "\" if textual condition number ", entry.getValue(), " (not evaluated) is true, else forbidden. It is ",
                                           ( presentSclComponent.get( entry.getKey() ) == null ? "absent." : "present." ), ( doc != null ? " Textual condition is: \"" + doc + "\"." : "" )
                                           , " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        error.getMessage(),
-                        new Object[] { sclModel, error } ));
+                        notice.getMessage(),
+                        new Object[] { sclModel, notice } ));
             }
         }
         
@@ -1297,7 +1313,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MmultiRange\" for ", getSclComponentClassName(), " ", name,
-                                                " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(),
+                                                " is not implemented in ", getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(),
                                                 "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1322,7 +1339,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"OmultiRange\" for ", getSclComponentClassName(), " ", name,
-                                                " is not implemented in ", getSclModelClassName(), " with ", getNsdModelClassName(), " \"",
+                                                " is not implemented in ", getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"",
                                                 getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1347,7 +1365,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MFsubst\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1395,7 +1414,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOlnNs\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1421,7 +1441,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MOcdcNs\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ", getSclModelClassName(),
-                            " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                            " id = \"",
+                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1446,7 +1467,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOdataNs\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1512,7 +1534,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOrms\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1536,7 +1559,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOrootLD\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1561,7 +1585,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOoperTm\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1587,7 +1612,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MmultiF\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1613,7 +1639,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOsbo\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1639,7 +1666,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOenhanced\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1665,7 +1693,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MONamPlt\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1690,7 +1719,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( entry.getValue() ) == null ) {
                     if( presentSclComponent.get( entry.getKey() ) != null ) {
                         RiseClipseMessage error = RiseClipseMessage.error( getValidationMessageCategory(), sclModel.getFilename(), sclModel.getLineNumber(), 
-                                                  getSclComponentClassName(), " ", entry.getKey() + " is forbidden in ", getSclModelClassName(), " with ",
+                                                  getSclComponentClassName(), " ", entry.getKey() + " is forbidden in ", getSclModelClassName(), " id = \"",
+                                                  sclModel.getId(), "\" with ",
                                                   getNsdModelClassName(), " \"", getNsdModelName(), "\" because sibling ", entry.getValue(), " is not present",
                                                   " in namespace \"", nsIdentification, "\"" );
                         diagnostics.add( new BasicDiagnostic(
@@ -1719,7 +1749,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                                 "verification of PresenceCondition \"MORange\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                                getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                                getSclModelClassName(), " id = \"",
+                                                sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                                 " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1754,7 +1785,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MAllOrNonePerGroup\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                            getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                            getSclModelClassName(), " id = \"",
+                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                             " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
@@ -1777,7 +1809,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MOctrl\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ", getSclModelClassName(),
-                            " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                            " id = \"",
+                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1799,7 +1832,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MOsboNormal\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ", getSclModelClassName(),
-                            " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                            " id = \"",
+                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1821,7 +1855,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
                 if( presentSclComponent.get( name ) != null ) {
                     RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                             "verification of PresenceCondition \"MOsboEnhanced\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ", getSclModelClassName(),
-                            " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
+                            " id = \"",
+                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(), " in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -1846,7 +1881,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
             if( presentSclComponent.get( name ) != null ) {
                 RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"MFscaledAV\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                            getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                            getSclModelClassName(), " id = \"",
+                                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                             " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.INFO,
@@ -1864,7 +1900,8 @@ public abstract class GenericPresenceConditionValidator< NsdModel extends Docume
             if( presentSclComponent.get( name ) != null ) {
                 RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.NOTIMPLEMENTED_NSD_CATEGORY, sclModel.getFilename(), sclModel.getLineNumber(), 
                                             "verification of PresenceCondition \"MFscaledMagV\" for ", getSclComponentClassName(), " \"", name, "\" is not implemented in ",
-                                            getSclModelClassName(), " with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
+                                            getSclModelClassName(), " id = \"",
+                                            sclModel.getId(), "\" with ", getNsdModelClassName(), " \"", getNsdModelName(), "\" at line ", getNsdModelLineNumber(),
                                             " in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.INFO,

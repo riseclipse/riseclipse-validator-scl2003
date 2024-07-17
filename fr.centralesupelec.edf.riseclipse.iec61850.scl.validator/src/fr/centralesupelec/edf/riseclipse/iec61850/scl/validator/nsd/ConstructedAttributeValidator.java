@@ -144,7 +144,7 @@ public class ConstructedAttributeValidator extends TypeValidator {
         
         if( constructedAttribute.isDeprecated() ) {
             RiseClipseMessage warning = RiseClipseMessage.warning( CA_VALIDATION_NSD_CATEGORY, daType.getFilename(), daType.getLineNumber(), 
-                    "DAType \"", daType.getId(), " refers to deprecated ConstructedAttribute \"", constructedAttribute.getName(), "\" in namespace \"", nsIdentification, "\"" );
+                    "DAType id = \"", daType.getId(), " refers to deprecated ConstructedAttribute \"", constructedAttribute.getName(), "\" in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
                     Diagnostic.WARNING,
                     RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -172,10 +172,10 @@ public class ConstructedAttributeValidator extends TypeValidator {
                 // if BDA has unknown type, tell it
                 String ofType = "";
                 if( subDataAttributeUnknownTypeMap.containsKey( bda.getName() )) {
-                    ofType = " of type " + subDataAttributeUnknownTypeMap.get( bda.getName() );
+                    ofType = "\" of type \"" + subDataAttributeUnknownTypeMap.get( bda.getName() );
                 }
                 RiseClipseMessage warning = RiseClipseMessage.warning( CA_VALIDATION_NSD_CATEGORY, daType.getFilename(), daType.getLineNumber(), 
-                        "while validating DAType: validator for BDA " + bda.getName() + ofType + " not found" );
+                        "while validating DAType: validator for BDA \"", bda.getName(), ofType, "\" not found in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,

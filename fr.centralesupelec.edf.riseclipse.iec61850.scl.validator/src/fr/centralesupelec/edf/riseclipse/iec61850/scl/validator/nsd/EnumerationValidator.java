@@ -59,7 +59,7 @@ public class EnumerationValidator extends TypeValidator {
     private HashSet< String > deprecatedLiterals = new HashSet<>();
 
     public EnumerationValidator( Enumeration enumeration, NsIdentification nsIdentification, IRiseClipseConsole console ) {
-        console.debug( ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getLineNumber(),
+        console.debug( ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
                 "EnumerationValidator( ", enumeration.getName(), " )in namespace\"", nsIdentification, "\"" );
 
         this.enumeration = enumeration;
@@ -74,7 +74,7 @@ public class EnumerationValidator extends TypeValidator {
                 literals.putAll( inheritedFrom.literals );
             }
             else {
-                console.error( ENUMERATION_SETUP_NSD_CATEGORY, 0,
+                console.error( ENUMERATION_SETUP_NSD_CATEGORY, enumeration.getFilename(), enumeration.getLineNumber(),
                                "validator for inherited enumeration \"", inheritedFromName, "\" not found" );
             }
         }
@@ -207,8 +207,8 @@ public class EnumerationValidator extends TypeValidator {
             
             if( ! literals.containsKey( enumVal.getOrd() )) {
                 RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
-                                          "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType id = ", enumType.getId(),
-                                          " is not defined as LiteralVal in standard Enumeration ", getName(), " in namespace \"", nsIdentification, "\"" );
+                                          "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType id = \"", enumType.getId(),
+                                          "\" is not defined as LiteralVal in standard Enumeration \"", getName(), "\" in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.ERROR,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -221,9 +221,9 @@ public class EnumerationValidator extends TypeValidator {
                 // while the supported positive value of the enumeration items shall be used by the implementation.
                 if( ! literals.get( enumVal.getOrd() ).equals( enumVal.getValue() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
-                                              "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType id = " , enumType.getId(),
-                                              " has incorrect name \"", enumVal.getValue(), "\" instead of \"", literals.get( enumVal.getOrd() ), "\" in standard enumeration ",
-                                              getName(), " in namespace \"", nsIdentification, "\"" );
+                                              "EnumVal with ord \"", enumVal.getOrd(), "\" in EnumType id = \"" , enumType.getId(),
+                                              "\" has incorrect name \"", enumVal.getValue(), "\" instead of \"", literals.get( enumVal.getOrd() ), "\" in standard enumeration \"",
+                                              getName(), "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -235,9 +235,9 @@ public class EnumerationValidator extends TypeValidator {
                 // Check for deprecated literal, only if correct name is used
                 else if( deprecatedLiterals.contains( enumVal.getValue() )) {
                     RiseClipseMessage warning = RiseClipseMessage.warning( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
-                            "EnumVal with name \"", enumVal.getValue(), "\" in EnumType id = " , enumType.getId(),
-                            " is deprecated in standard enumeration ",
-                            getName(), " in namespace \"", nsIdentification, "\"" );
+                            "EnumVal with name \"", enumVal.getValue(), "\" in EnumType id = \"" , enumType.getId(),
+                            "\" is deprecated in standard enumeration \"",
+                            getName(), "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,

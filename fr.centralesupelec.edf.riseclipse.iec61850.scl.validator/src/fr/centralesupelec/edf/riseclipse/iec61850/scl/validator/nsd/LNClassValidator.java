@@ -49,7 +49,7 @@ import fr.centralesupelec.edf.riseclipse.util.RiseClipseMessage;
 public class LNClassValidator {
     
     private static final String LNCLASS_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/LNClass";
-            static final String LNCLASS_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/LNClass";
+    private static final String LNCLASS_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/LNClass";
 
     // The name of an LNClass in a namespace is unique
     private static IdentityHashMap< NsIdentificationName, LNClassValidator > validators = new IdentityHashMap<>();

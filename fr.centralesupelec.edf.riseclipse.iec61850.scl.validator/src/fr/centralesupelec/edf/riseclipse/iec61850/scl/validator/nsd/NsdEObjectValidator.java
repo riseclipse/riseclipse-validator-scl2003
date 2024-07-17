@@ -208,8 +208,8 @@ public class NsdEObjectValidator implements EValidator {
             // DO.Name shall be a combination of the abbreviations listed in 7-4 NSD file
             // This must be verified even for an unknown namespace
             if( ! DONameValidator.validateDoName( do_.getName() )) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( LNClassValidator.LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                        "DO name \"", do_.getName(), "\" is not composed using standardised abbreviations" );
+                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                        "DO \"", do_.getName(), "\" is not composed using standardised abbreviations" );
                 diagnostics.add( new BasicDiagnostic(
                         Diagnostic.WARNING,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -223,9 +223,9 @@ public class NsdEObjectValidator implements EValidator {
             if( StandardDOValidator.isStandardDoName( do_.getName() )) {
                 if( do_.getRefersToDOType() != null ) {
                     if( ! StandardDOValidator.validateCdcOfExtendedDO( do_.getName(), do_.getRefersToDOType().getCdc() )) {
-                        RiseClipseMessage warning = RiseClipseMessage.warning( LNClassValidator.LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                                "DO name \"", do_.getName(), "\" use a standard name, but not the standard CDC, it is ", do_.getRefersToDOType().getCdc(),
-                                ", it should be ", StandardDOValidator.getStandardCdcOfDataObject( do_.getName() ));
+                        RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                                "DO \"", do_.getName(), "\" use a standard name, but not the standard CDC, it is \"", do_.getRefersToDOType().getCdc(),
+                                "\", it should be \"", StandardDOValidator.getStandardCdcOfDataObject( do_.getName() ), "\"");
                         diagnostics.add( new BasicDiagnostic(
                                 Diagnostic.WARNING,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -236,8 +236,8 @@ public class NsdEObjectValidator implements EValidator {
                 }
                 
                 if( ! StandardDOValidator.isStandardDoMulti( do_.getName() ) && do_.getName().matches( "[a-zA-Z]+\\d+" )) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( LNClassValidator.LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                            "DO name \"", do_.getName(), "\" use a standard name, but is instantiated while the standard one is not" );
+                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                            "DO \"", do_.getName(), "\" use a standard name, but is instantiated while the standard one is not" );
                     diagnostics.add( new BasicDiagnostic(
                             Diagnostic.WARNING,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -256,7 +256,7 @@ public class NsdEObjectValidator implements EValidator {
             // Message already displayed for unknown namespaces
             if( nsdResourceSet.getNS( nsIdentification ) != null ) {
                 RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
-                        "LNClassValidator ", lNodeType.getLnClass(), " not found for LNodeType in namespace \"", nsIdentification, "\"" );
+                        "LNClassValidator \"", lNodeType.getLnClass(), "\" not found for LNodeType \"", lNodeType.getId(), "\" in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
                       Diagnostic.ERROR,
                       RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
@@ -268,7 +268,7 @@ public class NsdEObjectValidator implements EValidator {
         }
 
         console.info( NsdValidator.VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(),
-                           "LNClassValidator ", lNodeType.getLnClass(), " found for LNodeType in namespace \"" + lnClassValidator.getRight() + "\"" );
+                           "LNClassValidator \"", lNodeType.getLnClass(), "\" found for LNodeType \"", lNodeType.getId(), "\" in namespace \"" + lnClassValidator.getRight() + "\"" );
 
         return lnClassValidator.getLeft().validateLNodeType( lNodeType, doNamespaces, diagnostics );
     }
