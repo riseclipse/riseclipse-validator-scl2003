@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: RiseClipse IEC61850 SCL Tools UI
+Bundle-Name: RiseClipse IEC61850 SCL Validator UI
 Bundle-Vendor: CentraleSupélec & EDF
 Bundle-SymbolicName: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui
 Bundle-Version: 1.2.7.qualifier
