@@ -151,17 +151,17 @@
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl</artifactId>
-      <version>1.2.11</version>
+      <version>1.2.12</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.edit</artifactId>
-      <version>1.2.11</version>
+      <version>1.2.12</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities</artifactId>
-      <version>1.2.11</version>
+      <version>1.2.12</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
