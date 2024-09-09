@@ -1,5 +1,5 @@
 
-## 1.2.8 (2024/07/17)
+## 1.2.8 (2024/09/09)
 - created links between LDevices are also built when setSrcRef value is in DataTypeTemplates 
   (issue riseclipse/riseclipse-metamodel-scl2003#43)
 - add some missing default values 
