@@ -80,7 +80,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.2.8-SNAPSHOT (9 September 2024)";
+    private static final String TOOL_VERSION = "1.2.8-SNAPSHOT (11 September 2024)";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
@@ -1041,6 +1041,11 @@ public class RiseClipseValidatorSCL {
 //                        catch( NumberFormatException ex ) {}
 //                        console.output( new RiseClipseMessage( severity, parts[1], line, parts[2] ));
 //                    }
+// But we must displayed it
+                    else {
+                        console.warning( VALIDATOR_SCL_CATEGORY, 0, "The structure of the following diagnostic message was not recognized by RiseClipseValidatorSCL" );
+                        console.warning( VALIDATOR_SCL_CATEGORY, 0, diagMessage );
+                    }
                 }
                 else if(( parts.length == 5 ) && ( parts[1].startsWith( "OCL" ))) {
                     // This should be a standard RiseClipse OCL message with the added filename
