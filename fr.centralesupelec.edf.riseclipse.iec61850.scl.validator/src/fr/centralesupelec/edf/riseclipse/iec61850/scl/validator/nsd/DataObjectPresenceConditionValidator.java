@@ -25,6 +25,8 @@ import java.util.IdentityHashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -51,6 +53,9 @@ public class DataObjectPresenceConditionValidator {
     private static final String DO_SETUP_NSD_CATEGORY      = NsdValidator.SETUP_NSD_CATEGORY      + "/DataObject";
     private static final String DO_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/DataObject";
 
+    // The name of a DataObject for numbered DO may contain digits (e.g. Rec3Tmms)
+    private static final Pattern NAME_PATTERN = Pattern.compile( "([a-zA-Z0-9]+)(\\d+)" ); 
+    
     private static IdentityHashMap< NsIdentificationName, DataObjectPresenceConditionValidator > notStatisticalValidators = new IdentityHashMap<>();
     private static IdentityHashMap< NsIdentificationName, DataObjectPresenceConditionValidator > statisticalValidators = new IdentityHashMap<>();
     
@@ -737,24 +742,16 @@ public class DataObjectPresenceConditionValidator {
         // but a number at the end of the name is not always an instance number !
         // Therefore, we first look for with the full name, then with the name without the suffix
         
-        String[] names = new String[] { do_.getName() };
-        if( ! presentDO.containsKey( names[0] )) {
-            if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
-                names = do_.getName().split( "(?=\\d)", 2 );
-                if( names.length != 2 ) {
-                    RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
-                            "unexpected DO name \"", do_.getName(), "\" in LNodeType id \"", do_.getParentLNodeType().getId(), "\" in namespace \"", nsIdentification, "\"" );
-                    diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.ERROR,
-                            RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
-                            0,
-                            error.getMessage(),
-                            new Object[] { do_, error } ));
-                    return false;
-                }
+        String name = do_.getName();
+        int number = 0;
+        if( ! presentDO.containsKey( name )) {
+            Matcher matcher = NAME_PATTERN.matcher( name );
+            if( matcher.matches() ) {
+                name = matcher.group( 1 );
+                number = Integer.valueOf( matcher.group( 2 ));
             }
         }
-        if( ! presentDO.containsKey( names[0] )) {
+        if( ! presentDO.containsKey( name )) {
             if( base != null ) {
                 return base.addDO( do_, anyLNClassName, diagnostics );
             }
@@ -769,7 +766,7 @@ public class DataObjectPresenceConditionValidator {
             return false;
         }
         
-        if( deprecatedDOs.contains( names[0] )) {
+        if( deprecatedDOs.contains( name )) {
             RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getFilename(), do_.getParentLNodeType().getLineNumber(), 
                     "DO \"", do_.getName(), "\" in LNodeType id \"", do_.getParentLNodeType().getId(), "\" is deprecated in \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
             diagnostics.add( new BasicDiagnostic(
@@ -779,9 +776,8 @@ public class DataObjectPresenceConditionValidator {
                     warning.getMessage(),
                     new Object[] { do_, warning } ));
         }
-
-        if( names.length == 1 ) {
-            if( presentDO.get( do_.getName() ) != null ) {
+        if( number == 0 ) {
+            if( presentDO.get( name ) != null ) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getFilename(), do_.getParentLNodeType().getLineNumber(), 
                                           "DO \"", do_.getName(), "\" in LNodeType id \"", do_.getParentLNodeType().getId(), "\" already present in LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
@@ -795,11 +791,11 @@ public class DataObjectPresenceConditionValidator {
             presentDO.put( do_.getName(), new SingleDO( do_ ));
             return true;
         }
-        if( names.length == 2 ) {
-            if( presentDO.get( names[0] ) == null ) {
-                presentDO.put( names[0], new MultiDO() );
+        else {
+            if( presentDO.get( name ) == null ) {
+                presentDO.put( name, new MultiDO() );
             }
-            else if( presentDO.get( names[0] ) instanceof SingleDO ) {
+            else if( presentDO.get( name ) instanceof SingleDO ) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getFilename(), do_.getParentLNodeType().getLineNumber(), 
                                           "DO \"", do_.getName(), "\" in LNodeType id \"", do_.getParentLNodeType().getId(), "\" already present without instance number in LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
@@ -811,8 +807,7 @@ public class DataObjectPresenceConditionValidator {
                 return false;
             }
 
-            MultiDO m = ( MultiDO ) presentDO.get( names[0] );
-            Integer number = Integer.valueOf( names[1] );
+            MultiDO m = ( MultiDO ) presentDO.get( name );
                 
             if( m.numberedDOs.containsKey( number )) {
                 RiseClipseMessage error = RiseClipseMessage.error( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getFilename(), do_.getParentLNodeType().getLineNumber(), 
@@ -828,9 +823,6 @@ public class DataObjectPresenceConditionValidator {
             m.add( number, do_ );
             return true;
         }
-        console.warning( DO_VALIDATION_NSD_CATEGORY, do_.getParentLNodeType().getFilename(), do_.getParentLNodeType().getLineNumber(), 
-                         "DO \"", do_.getName(), "\" in LNodeType id = \"", do_.getParentLNodeType().getId(), "\" has an unrecognized name in namespace \"", nsIdentification, "\"" );
-        return false;
     }
     
     public boolean validate( LNodeType lNodeType, DiagnosticChain diagnostics ) {
