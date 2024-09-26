@@ -61,7 +61,6 @@
 | NSD/Validation/DataObject | ERROR | LNodeType id "yyy" with LNClass "zzz" has more than one element marked AtMostOne in namespace "ppp" (at most one of: "aaa" "bbb") |
 | NSD/Validation/DataObject | ERROR | LNodeType id "yyy" with LNClass "zzz" has several groups with all elements in namespace "ppp" |
 | NSD/Validation/DataObject | ERROR | no group in LNodeType id "yyy" with LNClass "zzz" has all elements in namespace "ppp" |
-| NSD/Validation/DataObject | ERROR | unexpected DO name "xxx" in LNodeType id "yyy" in namespace "ppp" |
 | NSD/Validation/Enumeration | ERROR | bType of DA/BDA "xxx" is not Enum" |
 | NSD/Validation/Enumeration | ERROR | value "xxx" of DA/BDA/DAI "yyy" is not valid for EnumType "zzz" line = nnn in namespace "ppp" |
 | NSD/Validation/Enumeration | ERROR | EnumVal with ord "xxx" in EnumType id = "yyy" is not defined as LiteralVal in standard Enumeration "zzz" in namespace "ppp" |
@@ -129,7 +128,6 @@
 | NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOsboEnhanced" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
 | NSD/Validation/DataObject | WARNING | LNodeType id="yyy" refers to deprecated LNClass "xxx" in namespace "ppp" |
 | NSD/Validation/DataObject | WARNING | DO "xxx"" in LNodeType id = "yyy" is deprecated in "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | DO "xxx"" in LNodeType id = "yyy" has an unrecognized name in namespace "ppp" |
 | NSD/Validation/Enumeration | WARNING | EnumVal with name "xxx" in EnumType id = "yyy" is deprecated in standard enumeration "zzz" in namespace "ppp" |
 | NSD/Validation/LNClass | WARNING | DOType id = "yyy" at line nnn used by DO "xxx"" has wrong CDC "aaa", it should be "bbb" in namespace "ppp" |
 | NSD/Validation/LNClass | WARNING | DO "xxx"" cannot be verified because there is no validator for it in namespace "ppp" |
