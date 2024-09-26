@@ -333,7 +333,17 @@ public class CDCValidator {
                 // Issue #153
                 // DA is allowed to contain a "count" attribute, only if the corresponding DA in NSD of 7-3 has CDC / DataAttribute isArray = "true"
                 if( da.isSetCount() ) {
-                    if( ! dataAttribute.isSetIsArray() ) {
+                    // "count=0" is equivalent to "count" attribute absent
+                    // but count is a string
+                    int count = -1;
+                    try {
+                        count = Integer.valueOf( da.getCount() );
+                    }
+                    catch( NumberFormatException e ) {
+                        // We consider that an empty value is equivalent to "count" attribute absent
+                        if( da.getCount().isEmpty() ) count = 0;
+                    }
+                    if(( count != 0 ) && ! dataAttribute.isSetIsArray() ) {
                         RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
                                 "DA \"", da.getName(), "\" has a count attribute while the corresponding DataAttribute has not isArray=\"true\"",
                                 " in namespace \"", nsIdentification, "\"" );
