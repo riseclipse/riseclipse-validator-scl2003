@@ -80,7 +80,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.2.9 (25 February 2025)";
+    private static final String TOOL_VERSION = "1.2.10-SNAPSHOT (25 February 2025)";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
