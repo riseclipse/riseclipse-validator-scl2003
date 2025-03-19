@@ -33,7 +33,7 @@ jobs:
       tool_name: RiseClipseValidatorSCL
       run_sonarqube: true
       dest_folder: develop
-      email_to: ${{ secrets.RISECLIPSE_SCL_TOOL_RECIPIENT_ADDRESSES }}
+      email_to: dominique.marcadet@centralesupelec.fr
     secrets:
       SONAR_TOKEN: ${{ secrets.RISECLIPSE_SONAR_TOKEN }}
       RISECLIPSE_WEB_HOSTNAME: ${{ secrets.RISECLIPSE_WEB_HOSTNAME }}
