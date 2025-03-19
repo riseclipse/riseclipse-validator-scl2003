@@ -827,7 +827,7 @@ public class RiseClipseValidatorSCL {
                 DependsOn dependsOn = root.getNS().getDependsOn();
                 if( dependsOn != null ) {
                     console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn Id: " + dependsOn.getId() );
-                    console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn Version: " + dependsOn.getVersion() + "-"  + dependsOn.getRevision()  + dependsOn.getRelease() + "-" + dependsOn.getPublicationStage() );
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn Version: " + dependsOn.getVersion() + "-"  + dependsOn.getRevision() );
                     if( dependsOn.getRefersToNS() != null ) {
                         console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn.refersToNS found " );
                     }
