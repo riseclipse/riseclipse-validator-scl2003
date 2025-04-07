@@ -84,6 +84,12 @@ public abstract class TypeValidator {
                                 nsIdentification, "\"" );
             }
             // BasicTypes are predefined
+            if( BasicTypeValidator.get( basicType ) == null ) {
+                console.error( BasicTypeValidator.BASIC_TYPE_SETUP_NSD_CATEGORY, basicType.getFilename(), basicType.getLineNumber(),
+                        "Validator for BasicType ", basicType.getName(), " in namespace \"",
+                        nsIdentification, "\" not found" );
+                return;
+            }
             validators.put( nsId, BasicTypeValidator.get( basicType ));
         });
     }
