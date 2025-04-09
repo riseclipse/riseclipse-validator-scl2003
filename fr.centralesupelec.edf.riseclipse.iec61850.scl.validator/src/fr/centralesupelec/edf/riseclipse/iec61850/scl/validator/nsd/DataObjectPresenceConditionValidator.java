@@ -54,7 +54,8 @@ public class DataObjectPresenceConditionValidator {
     private static final String DO_VALIDATION_NSD_CATEGORY = NsdValidator.VALIDATION_NSD_CATEGORY + "/DataObject";
 
     // The name of a DataObject for numbered DO may contain digits (e.g. Rec3Tmms)
-    private static final Pattern NAME_PATTERN = Pattern.compile( "([a-zA-Z0-9]+)(\\d+)" ); 
+    // But the first digit of the number must not be part of the name (issue #194)
+    private static final Pattern NAME_PATTERN = Pattern.compile( "([a-zA-Z0-9]+[a-zA-Z])(\\d+)" ); 
     
     private static IdentityHashMap< NsIdentificationName, DataObjectPresenceConditionValidator > notStatisticalValidators = new IdentityHashMap<>();
     private static IdentityHashMap< NsIdentificationName, DataObjectPresenceConditionValidator > statisticalValidators = new IdentityHashMap<>();
