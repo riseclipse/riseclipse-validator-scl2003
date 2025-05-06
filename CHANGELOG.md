@@ -1,4 +1,12 @@
 
+## 1.2.9 (2025/??/??)
+- update to Eclipse 2024-12, Java 21 is now required
+- numbered DO are correctly recognized by NSD validator 
+  (riseclipse/riseclipse-validator-scl2003#194)
+- more links between LDevices are recognized 
+  (issue riseclipse/riseclipse-metamodel-scl2003#63)
+- update for NSD2017B5 (issue riseclipse/riseclipse-metamodel-nsd2016#47))
+
 ## 1.2.8 (2024/09/26)
 - created links between LDevices are also built when setSrcRef value is in DataTypeTemplates 
   (issue riseclipse/riseclipse-metamodel-scl2003#43)
