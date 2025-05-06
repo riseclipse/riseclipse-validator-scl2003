@@ -36,8 +36,8 @@ jobs:
       email_to: dominique.marcadet@centralesupelec.fr, aurelie.dehouck-neveu@edf.fr
     secrets:
       SONAR_TOKEN: ${{ secrets.RISECLIPSE_SONAR_TOKEN }}
-      RISECLIPSE_OSSRH_USERNAME:   ${{ secrets.RISECLIPSE_OSSRH_USERNAME }}
-      RISECLIPSE_OSSRH_PASSWORD:   ${{ secrets.RISECLIPSE_OSSRH_PASSWORD }}
+      RISECLIPSE_CENTRAL_USERNAME:   ${{ secrets.RISECLIPSE_CENTRAL_USERNAME }}
+      RISECLIPSE_CENTRAL_PASSWORD:   ${{ secrets.RISECLIPSE_CENTRAL_PASSWORD }}
       RISECLIPSE_WEB_HOSTNAME: ${{ secrets.RISECLIPSE_WEB_HOSTNAME }}
       RISECLIPSE_WEB_USERNAME: ${{ secrets.RISECLIPSE_WEB_USERNAME }}
       RISECLIPSE_WEB_SSHKEY: ${{ secrets.RISECLIPSE_WEB_SSHKEY }}
