@@ -211,6 +211,9 @@ public class RiseClipseValidatorSCL {
                 + "files ending with \".zip\" are decompressed and each file inside is taken into account "
                 + "(case is ignored for all these extensions), "
                 + "all others are considered SCL files" );
+
+        console.info( VALIDATOR_SCL_CATEGORY, 0,"Exemple : java -jar RiseClipseValidatorSCLjar --make-explicit-links fileToValidate.icd OCL NSD >Result.txt");
+
         System.exit( -1 );
     }
 
