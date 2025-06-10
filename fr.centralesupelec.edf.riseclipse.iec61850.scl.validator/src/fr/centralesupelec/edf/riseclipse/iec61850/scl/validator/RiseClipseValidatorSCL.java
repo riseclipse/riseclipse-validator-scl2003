@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2016-2024 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2025 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -80,7 +80,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.2.9-SNAPSHOT (6 May 2025)";
+    private static final String TOOL_VERSION = "1.2.9-SNAPSHOT (10 June 2025)";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
@@ -267,6 +267,9 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\t4 if there is any info message but no notice or warning or error, 0 otherwise." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + HELP_ENVIRONMENT_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tEnvironment variables used are displayed." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Example of usage (NSD and OCL are supposed to be folders containing NS files and OCL constraints):" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "java -jar RiseClipseValidatorSCL-" + TOOL_VERSION + ".jar --make-explicit-links --notice NSD OCL my_scl_file.scl" );
         System.exit( 0 );
     }
     
