@@ -890,6 +890,7 @@ public class RiseClipseValidatorSCL {
         composedValidator = new ComposedEValidator( null );
 
         if(( oclFiles != null ) && ( ! oclFiles.isEmpty() )) {
+            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading OCL constraints" );
             oclValidator = new OCLValidator( sclPg, console );
 
             for( int i = 0; i < oclFiles.size(); ++i ) {
@@ -900,6 +901,7 @@ public class RiseClipseValidatorSCL {
         }
 
         if(( nsdFiles != null ) && ( ! nsdFiles.isEmpty() )) {
+            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading NSD files" );
             nsdValidator = new NsdValidator( sclPg );
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
@@ -912,6 +914,7 @@ public class RiseClipseValidatorSCL {
         sclAdapter = new SclItemProviderAdapterFactory();
 
         if( xsdFile != null ) {
+            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading XSD schema" );
             if( ! XSDValidator.prepare( xsdFile )) {
                 // Problem with given xsd file, do not do XSD validation
                 console.warning( VALIDATOR_SCL_CATEGORY, 0, "XSD validation will not be done, because of problems with XSD file: " + xsdFile );
@@ -931,13 +934,14 @@ public class RiseClipseValidatorSCL {
         }
         
         sclLoader.reset();
+        console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading SCL file:", sclFile );
         Resource resource = sclLoader.loadWithoutValidation( sclFile );
         if( makeExplicitLinks ) {
-            console.info( VALIDATOR_SCL_CATEGORY, 0, "Making explicit links for file: " + sclFile );
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "Making explicit links for file: ", sclFile );
             sclLoader.finalizeLoad( console );
         }
         if( resource != null ) {
-            console.info( VALIDATOR_SCL_CATEGORY, 0, "Validating file: " + sclFile );
+            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Validating file: " + sclFile );
             // Some attributes must be re-initalialized
             if( nsdValidator != null ) nsdValidator.reset();
             // Not needed for the OCL validator
@@ -992,7 +996,21 @@ public class RiseClipseValidatorSCL {
             ValidationRegistryAdapter adapter = ValidationRegistryAdapter.getAdapter( sclLoader.getResourceSet() );
             adapter.put( SclPackage.eINSTANCE, composedValidator );
             Diagnostician diagnostician = new Diagnostician( adapter );
+            
+            Thread progress = new Thread( () -> {
+                try {
+                    while( true ) {
+                        Thread.sleep( 1000 );
+                        console.notice( VALIDATOR_SCL_CATEGORY, 0, "Running..." );
+                    }
+                }
+                catch( InterruptedException e ) {}
+            });
+            progress.start();
+            
             Diagnostic diagnostics = diagnostician.validate( resource.getContents().get( 0 ), context );
+            
+            progress.interrupt();
 
             for( Iterator< Diagnostic > i = diagnostics.getChildren().iterator(); i.hasNext(); ) {
                 Diagnostic childDiagnostic = i.next();
