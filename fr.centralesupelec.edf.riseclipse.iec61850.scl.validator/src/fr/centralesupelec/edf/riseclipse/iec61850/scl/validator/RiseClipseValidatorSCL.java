@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2016-2024 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2025 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -80,7 +80,9 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.2.9-SNAPSHOT (26 September 2024)";
+    private static final String TOOL_VERSION = "1.2.9-SNAPSHOT";
+    private static final String TOOL_DATE = "12 June 2025";
+    private static final String TOOL_VERSION_DATE = TOOL_VERSION + " (" + TOOL_DATE + ")";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
     private static final String APP_NS_FILE_EXTENSION = ".AppNS";
@@ -151,7 +153,7 @@ public class RiseClipseValidatorSCL {
             DEFAULT_NAMESPACE_RELEASE
     );
     
-    private static final String VALIDATOR_SCL_CATEGORY = "SCL/Validator";
+    public  static final String VALIDATOR_SCL_CATEGORY = "SCL/Validator";
     private static final String INFO_FORMAT_STRING = "%6$s%1$-8s%7$s: %4$s";
     
     private static final int EXIT_SUCCESS = 0;
@@ -267,6 +269,9 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\t4 if there is any info message but no notice or warning or error, 0 otherwise." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t" + HELP_ENVIRONMENT_OPTION );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "\t\tEnvironment variables used are displayed." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Example of usage (NSD and OCL are supposed to be folders containing NS files and OCL constraints):" );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "java -jar RiseClipseValidatorSCL-" + TOOL_VERSION + ".jar --make-explicit-links --notice NSD OCL my_scl_file.scl" );
         System.exit( 0 );
     }
     
@@ -827,7 +832,7 @@ public class RiseClipseValidatorSCL {
                 DependsOn dependsOn = root.getNS().getDependsOn();
                 if( dependsOn != null ) {
                     console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn Id: " + dependsOn.getId() );
-                    console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn Version: " + dependsOn.getVersion() + "-"  + dependsOn.getRevision()  + dependsOn.getRelease() + "-" + dependsOn.getPublicationStage() );
+                    console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn Version: " + dependsOn.getVersion() + "-"  + dependsOn.getRevision() );
                     if( dependsOn.getRefersToNS() != null ) {
                         console.info( VALIDATOR_SCL_CATEGORY, 0, "DependsOn.refersToNS found " );
                     }
@@ -864,7 +869,7 @@ public class RiseClipseValidatorSCL {
         console.info( VALIDATOR_SCL_CATEGORY, 0, "Web site:" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "    https://riseclipse.github.io/" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "RiseClipseValidatorSCL version: " + TOOL_VERSION );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "RiseClipseValidatorSCL version: " + TOOL_VERSION_DATE );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "" );
 
         console.setFormatString( oldFormat );
@@ -890,6 +895,7 @@ public class RiseClipseValidatorSCL {
         composedValidator = new ComposedEValidator( null );
 
         if(( oclFiles != null ) && ( ! oclFiles.isEmpty() )) {
+            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading OCL constraints" );
             oclValidator = new OCLValidator( sclPg, console );
 
             for( int i = 0; i < oclFiles.size(); ++i ) {
@@ -900,6 +906,7 @@ public class RiseClipseValidatorSCL {
         }
 
         if(( nsdFiles != null ) && ( ! nsdFiles.isEmpty() )) {
+            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading NSD files" );
             nsdValidator = new NsdValidator( sclPg );
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
@@ -912,6 +919,7 @@ public class RiseClipseValidatorSCL {
         sclAdapter = new SclItemProviderAdapterFactory();
 
         if( xsdFile != null ) {
+            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading XSD schema" );
             if( ! XSDValidator.prepare( xsdFile )) {
                 // Problem with given xsd file, do not do XSD validation
                 console.warning( VALIDATOR_SCL_CATEGORY, 0, "XSD validation will not be done, because of problems with XSD file: " + xsdFile );
@@ -931,13 +939,14 @@ public class RiseClipseValidatorSCL {
         }
         
         sclLoader.reset();
+        console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading SCL file:", sclFile );
         Resource resource = sclLoader.loadWithoutValidation( sclFile );
         if( makeExplicitLinks ) {
-            console.info( VALIDATOR_SCL_CATEGORY, 0, "Making explicit links for file: " + sclFile );
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "Making explicit links for file: ", sclFile );
             sclLoader.finalizeLoad( console );
         }
         if( resource != null ) {
-            console.info( VALIDATOR_SCL_CATEGORY, 0, "Validating file: " + sclFile );
+            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Validating file: " + sclFile );
             // Some attributes must be re-initalialized
             if( nsdValidator != null ) nsdValidator.reset();
             // Not needed for the OCL validator
@@ -992,7 +1001,21 @@ public class RiseClipseValidatorSCL {
             ValidationRegistryAdapter adapter = ValidationRegistryAdapter.getAdapter( sclLoader.getResourceSet() );
             adapter.put( SclPackage.eINSTANCE, composedValidator );
             Diagnostician diagnostician = new Diagnostician( adapter );
+            
+            Thread progress = new Thread( () -> {
+                try {
+                    while( true ) {
+                        Thread.sleep( 1000 );
+                        console.notice( VALIDATOR_SCL_CATEGORY, 0, "Running..." );
+                    }
+                }
+                catch( InterruptedException e ) {}
+            });
+            progress.start();
+            
             Diagnostic diagnostics = diagnostician.validate( resource.getContents().get( 0 ), context );
+            
+            progress.interrupt();
 
             for( Iterator< Diagnostic > i = diagnostics.getChildren().iterator(); i.hasNext(); ) {
                 Diagnostic childDiagnostic = i.next();

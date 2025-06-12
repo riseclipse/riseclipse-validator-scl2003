@@ -1,4 +1,17 @@
 
+## 1.2.9 (2025/06/12)
+- update to Eclipse 2024-12, Java 21 is now required
+- numbered DO are correctly recognized by NSD validator 
+  (riseclipse/riseclipse-validator-scl2003#194)
+- more links between LDevices are recognized 
+  (issue riseclipse/riseclipse-metamodel-scl2003#63)
+- update for NSD2017B5 (issue riseclipse/riseclipse-metamodel-nsd2016#47))
+- new link from FCDA (issue riseclipse/riseclipse-metamodel-scl2003#66)
+- correct namespace of saved SCL files (issue riseclipse/riseclipse-metamodel-scl2003#62)
+- SCL objects have now an xpath property (issue riseclipse/riseclipse-metamodel-scl2003#12)
+- progress of validation is displayed  (riseclipse/riseclipse-validator-scl2003#196)
+- help has an example of command line (riseclipse/riseclipse-validator-scl2003#197)
+
 ## 1.2.8 (2024/09/26)
 - created links between LDevices are also built when setSrcRef value is in DataTypeTemplates 
   (issue riseclipse/riseclipse-metamodel-scl2003#43)

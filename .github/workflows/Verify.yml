@@ -21,7 +21,10 @@ name: Build
 
 # This workflow is triggered on every push to verify that the project builds correctly and runs Sonar + Unit tests
 
-on: push
+on: 
+  push:
+    branches:
+      - master
 
 jobs:
   call-verify-workflow:

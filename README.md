@@ -8,3 +8,4 @@
 [![License](https://img.shields.io/badge/License-EPL_2.0-blue.svg)](https://opensource.org/licenses/EPL-2.0)
 
 This repository contains the **RiseClipse** tools for validating SCL models.
+

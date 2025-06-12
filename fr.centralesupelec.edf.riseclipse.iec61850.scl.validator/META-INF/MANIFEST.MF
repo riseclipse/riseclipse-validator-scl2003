@@ -3,10 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: RiseClipse IEC61850 SCL Validator
 Bundle-Vendor: CentraleSupélec & EDF
 Bundle-SymbolicName: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
-Bundle-Version: 1.2.8.qualifier
+Bundle-Version: 1.2.9.qualifier
 Automatic-Module-Name: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
 Export-Package: fr.centralesupelec.edf.riseclipse.iec61850.scl.validator
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.emf.ecore,
@@ -18,11 +18,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ocl.xtext.completeocl,
  org.eclipse.ocl.xtext.oclstdlib,
  org.apache.commons.lang3,
- fr.centralesupelec.edf.riseclipse.main;bundle-version="1.2.11",
- fr.centralesupelec.edf.riseclipse.iec61850.scl;bundle-version="1.2.13",
- fr.centralesupelec.edf.riseclipse.iec61850.scl.edit;bundle-version="1.2.13",
- fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities;bundle-version="1.2.13",
- fr.centralesupelec.edf.riseclipse.validation.ocl;bundle-version="1.2.7",
- fr.centralesupelec.edf.riseclipse.iec61850.nsd;bundle-version="1.2.11",
- fr.centralesupelec.edf.riseclipse.iec61850.nsd.edit;bundle-version="1.2.11",
- fr.centralesupelec.edf.riseclipse.iec61850.nsd.utilities;bundle-version="1.2.11"
+ fr.centralesupelec.edf.riseclipse.main;bundle-version="1.2.12",
+ fr.centralesupelec.edf.riseclipse.iec61850.scl;bundle-version="1.2.14",
+ fr.centralesupelec.edf.riseclipse.iec61850.scl.edit;bundle-version="1.2.14",
+ fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities;bundle-version="1.2.14",
+ fr.centralesupelec.edf.riseclipse.validation.ocl;bundle-version="1.2.8",
+ fr.centralesupelec.edf.riseclipse.iec61850.nsd;bundle-version="1.2.12",
+ fr.centralesupelec.edf.riseclipse.iec61850.nsd.edit;bundle-version="1.2.12",
+ fr.centralesupelec.edf.riseclipse.iec61850.nsd.utilities;bundle-version="1.2.12"

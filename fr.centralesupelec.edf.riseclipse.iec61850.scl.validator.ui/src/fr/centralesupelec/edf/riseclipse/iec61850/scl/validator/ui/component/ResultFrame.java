@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2025 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.component;
@@ -29,6 +29,7 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 public class ResultFrame extends JFrame {
 
     private JTabbedPane tabbedPane;
+    private ResultPane mainConsole = new ResultPane( null, false );
 
     public ResultFrame() {
         setTitle( "RiseClipseValidatorSCL results" );
@@ -36,14 +37,13 @@ public class ResultFrame extends JFrame {
         
         tabbedPane = new JTabbedPane( JTabbedPane.TOP );
         getContentPane().add( tabbedPane );
+        tabbedPane.addTab( "RiseClipseValidatorSCL", null, mainConsole, null );
         
         setVisible( true );
     }
     
     public IRiseClipseConsole getMainConsole() {
-        ResultPane console = new ResultPane( null, false );
-        tabbedPane.addTab( "RiseClipseValidatorSCL", null, console, null );
-        return console;
+        return mainConsole;
     }
 
     public IRiseClipseConsole getConsoleFor( String filename ) {

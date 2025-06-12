@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019-2022 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2025 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
 **      dominique.marcadet@centralesupelec.fr
 **      aurelie.dehouck-neveu@edf.fr
 **  Web site:
-**      http://wdi.supelec.fr/software/RiseClipse/
+**      https://riseclipse.github.io/
 *************************************************************************
 */
 package fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.component;
@@ -77,12 +77,13 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
         add( cbPanel, BorderLayout.NORTH );
 
         cbInfo = new JCheckBox( "Info" );
-        cbInfo.setSelected( false );
+        // withButtons means not main console
+        cbInfo.setSelected( ! withButtons );
         cbInfo.addActionListener( this );
         cbPanel.add( cbInfo );
 
         cbNotice = new JCheckBox( "Notice" );
-        cbNotice.setSelected( false );
+        cbNotice.setSelected( ! withButtons );
         cbNotice.addActionListener( this );
         cbPanel.add( cbNotice );
 
