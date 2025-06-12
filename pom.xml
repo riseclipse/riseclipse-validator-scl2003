@@ -34,7 +34,7 @@
   <parent>
     <groupId>io.github.riseclipse</groupId>
     <artifactId>fr.centralesupelec.edf.riseclipse.developer.maven</artifactId>
-    <version>1.2.14-SNAPSHOT</version>
+    <version>1.2.13</version>
   </parent>
   
   <scm>
@@ -141,42 +141,42 @@
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.main</artifactId>
-      <version>1.2.12-SNAPSHOT</version>
+      <version>1.2.12</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.validation.ocl</artifactId>
-      <version>1.2.8-SNAPSHOT</version>
+      <version>1.2.8</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl</artifactId>
-      <version>1.2.14-SNAPSHOT</version>
+      <version>1.2.14</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.edit</artifactId>
-      <version>1.2.14-SNAPSHOT</version>
+      <version>1.2.14</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities</artifactId>
-      <version>1.2.14-SNAPSHOT</version>
+      <version>1.2.14</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.nsd</artifactId>
-      <version>1.2.12-SNAPSHOT</version>
+      <version>1.2.12</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.nsd.edit</artifactId>
-      <version>1.2.12-SNAPSHOT</version>
+      <version>1.2.12</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.nsd.utilities</artifactId>
-      <version>1.2.12-SNAPSHOT</version>
+      <version>1.2.12</version>
     </dependency>
   </dependencies>
 
