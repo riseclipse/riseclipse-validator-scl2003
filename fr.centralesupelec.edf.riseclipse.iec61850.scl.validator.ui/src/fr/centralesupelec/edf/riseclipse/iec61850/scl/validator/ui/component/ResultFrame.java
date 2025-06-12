@@ -29,6 +29,7 @@ import fr.centralesupelec.edf.riseclipse.util.IRiseClipseConsole;
 public class ResultFrame extends JFrame {
 
     private JTabbedPane tabbedPane;
+    private ResultPane mainConsole = new ResultPane( null, false );
 
     public ResultFrame() {
         setTitle( "RiseClipseValidatorSCL results" );
@@ -36,14 +37,13 @@ public class ResultFrame extends JFrame {
         
         tabbedPane = new JTabbedPane( JTabbedPane.TOP );
         getContentPane().add( tabbedPane );
+        tabbedPane.addTab( "RiseClipseValidatorSCL", null, mainConsole, null );
         
         setVisible( true );
     }
     
     public IRiseClipseConsole getMainConsole() {
-        ResultPane console = new ResultPane( null, false );
-        tabbedPane.addTab( "RiseClipseValidatorSCL", null, console, null );
-        return console;
+        return mainConsole;
     }
 
     public IRiseClipseConsole getConsoleFor( String filename ) {

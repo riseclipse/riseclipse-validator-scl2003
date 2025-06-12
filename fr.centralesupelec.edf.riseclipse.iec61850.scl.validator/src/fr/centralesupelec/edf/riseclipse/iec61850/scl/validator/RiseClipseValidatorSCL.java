@@ -153,7 +153,7 @@ public class RiseClipseValidatorSCL {
             DEFAULT_NAMESPACE_RELEASE
     );
     
-    private static final String VALIDATOR_SCL_CATEGORY = "SCL/Validator";
+    public  static final String VALIDATOR_SCL_CATEGORY = "SCL/Validator";
     private static final String INFO_FORMAT_STRING = "%6$s%1$-8s%7$s: %4$s";
     
     private static final int EXIT_SUCCESS = 0;

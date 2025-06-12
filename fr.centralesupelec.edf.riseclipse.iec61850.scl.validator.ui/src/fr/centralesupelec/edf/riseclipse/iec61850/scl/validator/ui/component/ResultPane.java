@@ -77,12 +77,13 @@ public class ResultPane extends JPanel implements IRiseClipseConsole, ActionList
         add( cbPanel, BorderLayout.NORTH );
 
         cbInfo = new JCheckBox( "Info" );
-        cbInfo.setSelected( false );
+        // withButtons means not main console
+        cbInfo.setSelected( ! withButtons );
         cbInfo.addActionListener( this );
         cbPanel.add( cbInfo );
 
         cbNotice = new JCheckBox( "Notice" );
-        cbNotice.setSelected( false );
+        cbNotice.setSelected( ! withButtons );
         cbNotice.addActionListener( this );
         cbPanel.add( cbNotice );
 

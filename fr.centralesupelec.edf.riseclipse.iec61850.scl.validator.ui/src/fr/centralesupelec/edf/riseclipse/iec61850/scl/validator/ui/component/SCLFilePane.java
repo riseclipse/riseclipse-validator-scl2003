@@ -35,6 +35,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
 
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL;
 import fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application.RiseClipseValidatorSCLApplication;
@@ -62,6 +64,7 @@ public class SCLFilePane extends JPanel implements ActionListener {
         btnPanel.add( btnAddSclFile );
 
         btnValidate = new JButton( "Validate" );
+        btnValidate.setEnabled( false );
         btnValidate.addActionListener( this );
         btnPanel.add( btnValidate );
 
@@ -89,6 +92,8 @@ public class SCLFilePane extends JPanel implements ActionListener {
             fileDialog.setVisible( true );
             if( fileDialog.getFiles().length != 0 ) {
                 sclFilesList.add( fileDialog.getFiles()[0] );
+                btnAddSclFile.setEnabled( false );
+                btnValidate.setEnabled( true );
             }
             return;
         }
@@ -111,19 +116,59 @@ public class SCLFilePane extends JPanel implements ActionListener {
 
             ResultFrame result = new ResultFrame();
             
-            IRiseClipseConsole console = result.getMainConsole();
+            final IRiseClipseConsole console = result.getMainConsole();
             AbstractRiseClipseConsole.changeConsole( console );
             RiseClipseValidatorSCL.displayLegal( );
-            RiseClipseValidatorSCL.prepare( oclFileNames, nsdFileNames, false );
-            result.repaint();
-            for( int i = 0; i < sclFiles.size(); ++i ) {
-                console = result.getConsoleFor( sclFiles.get( i ));
-                AbstractRiseClipseConsole.changeConsole( console );
-                RiseClipseValidatorSCL.run( true, sclFiles.get( i ));
-                result.repaint();
-            }
 
-            return;
+            SwingWorker< Void, Void > prepareWorker = new SwingWorker<>() {
+
+                @Override
+                protected Void doInBackground() throws Exception {
+                    RiseClipseValidatorSCL.prepare( oclFileNames, nsdFileNames, false );
+                    return null;
+                }
+                
+                @Override
+                protected void done() {
+                    for( int i = 0; i < sclFiles.size(); ++i ) {
+                        String sclFilename = sclFiles.get( i );
+                        String shortName = sclFilename.substring( sclFiles.get( i ).lastIndexOf( '/' ) + 1 );
+                        IRiseClipseConsole file_console = result.getConsoleFor( shortName);
+                        AbstractRiseClipseConsole.changeConsole( file_console );
+                        ActionListener progress = new ActionListener() {
+                            private int count = 0;
+                            public void actionPerformed( ActionEvent evt ) {
+                                result.getMainConsole().info( RiseClipseValidatorSCL.VALIDATOR_SCL_CATEGORY, 0, "Validation running for ", shortName, " [", ++count, "] ..." );
+                                result.repaint();
+                            }
+                        };
+                        SwingWorker< Void, Void > worker = new SwingWorker<>() {
+                            private Timer timer;
+                            
+                            @Override
+                            protected Void doInBackground() throws Exception {
+                                timer = new Timer( 1000, progress );  // milliseconds
+                                timer.start();
+                                
+                                RiseClipseValidatorSCL.run( true, sclFilename);
+                                return null;
+                            }
+                            
+                            @Override
+                            protected void done() {
+                                result.getMainConsole().info( RiseClipseValidatorSCL.VALIDATOR_SCL_CATEGORY, 0, "Validation done for ", shortName );
+                                result.repaint();
+                                timer.stop();
+                            }
+                            
+                        };
+                        worker.execute();
+                    }
+                };
+
+            };
+            
+            prepareWorker.execute();
         }
     }
 }
