@@ -28,7 +28,7 @@ on:
 jobs:
   call-deploy-snapshot-workflow:
     name: Deploy Snapshot Tool
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Deploy-Snapshot-Tools.yml@develop
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Deploy-Snapshot-Tools.yml@master
     with:
       tool_name: RiseClipseValidatorSCL
       run_sonarqube: true

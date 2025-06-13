@@ -1,5 +1,5 @@
 
-## 1.2.9 (2025/06/12)
+## 1.2.9 (2025/06/13)
 - update to Eclipse 2024-12, Java 21 is now required
 - numbered DO are correctly recognized by NSD validator 
   (riseclipse/riseclipse-validator-scl2003#194)
