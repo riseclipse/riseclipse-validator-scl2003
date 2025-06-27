@@ -11,6 +11,8 @@
 - SCL objects have now an xpath property (issue riseclipse/riseclipse-metamodel-scl2003#12)
 - progress of validation is displayed  (riseclipse/riseclipse-validator-scl2003#196)
 - help has an example of command line (riseclipse/riseclipse-validator-scl2003#197)
+- correct addition of an explicit link from an LN to a supervised ControlWithIEDName (issue riseclipse/riseclipse-metamodel-scl2003#38)
+- correct one default value (issue riseclipse/riseclipse-metamodel-scl2003#45)
 
 ## 1.2.8 (2024/09/26)
 - created links between LDevices are also built when setSrcRef value is in DataTypeTemplates 
