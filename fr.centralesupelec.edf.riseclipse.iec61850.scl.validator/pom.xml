@@ -29,14 +29,14 @@
  
   <groupId>io.github.riseclipse</groupId>
   <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.validator</artifactId>
-  <version>1.2.9-SNAPSHOT</version>
+  <version>1.2.10-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>[jar] RiseClipse Validator SCL2003 Command Line Tool</name>
 
   <parent>
     <groupId>io.github.riseclipse</groupId>
     <artifactId>riseclipse-validator-scl2003</artifactId>
-    <version>1.2.9-SNAPSHOT</version>
+    <version>1.2.10-SNAPSHOT</version>
   </parent>
 
   <properties>
