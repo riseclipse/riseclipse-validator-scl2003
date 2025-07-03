@@ -22,7 +22,7 @@ name: Pre-release application as a zip file
 on: workflow_dispatch
 
 jobs:
-  release:
+  pre-release-as-zip:
     # Use a specific version to avoid unattended changes with latest
     runs-on: ubuntu-24.04
     name: Make a zip of the released application
