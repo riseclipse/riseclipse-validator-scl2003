@@ -31,6 +31,51 @@ jobs:
     name: Validate Release
     uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Validate-Release.yml@master
 
+  release-as-zip:
+    # Should use a shared workflow common with Pre-Release-As-Zip.yml
+    runs-on: ubuntu-24.04
+    name: Make a zip of the released application
+
+    steps:
+    - name: Checkout ${{ github.event.repository.name }}
+      uses: actions/checkout@v4
+
+    - name: Download artifact from other workflow
+      uses: dawidd6/action-download-artifact@v9
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: Pre-Release-and-Prepare-Next-Dev.yml
+        workflow_conclusion: success
+        path: ${{ github.workspace }}/artifacts
+
+    - name: Get version from any artifact name
+      run: |
+        cd artifacts
+        FILENAME=$(basename */*.jar )
+        VERSION=${FILENAME##*-}
+        VERSION=${VERSION%.jar}
+        echo "project_version=$VERSION" >> $GITHUB_OUTPUT
+      id: get_version
+
+    - name: Make a zip
+      run: |
+        mkdir zip
+        mkdir zip/OCL
+        mkdir zip/NSD
+        cp ${{ github.workspace }}/artifacts/*/*Application*.jar zip/
+        cd zip
+        FILENAME=$(basename *.jar .jar )
+        zip -r ../${FILENAME}.zip .
+
+    - name: Release zip
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: "${{ github.workspace }}/*.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.repository.name }}-${{ steps.get_version.outputs.project_version }}
+        name: ${{ github.event.repository.name }} v${{ steps.get_version.outputs.project_version }}
+
   call-release-dockerhub-workflow:
     name: Release on DockerHub
     needs: [call-validate-release-workflow]
