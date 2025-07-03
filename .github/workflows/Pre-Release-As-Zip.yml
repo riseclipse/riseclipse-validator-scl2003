@@ -56,7 +56,7 @@ jobs:
         cp ${{ github.workspace }}/artifacts/*/*Application*.jar zip/
         cd zip
         FILENAME=$(basename *.jar .jar )
-        zip -r ../${FILENAME}.zip .
+        zip -r ../${FILENAME}rc.zip .
 
     - name: Release zip
       uses: ncipollo/release-action@v1
