@@ -60,6 +60,8 @@ jobs:
                  --name RiseClipseValidatorSCLApplication-1.2.9rc `
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
                  --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
+        cd gui
+        mv RiseClipseValidatorSCLApplication-1.2.9rc-1.0.exe RiseClipseValidatorSCLApplication-1.2.9rc.exe
 
     - name: Package cli
       run: |
@@ -74,6 +76,8 @@ jobs:
                  --win-console `
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
                  --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
+        cd cli
+        mv RiseClipseValidatorSCL-1.2.9rc-1.0.exe RiseClipseValidatorSCL-1.2.9rc.exe
 
     - name: Release exe
       uses: ncipollo/release-action@v1
