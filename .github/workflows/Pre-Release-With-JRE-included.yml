@@ -54,11 +54,11 @@ jobs:
         distribution: "temurin"
         java-version: "21"
 
-      - name: Checkout distribution to get icons
-        uses: actions/checkout@v4
-        with:
-          repository: riseclipse/riseclipse-distribution
-          path: riseclipse-distribution
+    - name: Checkout distribution to get icons
+      uses: actions/checkout@v4
+      with:
+        repository: riseclipse/riseclipse-distribution
+        path: riseclipse-distribution
 
     - name: Package application
       run: |
