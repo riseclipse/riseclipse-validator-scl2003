@@ -50,8 +50,10 @@ jobs:
 
     - name: Package application
       run: |
-        mv ${{ github.workspace }}\artifacts\*\*Application*.jar .
-        jpackage --verbose --input . `
+        mkdir ${{ github.workspace }}\gui
+        mv ${{ github.workspace }}\artifacts\*\*Application*.jar ${{ github.workspace }}\gui\
+        jpackage --verbose --input ${{ github.workspace }}\gui `
+                 --dest ${{ github.workspace }}\gui `
                  --main-jar *.jar `
                  --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application.RiseClipseValidatorSCLApplication `
                  --type exe `
@@ -62,8 +64,10 @@ jobs:
 
     - name: Package cli
       run: |
-        mv ${{ github.workspace }}\artifacts\*\*.jar .
-        jpackage --verbose --input . `
+        mkdir ${{ github.workspace }}\cli
+        mv ${{ github.workspace }}\artifacts\*\*.jar ${{ github.workspace }}\cli\
+        jpackage --verbose --input ${{ github.workspace }}\cli `
+                 --dest ${{ github.workspace }}\cli `
                  --main-jar *.jar `
                  --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL `
                  --type exe `
@@ -77,7 +81,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "${{ github.workspace }}/*.exe"
+        artifacts: "${{ github.workspace }}/*/*.exe"
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.repository.name }}-1.2.9
         prerelease: true
