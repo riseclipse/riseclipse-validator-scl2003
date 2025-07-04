@@ -37,19 +37,10 @@ jobs:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: Pre-Release-and-Prepare-Next-Dev.yml
         workflow_conclusion: success
-        path: ${{ github.workspace }}/artifacts
-
-    - name: Get version from any artifact name
-      run: |
-        cd artifacts
-        FILENAME=$(basename */*.jar )
-        VERSION=${FILENAME##*-}
-        VERSION=${VERSION%.jar}
-        echo "project_version=$VERSION" >> $GITHUB_OUTPUT
-      id: get_version
+        path: ${{ github.workspace }}\artifacts
 
     - name: Setup Java
-      uses: actions/setup-java@v4
+      uses: actions\setup-java@v4
       with:
         distribution: "temurin"
         java-version: "21"
@@ -62,36 +53,35 @@ jobs:
 
     - name: Package application
       run: |
-        mv ${{ github.workspace }}/artifacts/*/*Application*.jar .
-        FILENAME=$(basename *.jar .jar )
+        mv ${{ github.workspace }}\artifacts\*\*Application*.jar .
         jpackage --main-jar *.jar \
                  --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application.RiseClipseValidatorSCLApplication \
                  --type exe \
-                 --name ${FILENAME}rc.exe \
+                 --name RiseClipseValidatorSCLApplication-1.2.9rc.exe \
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" \
-                 --app-version ${{ steps.get_version.outputs.project_version }} \
-                 --icon ${{ github.workspace }}/riseclipse-distribution/fr.centralesupelec.edf.riseclipse.rcp/icons/riseclipse.ico
+                 --app-version 1.2.9rc \
+                 --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
 
     - name: Package cli
       run: |
-        mv ${{ github.workspace }}/artifacts/*/*.jar .
+        mv ${{ github.workspace }}\artifacts\*\*.jar .
         FILENAME=$(basename *.jar .jar )
         jpackage --main-jar *.jar \
                  --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL \
                  --type exe \
-                 --name ${FILENAME}rc.exe \
+                 --name RiseClipseValidatorSCL-1.2.9rc.exe \
                  --win-console \
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" \
-                 --app-version ${{ steps.get_version.outputs.project_version }} \
-                 --icon ${{ github.workspace }}/riseclipse-distribution/fr.centralesupelec.edf.riseclipse.rcp/icons/riseclipse.ico
+                 --app-version 1.2.9rc \
+                 --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
 
     - name: Release exe
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "${{ github.workspace }}/*.exe"
+        artifacts: "${{ github.workspace }}\*.exe"
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.event.repository.name }}-${{ steps.get_version.outputs.project_version }}
+        tag: ${{ github.event.repository.name }}-1.2.9
         prerelease: true
-        name: ${{ github.event.repository.name }} v${{ steps.get_version.outputs.project_version }}
+        name: ${{ github.event.repository.name }} v1.2.9
 
