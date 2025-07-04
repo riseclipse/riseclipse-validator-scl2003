@@ -46,13 +46,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: riseclipse/riseclipse-distribution
-        path: riseclipse-distribution
+        path: ${{ github.workspace }}\riseclipse-distribution
 
     - name: Package application
       run: |
         mkdir ${{ github.workspace }}\gui
         mv ${{ github.workspace }}\artifacts\*\*Application*.jar ${{ github.workspace }}\gui\
-        cd gui
+        cd ${{ github.workspace }}\gui
+        mkdir OCL
+        mkdir NSD
         $jarname = Get-ChildItem  -Filter "*.jar" | Select-Object -ExpandProperty Name
         $filename = [System.IO.Path]::GetFileNameWithoutExtension($jarname)
         $toolname = $filename.Substring(0,$filename.LastIndexOf("-"))
@@ -77,7 +79,7 @@ jobs:
       run: |
         mkdir ${{ github.workspace }}\cli
         mv ${{ github.workspace }}\artifacts\*\*.jar ${{ github.workspace }}\cli\
-        cd cli
+        cd ${{ github.workspace }}\cli
         $jarname = Get-ChildItem  -Filter "*.jar" | Select-Object -ExpandProperty Name
         $filename = [System.IO.Path]::GetFileNameWithoutExtension($jarname)
         $toolname = $filename.Substring(0,$filename.LastIndexOf("-"))
@@ -88,7 +90,7 @@ jobs:
                  --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL `
                  --type msi `
                  --name $toolname `
-                 --app-version 1.2.9 `
+                 --app-version $version `
                  --win-dir-chooser `
                  --win-console `
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
