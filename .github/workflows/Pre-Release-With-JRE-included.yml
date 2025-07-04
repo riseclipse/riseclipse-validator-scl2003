@@ -40,7 +40,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: "temurin"
-        java-version: "21"
+        java-version: "24"
 
     - name: Checkout distribution to get icons
       uses: actions/checkout@v4
@@ -56,14 +56,15 @@ jobs:
                  --dest ${{ github.workspace }}\gui `
                  --main-jar RiseClipseValidatorSCLApplication-1.2.9.jar `
                  --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application.RiseClipseValidatorSCLApplication `
-                 --type exe `
+                 --type msi `
                  --name RiseClipseValidatorSCLApplication-1.2.9rc `
                  --app-version 1.2.9 `
                  --win-dir-chooser `
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
                  --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
         cd gui
-        mv RiseClipseValidatorSCLApplication-1.2.9rc-1.2.9.exe RiseClipseValidatorSCLApplication-1.2.9rc.exe
+        ls -l
+        mv RiseClipseValidatorSCLApplication-1.2.9rc-1.2.9.msi RiseClipseValidatorSCLApplication-1.2.9rc.msi
 
     - name: Package cli
       run: |
@@ -73,7 +74,7 @@ jobs:
                  --dest ${{ github.workspace }}\cli `
                  --main-jar RiseClipseValidatorSCL-1.2.9.jar `
                  --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL `
-                 --type exe `
+                 --type msi `
                  --name RiseClipseValidatorSCL-1.2.9rc `
                  --app-version 1.2.9 `
                  --win-dir-chooser `
@@ -81,13 +82,13 @@ jobs:
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
                  --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
         cd cli
-        mv RiseClipseValidatorSCL-1.2.9rc-1.2.9.exe RiseClipseValidatorSCL-1.2.9rc.exe
+        mv RiseClipseValidatorSCL-1.2.9rc-1.2.9.msi RiseClipseValidatorSCL-1.2.9rc.msi
 
-    - name: Release exe
+    - name: Release msi
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "${{ github.workspace }}/*/*.exe"
+        artifacts: "${{ github.workspace }}/*/*.msi"
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.repository.name }}-1.2.9
         prerelease: true
