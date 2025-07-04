@@ -60,7 +60,7 @@ jobs:
                  --type exe `
                  --name RiseClipseValidatorSCLApplication-1.2.9rc.exe `
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
-                 --app-version 1.2.9rc `
+                 --app-version 1.2.9 `
                  --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
 
     - name: Package cli
@@ -73,7 +73,7 @@ jobs:
                  --name RiseClipseValidatorSCL-1.2.9rc.exe `
                  --win-console `
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
-                 --app-version 1.2.9rc `
+                 --app-version 1.2.9 `
                  --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
 
     - name: Release exe
