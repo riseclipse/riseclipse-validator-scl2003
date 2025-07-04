@@ -63,7 +63,6 @@ jobs:
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
                  --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
         cd gui
-        ls -l
         mv RiseClipseValidatorSCLApplication-1.2.9rc-1.2.9.msi RiseClipseValidatorSCLApplication-1.2.9rc.msi
 
     - name: Package cli
