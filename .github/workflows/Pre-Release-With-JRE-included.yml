@@ -79,7 +79,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "${{ github.workspace }}\*.exe"
+        artifacts: "${{ github.workspace }}/*.exe"
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.repository.name }}-1.2.9
         prerelease: true
