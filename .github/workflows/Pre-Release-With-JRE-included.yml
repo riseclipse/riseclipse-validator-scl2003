@@ -70,7 +70,7 @@ jobs:
         $currentname = $toolname + "-" + $version + ".msi"
         $rcname = $toolname + "-" + $version + "rc.msi"
         mv $currentname $rcname
-        echo "tool_version=$version" >> $GITHUB_OUTPUT
+        echo "tool_version=$version" >> $env:GITHUB_OUTPUT
       id: package_application
 
     - name: Package cli
