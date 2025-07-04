@@ -28,9 +28,6 @@ jobs:
     name: Pre-release application with JRE included
 
     steps:
-    - name: Checkout ${{ github.event.repository.name }}
-      uses: actions/checkout@v4
-
     - name: Download artifact from other workflow
       uses: dawidd6/action-download-artifact@v9
       with:
