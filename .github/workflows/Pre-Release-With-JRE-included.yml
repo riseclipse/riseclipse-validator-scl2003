@@ -24,7 +24,7 @@ on: workflow_dispatch
 jobs:
   pre-release-with-jre-included:
     # Only on Windows for the moment
-    runs-on: windows-11-arm
+    runs-on: windows-latest
     name: Pre-release application with JRE included
 
     steps:
@@ -40,7 +40,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: "temurin"
-        java-version: "24"
+        java-version: "21"
 
     - name: Checkout distribution to get icons
       uses: actions/checkout@v4
