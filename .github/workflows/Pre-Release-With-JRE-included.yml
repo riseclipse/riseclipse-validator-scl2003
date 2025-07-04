@@ -73,7 +73,9 @@ jobs:
                  --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
                  --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
         dir
-        mv $toolname + "-" + $version + ".msi" $toolname + "-" + $version + "rc.msi"
+        $currentname = $toolname + "-" + $version + ".msi"
+        $rcname = $toolname + "-" + $version + "rc.msi"
+        mv $currentname $rcname
         dir
 
     - name: Package cli
