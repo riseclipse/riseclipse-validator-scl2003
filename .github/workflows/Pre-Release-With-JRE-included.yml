@@ -58,9 +58,9 @@ jobs:
         $jarname
         $filename = [System.IO.Path]::GetFileNameWithoutExtension($filename)
         $filename
-        $toolname = $filename.Substring(0,$f.LastIndexOf("-"))
+        $toolname = $filename.Substring(0,$filename.LastIndexOf("-"))
         $toolname
-        $version = $filename.Substring($f.LastIndexOf("-") + 1)
+        $version = $filename.Substring($filename.LastIndexOf("-") + 1)
         $version
         jpackage --verbose --input ${{ github.workspace }}\gui `
                  --dest ${{ github.workspace }}\gui `
