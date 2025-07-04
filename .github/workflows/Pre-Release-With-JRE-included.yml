@@ -1,0 +1,97 @@
+# *************************************************************************
+# **  Copyright (c) 2025 CentraleSupélec & EDF.
+# **  All rights reserved. This program and the accompanying materials
+# **  are made available under the terms of the Eclipse Public License v2.0
+# **  which accompanies this distribution, and is available at
+# **  https://www.eclipse.org/legal/epl-v20.html
+# ** 
+# **  This file is part of the RiseClipse tool
+# **  
+# **  Contributors:
+# **      Computer Science Department, CentraleSupélec
+# **      EDF R&D
+# **  Contacts:
+# **      dominique.marcadet@centralesupelec.fr
+# **      aurelie.dehouck-neveu@edf.fr
+# **  Web site:
+# **      https://riseclipse.github.io
+# *************************************************************************
+
+name: Pre-release application with the JRE using jpackage
+
+on: workflow_dispatch
+
+jobs:
+  pre-release-with-jre-included:
+    # Only on Windows for the moment
+    runs-on: windows-latest
+    name: Pre-release application with JRE included
+
+    steps:
+    - name: Checkout ${{ github.event.repository.name }}
+      uses: actions/checkout@v4
+
+    - name: Download artifact from other workflow
+      uses: dawidd6/action-download-artifact@v9
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: Pre-Release-and-Prepare-Next-Dev.yml
+        workflow_conclusion: success
+        path: ${{ github.workspace }}/artifacts
+
+    - name: Get version from any artifact name
+      run: |
+        cd artifacts
+        FILENAME=$(basename */*.jar )
+        VERSION=${FILENAME##*-}
+        VERSION=${VERSION%.jar}
+        echo "project_version=$VERSION" >> $GITHUB_OUTPUT
+      id: get_version
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: "temurin"
+        java-version: "21"
+
+      - name: Checkout distribution to get icons
+        uses: actions/checkout@v4
+        with:
+          repository: riseclipse/riseclipse-distribution
+          path: riseclipse-distribution
+
+    - name: Package application
+      run: |
+        mv ${{ github.workspace }}/artifacts/*/*Application*.jar .
+        FILENAME=$(basename *.jar .jar )
+        jpackage --main-jar *.jar \
+                 --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application.RiseClipseValidatorSCLApplication \
+                 --type exe \
+                 --name ${FILENAME}rc.exe \
+                 --copyright "Copyright (c) 2025 CentraleSupélec & EDF" \
+                 --app-version ${{ steps.get_version.outputs.project_version }} \
+                 --icon ${{ github.workspace }}/riseclipse-distribution/fr.centralesupelec.edf.riseclipse.rcp/icons/riseclipse.ico
+
+    - name: Package cli
+      run: |
+        mv ${{ github.workspace }}/artifacts/*/*.jar .
+        FILENAME=$(basename *.jar .jar )
+        jpackage --main-jar *.jar \
+                 --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL \
+                 --type exe \
+                 --name ${FILENAME}rc.exe \
+                 --win-console \
+                 --copyright "Copyright (c) 2025 CentraleSupélec & EDF" \
+                 --app-version ${{ steps.get_version.outputs.project_version }} \
+                 --icon ${{ github.workspace }}/riseclipse-distribution/fr.centralesupelec.edf.riseclipse.rcp/icons/riseclipse.ico
+
+    - name: Release exe
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: "${{ github.workspace }}/*.exe"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.repository.name }}-${{ steps.get_version.outputs.project_version }}
+        prerelease: true
+        name: ${{ github.event.repository.name }} v${{ steps.get_version.outputs.project_version }}
+
