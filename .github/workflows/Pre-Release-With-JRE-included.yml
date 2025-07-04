@@ -36,18 +36,6 @@ jobs:
         workflow_conclusion: success
         path: ${{ github.workspace }}\artifacts
 
-    - name: Get info from one artifact name
-      run: |
-        cd artifacts
-        cd *Application*
-        $jarname = Get-ChildItem  -Filter "*.jar" | Select-Object -ExpandProperty Name
-        $filename = [System.IO.Path]::GetFileNameWithoutExtension($filename)
-        $toolname = $filename.Substring(0,$f.LastIndexOf("-"))
-        $version = $filename.Substring($f.LastIndexOf("-") + 1)
-        echo "project_tool=$toolname" >> $GITHUB_OUTPUT
-        echo "project_version=$version" >> $GITHUB_OUTPUT
-      id: get_info
-
     - name: Setup Java
       uses: actions/setup-java@v4
       with:
