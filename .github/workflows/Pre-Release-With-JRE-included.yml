@@ -75,30 +75,6 @@ jobs:
         echo "tool_version=$version" >> $env:GITHUB_OUTPUT
       id: package_application
 
-    - name: Package cli
-      run: |
-        mkdir ${{ github.workspace }}\cli
-        mv ${{ github.workspace }}\artifacts\*\*.jar ${{ github.workspace }}\cli\
-        cd ${{ github.workspace }}\cli
-        $jarname = Get-ChildItem  -Filter "*.jar" | Select-Object -ExpandProperty Name
-        $filename = [System.IO.Path]::GetFileNameWithoutExtension($jarname)
-        $toolname = $filename.Substring(0,$filename.LastIndexOf("-"))
-        $version = $filename.Substring($filename.LastIndexOf("-") + 1)
-        jpackage --verbose --input ${{ github.workspace }}\cli `
-                 --dest ${{ github.workspace }}\cli `
-                 --main-jar $jarname `
-                 --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.RiseClipseValidatorSCL `
-                 --type msi `
-                 --name $toolname `
-                 --app-version $version `
-                 --win-dir-chooser `
-                 --win-console `
-                 --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
-                 --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
-        $currentname = $toolname + "-" + $version + ".msi"
-        $rcname = $toolname + "-" + $version + "rc.msi"
-        mv $currentname $rcname
-
     - name: Release msi
       uses: ncipollo/release-action@v1
       with:
