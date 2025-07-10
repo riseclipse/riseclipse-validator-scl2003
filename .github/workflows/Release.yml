@@ -1,0 +1,162 @@
+# *************************************************************************
+# **  Copyright (c) 2022-23 CentraleSupélec & EDF.
+# **  All rights reserved. This program and the accompanying materials
+# **  are made available under the terms of the Eclipse Public License v2.0
+# **  which accompanies this distribution, and is available at
+# **  https://www.eclipse.org/legal/epl-v20.html
+# ** 
+# **  This file is part of the RiseClipse tool
+# **  
+# **  Contributors:
+# **      Computer Science Department, CentraleSupélec
+# **      EDF R&D
+# **  Contacts:
+# **      dominique.marcadet@centralesupelec.fr
+# **      aurelie.dehouck-neveu@edf.fr
+# **  Web site:
+# **      https://riseclipse.github.io
+# *************************************************************************
+
+name: Release on GitHub, DockerHub and RiseClipseWeb
+
+# This CD workflow switches pre-release to release on GitHub (without rc flag)
+# It also 
+#   - builds and push a docker image of the RiseClipse Validator SCL CLI tool
+#   - scp the RiseClipse Validator SCL CLI tool to the corresponding RiseClipseWeb profile
+
+on: workflow_dispatch
+
+jobs:
+  call-validate-release-workflow:
+    name: Validate Release
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Validate-Release.yml@master
+
+  release-as-zip:
+    # Should use a shared workflow common with Pre-Release-As-Zip.yml
+    runs-on: ubuntu-24.04
+    needs: [call-validate-release-workflow]
+    name: Make a zip of the released application
+
+    steps:
+    - name: Checkout ${{ github.event.repository.name }}
+      uses: actions/checkout@v4
+
+    - name: Download artifact from other workflow
+      uses: dawidd6/action-download-artifact@v9
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: Pre-Release-and-Prepare-Next-Dev.yml
+        workflow_conclusion: success
+        path: ${{ github.workspace }}/artifacts
+
+    - name: Get version from any artifact name
+      run: |
+        cd artifacts
+        FILENAME=$(basename */*.jar )
+        VERSION=${FILENAME##*-}
+        VERSION=${VERSION%.jar}
+        echo "project_version=$VERSION" >> $GITHUB_OUTPUT
+      id: get_version
+
+    - name: Make a zip
+      run: |
+        mkdir zip
+        mkdir zip/OCL
+        mkdir zip/NSD
+        cp ${{ github.workspace }}/artifacts/*/*Application*.jar zip/
+        cd zip
+        FILENAME=$(basename *.jar .jar )
+        zip -r ../${FILENAME}.zip .
+
+    - name: Release zip
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: "${{ github.workspace }}/*.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.repository.name }}-${{ steps.get_version.outputs.project_version }}
+        name: ${{ github.event.repository.name }} v${{ steps.get_version.outputs.project_version }}
+
+  pre-release-with-jre-included:
+    # Should use a shared workflow common with Pre-Release-With-JRE-included.yml
+    # Only on Windows for the moment
+    runs-on: windows-latest
+    needs: [call-validate-release-workflow]
+    name: Release application with JRE included
+
+    steps:
+    - name: Download artifact from other workflow
+      uses: dawidd6/action-download-artifact@v9
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: Pre-Release-and-Prepare-Next-Dev.yml
+        workflow_conclusion: success
+        path: ${{ github.workspace }}\artifacts
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: "temurin"
+        java-version: "21"
+
+    - name: Checkout distribution to get icons
+      uses: actions/checkout@v4
+      with:
+        repository: riseclipse/riseclipse-distribution
+        path: ${{ github.workspace }}\riseclipse-distribution
+
+    - name: Package application
+      run: |
+        mkdir ${{ github.workspace }}\gui
+        mv ${{ github.workspace }}\artifacts\*\*Application*.jar ${{ github.workspace }}\gui\
+        cd ${{ github.workspace }}\gui
+        mkdir OCL
+        mkdir NSD
+        $jarname = Get-ChildItem  -Filter "*.jar" | Select-Object -ExpandProperty Name
+        $filename = [System.IO.Path]::GetFileNameWithoutExtension($jarname)
+        $toolname = $filename.Substring(0,$filename.LastIndexOf("-"))
+        $version = $filename.Substring($filename.LastIndexOf("-") + 1)
+        jpackage --verbose --input ${{ github.workspace }}\gui `
+                 --dest ${{ github.workspace }}\gui `
+                 --main-jar $jarname `
+                 --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application.RiseClipseValidatorSCLApplication `
+                 --type msi `
+                 --name $toolname `
+                 --app-version $version `
+                 --win-dir-chooser `
+                 --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
+                 --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
+        echo "tool_version=$version" >> $env:GITHUB_OUTPUT
+      id: package_application
+
+    - name: Release msi
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: "${{ github.workspace }}/*/*.msi"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.repository.name }}-${{ steps.package_application.outputs.tool_version }}
+        name: ${{ github.event.repository.name }} v${{ steps.package_application.outputs.tool_version }}
+
+  call-release-dockerhub-workflow:
+    name: Release on DockerHub
+    needs: [call-validate-release-workflow]
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-DockerHub.yml@master
+    with:
+      release_version: ${{ needs.call-validate-release-workflow.outputs.release_version }}  
+      docker_repository: riseclipse-validator-scl
+    secrets:
+      DOCKER_USER: ${{ secrets.RISECLIPSE_DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.RISECLIPSE_DOCKER_ACCESS_TOKEN }}
+
+  call-release-riseclipseweb-workflow:
+    name: Release on RiseClipseWeb
+    needs: [call-validate-release-workflow]
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-RiseClipseWeb.yml@master
+    with:
+      dest_folder: "EDF-61850-Ed.2%fr.riseclipse.iec61850Ed_2%scl/"
+    secrets:
+      RISECLIPSE_WEB_HOSTNAME: ${{ secrets.RISECLIPSE_WEB_HOSTNAME }}
+      RISECLIPSE_WEB_USERNAME: ${{ secrets.RISECLIPSE_WEB_USERNAME }}
+      RISECLIPSE_WEB_SSHKEY: ${{ secrets.RISECLIPSE_WEB_SSHKEY }}
+      RISECLIPSE_WEB_PASSPHRASE: ${{ secrets.RISECLIPSE_WEB_PASSPHRASE }}

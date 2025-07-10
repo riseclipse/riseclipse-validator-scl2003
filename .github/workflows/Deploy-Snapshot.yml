@@ -1,0 +1,44 @@
+# *************************************************************************
+# **  Copyright (c) 2025 CentraleSupélec & EDF.
+# **  All rights reserved. This program and the accompanying materials
+# **  are made available under the terms of the Eclipse Public License v2.0
+# **  which accompanies this distribution, and is available at
+# **  https://www.eclipse.org/legal/epl-v20.html
+# **
+# **  This file is part of the RiseClipse tool
+# **
+# **  Contributors:
+# **      Computer Science Department, CentraleSupélec
+# **      EDF R&D
+# **  Contacts:
+# **      dominique.marcadet@centralesupelec.fr
+# **      aurelie.dehouck-neveu@edf.fr
+# **  Web site:
+# **      https://riseclipse.github.io
+# *************************************************************************
+
+name: Deploy snapshot tool
+
+
+on:
+  push:
+    branches:
+      - 'develop'
+
+jobs:
+  call-deploy-snapshot-workflow:
+    name: Deploy Snapshot Tool
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Deploy-Snapshot-Tools.yml@master
+    with:
+      tool_name: RiseClipseValidatorSCL
+      run_sonarqube: true
+      dest_folder: develop
+      email_to: dominique.marcadet@centralesupelec.fr, aurelie.dehouck-neveu@edf.fr
+    secrets:
+      SONAR_TOKEN: ${{ secrets.RISECLIPSE_SONAR_TOKEN }}
+      RISECLIPSE_WEB_HOSTNAME: ${{ secrets.RISECLIPSE_WEB_HOSTNAME }}
+      RISECLIPSE_WEB_USERNAME: ${{ secrets.RISECLIPSE_WEB_USERNAME }}
+      RISECLIPSE_WEB_SSHKEY: ${{ secrets.RISECLIPSE_WEB_SSHKEY }}
+      RISECLIPSE_WEB_PASSPHRASE: ${{ secrets.RISECLIPSE_WEB_PASSPHRASE }}
+      MAIL_USERNAME: ${{ secrets.RISECLIPSE_GMAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.RISECLIPSE_GMAIL_PASSWORD }}
