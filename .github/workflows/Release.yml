@@ -76,6 +76,66 @@ jobs:
         tag: ${{ github.event.repository.name }}-${{ steps.get_version.outputs.project_version }}
         name: ${{ github.event.repository.name }} v${{ steps.get_version.outputs.project_version }}
 
+  pre-release-with-jre-included:
+    # Should use a shared workflow common with Pre-Release-With-JRE-included.yml
+    # Only on Windows for the moment
+    runs-on: windows-latest
+    name: Release application with JRE included
+
+    steps:
+    - name: Download artifact from other workflow
+      uses: dawidd6/action-download-artifact@v9
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: Pre-Release-and-Prepare-Next-Dev.yml
+        workflow_conclusion: success
+        path: ${{ github.workspace }}\artifacts
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: "temurin"
+        java-version: "21"
+
+    - name: Checkout distribution to get icons
+      uses: actions/checkout@v4
+      with:
+        repository: riseclipse/riseclipse-distribution
+        path: ${{ github.workspace }}\riseclipse-distribution
+
+    - name: Package application
+      run: |
+        mkdir ${{ github.workspace }}\gui
+        mv ${{ github.workspace }}\artifacts\*\*Application*.jar ${{ github.workspace }}\gui\
+        cd ${{ github.workspace }}\gui
+        mkdir OCL
+        mkdir NSD
+        $jarname = Get-ChildItem  -Filter "*.jar" | Select-Object -ExpandProperty Name
+        $filename = [System.IO.Path]::GetFileNameWithoutExtension($jarname)
+        $toolname = $filename.Substring(0,$filename.LastIndexOf("-"))
+        $version = $filename.Substring($filename.LastIndexOf("-") + 1)
+        jpackage --verbose --input ${{ github.workspace }}\gui `
+                 --dest ${{ github.workspace }}\gui `
+                 --main-jar $jarname `
+                 --main-class fr.centralesupelec.edf.riseclipse.iec61850.scl.validator.ui.application.RiseClipseValidatorSCLApplication `
+                 --type msi `
+                 --name $toolname `
+                 --app-version $version `
+                 --win-dir-chooser `
+                 --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
+                 --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
+        echo "tool_version=$version" >> $env:GITHUB_OUTPUT
+      id: package_application
+
+    - name: Release msi
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: "${{ github.workspace }}/*/*.msi"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.repository.name }}-${{ steps.package_application.outputs.tool_version }}
+        name: ${{ github.event.repository.name }} v${{ steps.package_application.outputs.tool_version }}
+
   call-release-dockerhub-workflow:
     name: Release on DockerHub
     needs: [call-validate-release-workflow]
