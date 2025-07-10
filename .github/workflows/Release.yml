@@ -34,6 +34,7 @@ jobs:
   release-as-zip:
     # Should use a shared workflow common with Pre-Release-As-Zip.yml
     runs-on: ubuntu-24.04
+    needs: [call-validate-release-workflow]
     name: Make a zip of the released application
 
     steps:
@@ -80,6 +81,7 @@ jobs:
     # Should use a shared workflow common with Pre-Release-With-JRE-included.yml
     # Only on Windows for the moment
     runs-on: windows-latest
+    needs: [call-validate-release-workflow]
     name: Release application with JRE included
 
     steps:
