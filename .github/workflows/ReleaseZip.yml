@@ -19,6 +19,8 @@
 
 name: Release a zip of the CLI tool
 
+# temporary worflow, will be merged in Release.yml
+
 on: workflow_dispatch
 
 jobs:
