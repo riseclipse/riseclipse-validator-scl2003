@@ -30,7 +30,7 @@ RUN                                         \
          --output /javaruntime
 
 # Base image
-FROM debian:buster-slim
+FROM debian:bookworm-slim
 
 ## environment settings
 ENV HOME="/config"
