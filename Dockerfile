@@ -17,7 +17,7 @@
 # **      https://riseclipse.github.io
 # *************************************************************************
 
-FROM eclipse-temurin:17 AS jre-build
+FROM eclipse-temurin:21 AS jre-build
 
 # Create a custom Java runtime
 RUN                                         \
