@@ -49,7 +49,8 @@ RUN apt update \
      && rm -rf \
           /tmp/* \
           /var/lib/apt/lists/* \
-          /var/tmp/*
+          /var/tmp/* \
+     && update-alternatives --install /usr/bin/java java /opt/java/openjdk/bin/java 2000
 COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/
 
 
