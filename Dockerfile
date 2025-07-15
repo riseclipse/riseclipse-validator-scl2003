@@ -17,7 +17,7 @@
 # **      https://riseclipse.github.io
 # *************************************************************************
 
-FROM eclipse-temurin:17 as jre-build
+FROM eclipse-temurin:21 AS jre-build
 
 # Create a custom Java runtime
 RUN $JAVA_HOME/bin/jlink                    \
@@ -37,7 +37,7 @@ ENV TZ=Europe/Paris
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV JAVA_HOME=/opt/java/openjdk
-ENV PATH "${JAVA_HOME}/bin:${PATH}"
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 COPY --from=jre-build /javaruntime $JAVA_HOME
 
 RUN \
