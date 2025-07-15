@@ -1,0 +1,69 @@
+# *************************************************************************
+# **  Copyright (c) 2025 CentraleSupélec & EDF.
+# **  All rights reserved. This program and the accompanying materials
+# **  are made available under the terms of the Eclipse Public License v2.0
+# **  which accompanies this distribution, and is available at
+# **  https://www.eclipse.org/legal/epl-v20.html
+# ** 
+# **  This file is part of the RiseClipse tool
+# **  
+# **  Contributors:
+# **      Computer Science Department, CentraleSupélec
+# **      EDF R&D
+# **  Contacts:
+# **      dominique.marcadet@centralesupelec.fr
+# **      aurelie.dehouck-neveu@edf.fr
+# **  Web site:
+# **      https://riseclipse.github.io
+# *************************************************************************
+
+name: Release a zip of the CLI tool
+
+# temporary worflow, will be merged in Release.yml
+
+on: workflow_dispatch
+
+jobs:
+  release-as-zip:
+    runs-on: ubuntu-24.04
+    name: Make a zip of the released cli tool
+
+    steps:
+    - name: Checkout ${{ github.event.repository.name }}
+      uses: actions/checkout@v4
+
+    - name: Download artifact from other workflow
+      uses: dawidd6/action-download-artifact@v9
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: Pre-Release-and-Prepare-Next-Dev.yml
+        workflow_conclusion: success
+        path: ${{ github.workspace }}/artifacts
+
+    - name: Get version from any artifact name
+      run: |
+        cd artifacts
+        FILENAME=$(basename */*.jar )
+        VERSION=${FILENAME##*-}
+        VERSION=${VERSION%.jar}
+        echo "project_version=$VERSION" >> $GITHUB_OUTPUT
+      id: get_version
+
+    - name: Make a zip
+      run: |
+        mkdir zip
+        rm ${{ github.workspace }}/artifacts/*/*Application*.jar
+        cp ${{ github.workspace }}/artifacts/*/*.jar zip/
+        cd zip
+        FILENAME=$(basename *.jar .jar )
+        zip -r ../${FILENAME}.zip .
+
+    - name: Release zip
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: "${{ github.workspace }}/*.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.repository.name }}-${{ steps.get_version.outputs.project_version }}
+        name: ${{ github.event.repository.name }} v${{ steps.get_version.outputs.project_version }}
+
