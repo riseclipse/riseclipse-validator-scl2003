@@ -246,7 +246,7 @@ public class CDCValidator {
         doType
         .getSDO()
         .stream()
-        .filter( sdo -> ( sdo.getNamespace() == null ) || nsIdentification.dependsOn( NsIdentification.of( sdo.getNamespace() ) ))
+        .filter( sdo -> ( sdo.getNamespace() == null ) || NsIdentification.of( sdo.getNamespace() ).dependsOn( nsIdentification ))
         .forEach( sdo -> {
             subDataObjectPresenceConditionValidator.addModelData( sdo, sdo.getName(), diagnostics );
         });
