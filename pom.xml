@@ -28,7 +28,7 @@
  
   <groupId>io.github.riseclipse</groupId>
   <artifactId>riseclipse-validator-scl2003</artifactId>
-  <version>1.2.10-SNAPSHOT</version>
+  <version>1.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>[aggregator] RiseClipse Validator SCL2003 Tools</name>
   
@@ -152,17 +152,17 @@
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl</artifactId>
-      <version>1.2.16-SNAPSHOT</version>
+      <version>1.3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.edit</artifactId>
-      <version>1.2.16-SNAPSHOT</version>
+      <version>1.3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
       <artifactId>fr.centralesupelec.edf.riseclipse.iec61850.scl.utilities</artifactId>
-      <version>1.2.16-SNAPSHOT</version>
+      <version>1.3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.github.riseclipse</groupId>
