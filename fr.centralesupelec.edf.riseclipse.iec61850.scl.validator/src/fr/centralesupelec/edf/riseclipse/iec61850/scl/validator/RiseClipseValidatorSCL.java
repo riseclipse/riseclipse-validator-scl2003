@@ -44,6 +44,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import fr.centralesupelec.edf.riseclipse.iec61850.asd.AsdPackage;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.ConstructedAttribute;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DependsOn;
 import fr.centralesupelec.edf.riseclipse.iec61850.nsd.DocumentRoot;
@@ -81,7 +82,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 public class RiseClipseValidatorSCL {
     
     private static final String TOOL_VERSION = "1.3.0-SNAPSHOT";
-    private static final String TOOL_DATE = "27 January 2026";
+    private static final String TOOL_DATE = "4 February 2026";
     private static final String TOOL_VERSION_DATE = TOOL_VERSION + " (" + TOOL_DATE + ")";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
@@ -1000,6 +1001,7 @@ public class RiseClipseValidatorSCL {
             @NonNull
             ValidationRegistryAdapter adapter = ValidationRegistryAdapter.getAdapter( sclLoader.getResourceSet() );
             adapter.put( SclPackage.eINSTANCE, composedValidator );
+            adapter.put( AsdPackage.eINSTANCE, composedValidator );
             Diagnostician diagnostician = new Diagnostician( adapter );
             
             Thread progress = new Thread( () -> {
