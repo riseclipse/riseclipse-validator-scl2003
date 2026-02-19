@@ -28,17 +28,13 @@ on:
 jobs:
   call-deploy-snapshot-workflow:
     name: Deploy Snapshot Tool
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Deploy-Snapshot-Tools.yml@master
+    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Deploy-Snapshot-Tools.yml@snapshot-tools-on-gh
     with:
       tool_name: RiseClipseValidatorSCL
       run_sonarqube: true
-      dest_folder: develop
-      email_to: dominique.marcadet@centralesupelec.fr, aurelie.dehouck-neveu@edf.fr
+#      email_to: dominique.marcadet@centralesupelec.fr, aurelie.dehouck-neveu@edf.fr
+      email_to: dominique.marcadet@centralesupelec.fr
     secrets:
       SONAR_TOKEN: ${{ secrets.RISECLIPSE_SONAR_TOKEN }}
-      RISECLIPSE_WEB_HOSTNAME: ${{ secrets.RISECLIPSE_WEB_HOSTNAME }}
-      RISECLIPSE_WEB_USERNAME: ${{ secrets.RISECLIPSE_WEB_USERNAME }}
-      RISECLIPSE_WEB_SSHKEY: ${{ secrets.RISECLIPSE_WEB_SSHKEY }}
-      RISECLIPSE_WEB_PASSPHRASE: ${{ secrets.RISECLIPSE_WEB_PASSPHRASE }}
       MAIL_USERNAME: ${{ secrets.RISECLIPSE_GMAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.RISECLIPSE_GMAIL_PASSWORD }}
