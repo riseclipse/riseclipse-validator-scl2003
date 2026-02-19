@@ -162,6 +162,9 @@ public class ConstructedAttributeValidator extends TypeValidator {
       
         boolean res = subDataAttributePresenceConditionValidator.validate( daType, diagnostics );
         
+        // Issue #218: need to check order of BDAs against order of SubDataAttribute in ConstructedAttribute
+        int currentPosInConstructedAttribute = -1;
+        
         for( BDA bda : daType.getBDA() ) {
             TypeValidator typeValidator = subDataAttributeValidatorMap.get( bda.getName() );
             if( typeValidator != null ) {
@@ -183,6 +186,27 @@ public class ConstructedAttributeValidator extends TypeValidator {
                         warning.getMessage(),
                         new Object[] { daType, warning } ));
             }
+
+            // For issue #218 on order of BDA
+            SubDataAttribute subDataAttribute = null;
+            for( int i = currentPosInConstructedAttribute + 1; i < constructedAttribute.getSubDataAttribute().size(); ++i ) {
+                if( bda.getName().equals( constructedAttribute.getSubDataAttribute().get( i ).getName() )) {
+                    currentPosInConstructedAttribute = i;
+                    subDataAttribute = constructedAttribute.getSubDataAttribute().get( currentPosInConstructedAttribute );
+                }
+            }
+            if( subDataAttribute == null ) {
+                RiseClipseMessage error = RiseClipseMessage.error( CA_VALIDATION_NSD_CATEGORY, bda.getFilename(), bda.getLineNumber(), 
+                        "the BDA \"", bda.getName(), "\" does not respect the order of SubDataAttribute in ConstructedAttribute \"",
+                        constructedAttribute.getName(), "\" in namespace \"", nsIdentification, "\"" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        error.getMessage(),
+                        new Object[] { bda, error } ));
+            }
+            
         }
       
         return res;
