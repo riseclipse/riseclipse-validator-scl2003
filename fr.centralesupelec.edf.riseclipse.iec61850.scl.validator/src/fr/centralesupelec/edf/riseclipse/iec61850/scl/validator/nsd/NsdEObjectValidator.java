@@ -208,14 +208,14 @@ public class NsdEObjectValidator implements EValidator {
             // DO.Name shall be a combination of the abbreviations listed in 7-4 NSD file
             // This must be verified even for an unknown namespace
             if( ! DONameValidator.validateDoName( do_.getName() )) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                         "DO \"", do_.getName(), "\" is not composed using standardised abbreviations" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { do_, warning } ));
+                        notice.getMessage(),
+                        new Object[] { do_, notice } ));
             }
             
             // If the DO use a standard name, it must use the same CDC and respect the multi presence condition
@@ -223,27 +223,27 @@ public class NsdEObjectValidator implements EValidator {
             if( StandardDOValidator.isStandardDoName( do_.getName() )) {
                 if( do_.getRefersToDOType() != null ) {
                     if( ! StandardDOValidator.validateCdcOfExtendedDO( do_.getName(), do_.getRefersToDOType().getCdc() )) {
-                        RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                        RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                                 "DO \"", do_.getName(), "\" use a standard name, but not the standard CDC, it is \"", do_.getRefersToDOType().getCdc(),
                                 "\", it should be \"", StandardDOValidator.getStandardCdcOfDataObject( do_.getName() ), "\"");
                         diagnostics.add( new BasicDiagnostic(
-                                Diagnostic.WARNING,
+                                Diagnostic.ERROR,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                warning.getMessage(),
-                                new Object[] { do_, warning } ));
+                                error.getMessage(),
+                                new Object[] { do_, error } ));
                     }
                 }
                 
                 if( ! StandardDOValidator.isStandardDoMulti( do_.getName() ) && do_.getName().matches( "[a-zA-Z]+\\d+" )) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                    RiseClipseMessage error = RiseClipseMessage.error( NsdValidator.VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                             "DO \"", do_.getName(), "\" use a standard name, but is instantiated while the standard one is not" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { do_, warning } ));
+                            error.getMessage(),
+                            new Object[] { do_, error } ));
                 }
             }
         });
