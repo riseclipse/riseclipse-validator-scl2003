@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2019-2025 CentraleSupélec & EDF.
+**  Copyright (c) 2019-2026 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -27,8 +27,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JCheckBox;
 import javax.swing.JList;
+import javax.swing.JRadioButton;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
@@ -39,14 +39,14 @@ import javax.swing.border.EmptyBorder;
  * Adapted from http://www.devx.com/tips/Tip/5342
  */
 @SuppressWarnings( "serial" )
-public class SclFileList extends JList< FileCheckBox > {
+public class SclFileList extends JList< FileRadioButton > {
     
     protected static Border noFocusBorder = new EmptyBorder( 1, 1, 1, 1 );
     
-    private DefaultListModel< FileCheckBox > model;
+    private DefaultListModel< FileRadioButton > model;
 
     public SclFileList() {
-        model = new DefaultListModel< FileCheckBox >();
+        model = new DefaultListModel<>();
         setModel( model );
         
         setCellRenderer( new SclFileCellRenderer() );
@@ -56,8 +56,8 @@ public class SclFileList extends JList< FileCheckBox > {
                 int index = locationToIndex( e.getPoint() );
 
                 if( index != -1 ) {
-                    JCheckBox checkbox = getModel().getElementAt( index ).getCheckBox();
-                    checkbox.setSelected( !checkbox.isSelected() );
+                    JRadioButton radioButton = getModel().getElementAt( index ).getRadioButton();
+                    radioButton.setSelected( true );
                     repaint();
                 }
             }
@@ -73,24 +73,24 @@ public class SclFileList extends JList< FileCheckBox > {
             }
         }
         
-        FileCheckBox check = new FileCheckBox( file );
-        model.addElement( check );
+        FileRadioButton button = new FileRadioButton( file );
+        model.addElement( button );
     }
 
-    protected class SclFileCellRenderer implements ListCellRenderer< FileCheckBox > {
+    protected class SclFileCellRenderer implements ListCellRenderer< FileRadioButton > {
 
         @Override
-        public Component getListCellRendererComponent( JList< ? extends FileCheckBox > list, FileCheckBox file, int index,
+        public Component getListCellRendererComponent( JList< ? extends FileRadioButton > list, FileRadioButton file, int index,
                 boolean isSelected, boolean cellHasFocus ) {
-            JCheckBox checkbox = file.getCheckBox();
-            checkbox.setBackground( isSelected ? getSelectionBackground() : getBackground() );
-            checkbox.setForeground( isSelected ? getSelectionForeground() : getForeground() );
-            checkbox.setEnabled( isEnabled() );
-            checkbox.setFont( getFont() );
-            checkbox.setFocusPainted( false );
-            checkbox.setBorderPainted( true );
-            checkbox.setBorder( isSelected ? UIManager.getBorder( "List.focusCellHighlightBorder" ) : noFocusBorder );
-            return checkbox;
+            JRadioButton radioButton = file.getRadioButton();
+            radioButton.setBackground( isSelected ? getSelectionBackground() : getBackground() );
+            radioButton.setForeground( isSelected ? getSelectionForeground() : getForeground() );
+            radioButton.setEnabled( isEnabled() );
+            radioButton.setFont( getFont() );
+            radioButton.setFocusPainted( false );
+            radioButton.setBorderPainted( true );
+            radioButton.setBorder( isSelected ? UIManager.getBorder( "List.focusCellHighlightBorder" ) : noFocusBorder );
+            return radioButton;
         }
     }
 
@@ -98,7 +98,7 @@ public class SclFileList extends JList< FileCheckBox > {
         ArrayList< String > sclFiles = new ArrayList< String >();
         
         for( int i = 0; i < model.size(); ++i ) {
-            if( model.getElementAt( i ).getCheckBox().isSelected() ) {
+            if( model.getElementAt( i ).getRadioButton().isSelected() ) {
                 sclFiles.add( model.getElementAt( i ).getFile().getAbsolutePath() );
             }
         }
