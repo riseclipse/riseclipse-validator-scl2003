@@ -234,16 +234,16 @@ public class EnumerationValidator extends TypeValidator {
                 }
                 // Check for deprecated literal, only if correct name is used
                 else if( deprecatedLiterals.contains( enumVal.getValue() )) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( ENUMERATION_VALIDATION_NSD_CATEGORY, enumVal.getFilename(), enumVal.getLineNumber(), 
                             "EnumVal with name \"", enumVal.getValue(), "\" in EnumType id = \"" , enumType.getId(),
                             "\" is deprecated in standard enumeration \"",
                             getName(), "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { enumVal, warning } ));
+                            notice.getMessage(),
+                            new Object[] { enumVal, notice } ));
                     res = false;
                 }
             }
