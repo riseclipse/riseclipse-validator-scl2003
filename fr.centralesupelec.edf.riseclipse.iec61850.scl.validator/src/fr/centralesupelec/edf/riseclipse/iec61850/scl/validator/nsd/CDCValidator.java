@@ -253,6 +253,9 @@ public class CDCValidator {
         
         res = subDataObjectPresenceConditionValidator.validate( doType, diagnostics ) && res;
         
+        // Issue #218: need to check order of DAs against order of DataAttribute in CDC
+        int currentPosInCDC = -1;
+        
         for( DA da : doType.getDA() ) {
             TypeValidator typeValidator = dataAttributeTypeValidatorMap.get( da.getName() );
             if( typeValidator != null ) {
@@ -287,13 +290,34 @@ public class CDCValidator {
                         new Object[] { da, notice } ));
             }
             
-            // Issue #146: check dchg, qchg, dupd
-            cdc
-           .getDataAttribute()
-           .stream()
-           .filter( d -> da.getName().equals( d.getName() ))
-           .findAny()
-           .ifPresent( dataAttribute -> {
+            // For issue #218 on order of DA
+            DataAttribute dataAttribute = null;
+            for( int i = currentPosInCDC + 1; i < cdc.getDataAttribute().size(); ++i ) {
+                if( da.getName().equals( cdc.getDataAttribute().get( i ).getName() )) {
+                    currentPosInCDC = i;
+                    dataAttribute = cdc.getDataAttribute().get( currentPosInCDC );
+                }
+            }
+            if( dataAttribute == null ) {
+                RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                        "the DA \"", da.getName(), "\" does not respect the order of DataAttribute in CDC \"",
+                        cdc.getName(), "\" in namespace \"", nsIdentification, "\"" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        error.getMessage(),
+                        new Object[] { da, error } ));
+                
+                for( int i = 0; i < cdc.getDataAttribute().size(); ++i ) {
+                    if( da.getName().equals( cdc.getDataAttribute().get( i ).getName() )) {
+                        dataAttribute = cdc.getDataAttribute().get( i );
+                    }
+                }
+            }
+            
+            if( dataAttribute != null ) {
+                // Issue #146: check dchg, qchg, dupd
                 if(( Boolean.TRUE.equals( da.getDchg() )) && ( ! dataAttribute.isDchg() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
                             "attribute dchg of DA \"", da.getName(), "\" is true while the corresponding one in DataAttribute is false or absent",
@@ -355,7 +379,7 @@ public class CDCValidator {
                                 new Object[] { da, error } ));
                     }
                 }
-            });
+            }
         }
       
         for( SDO sdo : doType.getSDO() ) {
