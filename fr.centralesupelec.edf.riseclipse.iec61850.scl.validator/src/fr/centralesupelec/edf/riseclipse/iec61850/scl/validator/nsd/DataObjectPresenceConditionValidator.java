@@ -966,15 +966,15 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition naM\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"na\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1616,15 +1616,15 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition \"MFsubst\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MFsubst\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1708,15 +1708,15 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition \"MOlnNs\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOlnNs\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1732,15 +1732,15 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition \"MOdataNs\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOdataNs\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1757,15 +1757,15 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition \"MFscaledAV\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MFscaledAV\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1781,15 +1781,15 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition \"MFscaledMagV\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MFscaledMagV\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1805,15 +1805,15 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition \"MFscaledAngV\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MFscaledAngV\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1829,15 +1829,15 @@ public class DataObjectPresenceConditionValidator {
                         "validation of presence condition \"MOrms\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOrms\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1887,15 +1887,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"MOoperTm\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOoperTm\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1911,15 +1911,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"MmultiF\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MmultiF\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1935,15 +1935,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"MOsbo\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOsbo\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -1959,15 +1959,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"MOenhanced\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                  "verification of PresenceCondition \"MOenhanced\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                  lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -2054,15 +2054,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"MOrange\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MORange\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -2077,15 +2077,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"OMSynPh\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"OMSynPh\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -2098,15 +2098,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"MAllOrNonePerGroup\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MAllOrNonePerGroup\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -2119,15 +2119,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"MOctrl\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOctrl\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -2140,15 +2140,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"MOsboNormal\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOsboNormal\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }
@@ -2161,15 +2161,15 @@ lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", n
                         "validation of presence condition \"MOsboEnhanced\" for DO \"", name, "\" in LNodeType id = \"",
                         lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                 if( presentDO.get( name ) != null ) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
+                    RiseClipseMessage notice = RiseClipseMessage.notice( DO_VALIDATION_NSD_CATEGORY, lNodeType.getFilename(), lNodeType.getLineNumber(), 
                                                 "verification of PresenceCondition \"MOsboEnhanced\" for DO \"", name, "\" is not implemented in LNodeType id=\"",
                                                 lNodeType.getId(), "\" with LNClass \"", anyLNClassName, "\" in namespace \"", nsIdentification, "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.INFO,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { lNodeType, warning } ));
+                            notice.getMessage(),
+                            new Object[] { lNodeType, notice } ));
                 }
             }
         }

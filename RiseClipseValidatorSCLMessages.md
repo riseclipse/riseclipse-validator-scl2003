@@ -5,6 +5,8 @@
 | NSD/Validation | ERROR | AnyLN type="xxx" class="yyy" has no namespace |
 | NSD/Validation | ERROR | LNClassValidator "xxx" not found for LNodeType "yyy" in namespace "ppp" |
 | NSD/Validation | ERROR | DO name "xxx" has an instance number, it shouldn't because the presCond of its corresponding DataObject is not multi |
+| NSD/Validation | ERROR | DO "xxx" use a standard name, but not the standard CDC, it is "yyy", it should be "zzz" |
+| NSD/Validation | ERROR | DO "xxx" use a standard name, but is instantiated while the standard one is not |
 | NSD/Validation/BasicType | ERROR | type of DA/BDA "xxx" is not "yyy", it is "zzz" |
 | NSD/Validation/BasicType | ERROR | empty value of Val in DA/BDA "xxx" is not valid for "yyy" type |
 | NSD/Validation/BasicType | ERROR | empty value of Val in DAI "xxx" is not valid for "yyy" type |
@@ -66,6 +68,7 @@
 | NSD/Validation/Enumeration | ERROR | EnumVal with ord "xxx" in EnumType id = "yyy" is not defined as LiteralVal in standard Enumeration "zzz" in namespace "ppp" |
 | NSD/Validation/Enumeration | ERROR | EnumVal with ord "xxx" in EnumType id = "yyy" has incorrect name "aaa" instead of "bbb" in standard enumeration "zzz" in namespace "ppp" |
 | NSD/Validation/FunctionalConstraint | ERROR | functional contraint "fff" of DA "xxx" is wrong, it should be "ggg" |
+| NSD/Validation/LNClass | ERROR | DOType id = "yyy" at line nnn used by DO "xxx"" has wrong CDC "aaa", it should be "bbb" in namespace "ppp" |
 | NSD/Validation/SubDataAttribute | ERROR | BDA "xxx" not expected in ConstructedAttribute "zzz" in namespace "ppp" |
 | NSD/Validation/SubDataAttribute | ERROR | BDA "xxx" already present in ConstructedAttribute "zzz" in namespace "ppp" |
 | NSD/Validation/SubDataAttribute | ERROR | BDA "xxx" is mandatory in DAType id = "yyy" with ConstructedAttribute "zzz" in namespace "ppp" |
@@ -93,14 +96,6 @@
 | NSD/Validation/SubDataObject | ERROR | SDO "xxx" is mandatory in DOType id = "yyy" with CDC "zzz" because sibling "sss" is not present in namespace "ppp" |
 | NSD/Validation/SubDataObject | ERROR | SDO "xxx" is forbidden in DOType id = "yyy" with CDC "zzz" because sibling "sss" is present in namespace "ppp" |
 | NSD/Validation/SubDataObject | ERROR | SDO "xxx" is mandatory in DOType because "phsRef" is not Synchrophasor in namespace "ppp" |
-| NSD/Validation | WARNING | DO "xxx" is not composed using standardised abbreviations |
-| NSD/Validation | WARNING | DO "xxx" use a standard name, but not the standard CDC, it is "yyy", it should be "zzz" |
-| NSD/Validation | WARNING | DO "xxx" use a standard name, but is instantiated while the standard one is not |
-| NSD/Validation | WARNING | AnyLN type="xxx" class="yyy" is in an unknown namespace "zzz", only partial validation will be done |
-| NSD/Validation/CDC | WARNING | DA "xxx" of type "yyy" cannot be verified because there is no validator for it in namespace "ppp" |
-| NSD/Validation/CDC | WARNING | DA "xxx" of bType "yyy" cannot be verified because there is no validator for it in namespace "ppp" |
-| NSD/Validation/CDC | WARNING | FunctionalConstraint "xxx" of DA "yyy" cannot be verified because there is no validator for it in namespace "ppp" |
-| NSD/Validation/CDC | WARNING | SDO name "xxx" is not composed using standardised abbreviations |
 | NSD/Validation/CDC | WARNING | while validating DOType: DOType for SDO "xxx" not found in namespace "ppp" |
 | NSD/Validation/CDC | WARNING | while validating DOType: validator for SDO "xxx" not found in namespace "ppp" |
 | NSD/Validation/CDC | WARNING | DOType id = "yyy" refers to deprecated CDC "xxx" in namespace "ppp" |
@@ -108,31 +103,36 @@
 | NSD/Validation/ConstructedAttribute | WARNING | while validating DAType: validator for BDA "xxx" not found in namespace "ppp" |
 | NSD/Validation/ConstructedAttribute | WARNING | DAType id = "yyy" refers to deprecated ConstructedAttribute "xxx" in namespace "ppp" |
 | NSD/Validation/DataAttribute | WARNING | DOType id="yyy" refers to deprecated CDC "xxx" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "na" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MFsubst" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOlnNs" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOdataNs" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MFscaledAV" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MFscaledMagV" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MFscaledAngV" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOrms" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOoperTm" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MmultiF" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOsbo" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOenhanced" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MORange" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "OMSynPh" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MAllOrNonePerGroup" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOctrl" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOsboNormal" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
-| NSD/Validation/DataObject | WARNING | verification of PresenceCondition "MOsboEnhanced" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
 | NSD/Validation/DataObject | WARNING | LNodeType id="yyy" refers to deprecated LNClass "xxx" in namespace "ppp" |
 | NSD/Validation/DataObject | WARNING | DO "xxx"" in LNodeType id = "yyy" is deprecated in "zzz" in namespace "ppp" |
-| NSD/Validation/Enumeration | WARNING | EnumVal with name "xxx" in EnumType id = "yyy" is deprecated in standard enumeration "zzz" in namespace "ppp" |
-| NSD/Validation/LNClass | WARNING | DOType id = "yyy" at line nnn used by DO "xxx"" has wrong CDC "aaa", it should be "bbb" in namespace "ppp" |
 | NSD/Validation/LNClass | WARNING | DO "xxx"" cannot be verified because there is no validator for it in namespace "ppp" |
 | NSD/Validation/SubDataAttribute | WARNING | DAType id="yyy" refers to deprecated ConstructedAttribute "xxx" in namespace "ppp" |
 | NSD/Validation/SubDataObject | WARNING | verification of PresenceCondition "OMSynPh" for SDO "xxx" for DOType: no value for "phsRef" in namespace "ppp" |
 | NSD/Validation/SubDataObject | WARNING | verification of PresenceCondition "OMSynPh" for SDO "xxx" for DOType: multiple values for "phsRef" in namespace "ppp" |
 | NSD/Validation/SubDataObject | WARNING | verification of PresenceCondition "OMSynPh" for SDO "xxx" for DOType: DA "phsRef" not found in namespace "ppp" |
 | NSD/Validation/SubDataObject | WARNING | DOType id="yyy" refers to deprecated CDC "xxx" in namespace "ppp" |
+| NSD/Validation | NOTICE | AnyLN type="xxx" class="yyy" is in an unknown namespace "zzz", only partial validation will be done |
+| NSD/Validation | NOTICE | DO "xxx" is not composed using standardised abbreviations |
+| NSD/Validation/CDC | NOTICE | SDO name "xxx" is not composed using standardised abbreviations |
+| NSD/Validation/CDC | NOTICE | DA "xxx" of type "yyy" cannot be verified because there is no validator for it in namespace "ppp" |
+| NSD/Validation/CDC | NOTICE | DA "xxx" of bType "yyy" cannot be verified because there is no validator for it in namespace "ppp" |
+| NSD/Validation/CDC | NOTICE | FunctionalConstraint "xxx" of DA "yyy" cannot be verified because there is no validator for it in namespace "ppp" |
+| NSD/Validation/Enumeration | NOTICE | EnumVal with name "xxx" in EnumType id = "yyy" is deprecated in standard enumeration "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "na" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MFsubst" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MOlnNs" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MOdataNs" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MFscaledAV" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MFscaledMagV" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MFscaledAngV" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MOrms" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MOoperTm" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MmultiF" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MOsbo" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MOenhanced" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MORange" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "OMSynPh" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MAllOrNonePerGroup" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MOctrl" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MOsboNormal" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |
+| NSD/Validation/DataObject | NOTICE | verification of PresenceCondition "MOsboEnhanced" for DO "xxx" is not implemented in LNodeType id="yyy" with LNClass "zzz" in namespace "ppp" |

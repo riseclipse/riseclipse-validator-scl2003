@@ -1,4 +1,11 @@
 
+## 1.3.0-SNAPSHOT (2026/02/19)
+- add support for ASD extension of SCL
+- improve usability of graphical tool (issue riseclipse/riseclipse-validator-scl2003#217)
+- check order of DA and BDA (issue riseclipse/riseclipse-validator-scl2003#218)
+- change levels of some messages (issue riseclipse/riseclipse-validator-scl2003#224)
+- improve build of link ControlWithIEDName (issue riseclipse/riseclipse-metamodel-scl2003#77)
+
 ## 1.2.9 (2025/06/13)
 - update to Eclipse 2024-12, Java 21 is now required
 - numbered DO are correctly recognized by NSD validator 
