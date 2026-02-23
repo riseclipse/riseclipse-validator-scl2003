@@ -41,9 +41,9 @@ ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 COPY --from=jre-build /javaruntime $JAVA_HOME
 
-RUN                                                   \
-       apt update                                     \
-    && apt install -y curl                            
+RUN                                                  \
+       apt update                                    \
+    && apt install -y curl                           \
       texlive-latex-base make zip texlive-latex-base \
       texlive-latex-extra latexmk tex-gyre           \
    && apt-get clean                                  \
