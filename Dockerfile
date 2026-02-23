@@ -59,7 +59,7 @@ ARG RISECLIPSE_TOOL=RiseClipseValidatorSCL
 
 RUN                                     \
        mkdir -p /usr/riseclipse/bin/    \
-    && curl -L -o "/usr/riseclipse/bin/RiseClipseValidatorSCL.jar" "https://github.com/riseclipse/riseclipse-validator-scl2003/releases/download/riseclipse-validator-scl2003-1.3.0-SNAPSHOT/RiseClipseValidatorSCL-1.3.0-SNAPSHOT.jar"
+    && curl -L -o "/usr/riseclipse/bin/${RISECLIPSE_TOOL}.jar" "https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-1.3.0-SNAPSHOT/${RISECLIPSE_TOOL}-1.3.0-SNAPSHOT.jar"
 #    && curl -L -o "/usr/riseclipse/bin/${RISECLIPSE_TOOL}.jar" "https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar"
 
 
