@@ -56,6 +56,7 @@ RUN apt update \
 ARG RISECLIPSE_PROJECT=riseclipse-validator-scl2003
 ARG RISECLIPSE_TOOL=RiseClipseValidatorSCL
 
+RUN mkdir /usr/riseclipse/bin/
 RUN echo "/usr/riseclipse/bin/${RISECLIPSE_TOOL}.jar"
 RUN echo "https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar"
 RUN curl -L -o "/usr/riseclipse/bin/RiseClipseValidatorSCL.jar" "https://github.com/riseclipse/riseclipse-validator-scl2003/releases/download/riseclipse-validator-scl2003-1.3.0-SNAPSHOT/RiseClipseValidatorSCL-1.3.0-SNAPSHOT.jar"
