@@ -43,23 +43,24 @@ COPY --from=jre-build /javaruntime $JAVA_HOME
 
 RUN                                                   \
        apt update                                     \
-    && apt install -y curl                            \
-       texlive-latex-base make zip texlive-latex-base \
-       texlive-latex-extra latexmk tex-gyre           \
-    && apt-get clean                                  \
-    && rm -rf                                         \
-         /tmp/*                                       \
-         /var/lib/apt/lists/*                         \
-         /var/tmp/*                                   \
-    && update-alternatives --install /usr/bin/java java /opt/java/openjdk/bin/java 2000
-COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/
+    && apt install -y curl                            
+#       texlive-latex-base make zip texlive-latex-base \
+#       texlive-latex-extra latexmk tex-gyre           \
+#    && apt-get clean                                  \
+#    && rm -rf                                         \
+#         /tmp/*                                       \
+#         /var/lib/apt/lists/*                         \
+#         /var/tmp/*                                   \
+#    && update-alternatives --install /usr/bin/java java /opt/java/openjdk/bin/java 2000
+#COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/
 
 ARG RISECLIPSE_PROJECT=riseclipse-validator-scl2003
 ARG RISECLIPSE_TOOL=RiseClipseValidatorSCL
 
 RUN                                     \
        mkdir -p /usr/riseclipse/bin/    \
-    && curl -L -o "/usr/riseclipse/bin/${RISECLIPSE_TOOL}.jar" "https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar"
+    && curl -L -o "/usr/riseclipse/bin/RiseClipseValidatorSCL.jar" "https://github.com/riseclipse/riseclipse-validator-scl2003/releases/download/riseclipse-validator-scl2003-${RELEASE_VERSION}/RiseClipseValidatorSCL-${RELEASE_VERSION}.jar"
+#    && curl -L -o "/usr/riseclipse/bin/${RISECLIPSE_TOOL}.jar" "https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar"
 
 
 WORKDIR /usr/riseclipse
