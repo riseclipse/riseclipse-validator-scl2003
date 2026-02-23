@@ -24,6 +24,7 @@ name: Release on DockerHub
 
 on:
     workflow_dispatch
+    push
 
 env:
     RELEASE_VERSION: 1.3.0-SNAPSHOT
