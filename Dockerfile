@@ -1,5 +1,5 @@
 # *************************************************************************
-# **  Copyright (c) 2022-24 CentraleSupélec & EDF.
+# **  Copyright (c) 2026 CentraleSupélec & EDF.
 # **  All rights reserved. This program and the accompanying materials
 # **  are made available under the terms of the Eclipse Public License v2.0
 # **  which accompanies this distribution, and is available at
@@ -53,9 +53,13 @@ RUN apt update \
      && update-alternatives --install /usr/bin/java java /opt/java/openjdk/bin/java 2000
 COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/
 
+ARG RISECLIPSE_PROJECT=riseclipse-validator-scl2003
+ARG RISECLIPSE_TOOL=RiseClipseValidatorSCL
 
 # "Download artifact" action creates subdirectory named from the artifact's name
-COPY artifacts/RiseClipseValidatorSCL-*/RiseClipseValidatorSCL-*.jar /usr/riseclipse/bin/RiseClipseValidatorSCL.jar
+RUN \
+    curl -o /usr/riseclipse/bin/{RISECLIPSE_TOOL}.jar https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar
+
 
 WORKDIR /usr/riseclipse
 

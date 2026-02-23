@@ -20,20 +20,32 @@
 name: Release on DockerHub
 
 # This CD workflow builds and push a docker image of the RiseClipse Validator SCL CLI tool
-# with a specific tag for this git branch
+# with a specific version
 
-on: workflow_dispatch
+on:
+    workflow_dispatch
+
+env:
+    RELEASE_VERSION: 1.3.0-SNAPSHOT
+    DOCKER_REPOSITORY: riseclipse-validator-scl
+    DOCKER_PRE_TAG: ec61850-6-3-v
 
 jobs:
-  call-release-dockerhub-workflow:
-    name: Release on DockerHub
-    uses: riseclipse/riseclipse-developer/.github/workflows/Shared-Release-On-DockerHub.yml@master
-    with:
-      # tag is specific to this branch, but also related to the version of the validator
-      # (see https://github.com/riseclipse/riseclipse-validator-scl2003/pull/122)
-      release_version: ec61850-6-3-v1.3.0-SNAPSHOT
-      docker_repository: riseclipse-validator-scl
-      release_latest: false
-    secrets:
-      DOCKER_USER: ${{ secrets.RISECLIPSE_DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.RISECLIPSE_DOCKER_ACCESS_TOKEN }}
+  release-dockerhub-workflow:
+    # Use a specific version to avoid unattended changes with latest
+    runs-on: ubuntu-24.04
+
+    steps: 
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.RISECLIPSE_DOCKER_USERNAME }}
+        password: ${{ secrets.RISECLIPSE_DOCKER_ACCESS_TOKEN }}
+
+    - name: Build and push Docker image with given tag
+      uses: docker/build-push-action@v6
+      with:
+        context: ${{ github.workspace }}/${{ github.event.repository.name }}
+        push: true
+        build-args: RELEASE_VERSION=${{ env.RELEASE_VERSION }}
+        tags: riseclipse/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_PRE_TAG }}${{ env.RELEASE_VERSION }}
