@@ -37,6 +37,9 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps: 
+    - name: Checkout ${{ github.event.repository.name }}
+      uses: actions/checkout@v4
+
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
