@@ -58,7 +58,7 @@ ARG RISECLIPSE_TOOL=RiseClipseValidatorSCL
 
 # "Download artifact" action creates subdirectory named from the artifact's name
 RUN \
-    curl -o /usr/riseclipse/bin/{RISECLIPSE_TOOL}.jar https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar
+    curl -o "/usr/riseclipse/bin/${RISECLIPSE_TOOL}.jar" "https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar"
 
 
 WORKDIR /usr/riseclipse
