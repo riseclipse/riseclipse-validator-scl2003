@@ -23,7 +23,7 @@ name: Release on DockerHub
 # with a specific version
 
 on:
-    push
+    workflow_dispatch
 
 env:
     RELEASE_VERSION: 1.3.0-SNAPSHOT
@@ -45,7 +45,7 @@ jobs:
     - name: Build and push Docker image with given tag
       uses: docker/build-push-action@v6
       with:
-        context: ${{ github.workspace }}/${{ github.event.repository.name }}
+        context: .
         push: true
         build-args: RELEASE_VERSION=${{ env.RELEASE_VERSION }}
         tags: riseclipse/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_PRE_TAG }}${{ env.RELEASE_VERSION }}
