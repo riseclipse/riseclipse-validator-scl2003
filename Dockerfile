@@ -56,9 +56,11 @@ COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/
 ARG RISECLIPSE_PROJECT=riseclipse-validator-scl2003
 ARG RISECLIPSE_TOOL=RiseClipseValidatorSCL
 
-# "Download artifact" action creates subdirectory named from the artifact's name
 RUN \
-    curl -o "/usr/riseclipse/bin/${RISECLIPSE_TOOL}.jar" "https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar"
+       echo "/usr/riseclipse/bin/${RISECLIPSE_TOOL}.jar" \
+    && echo "https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar" \
+    && curl -L -o "/usr/riseclipse/bin/RiseClipseValidatorSCL.jar" "https://github.com/riseclipse/riseclipse-validator-scl2003/releases/download/riseclipse-validator-scl2003-1.3.0-SNAPSHOT/RiseClipseValidatorSCL-1.3.0-SNAPSHOT.jar" \
+    && curl -L -o "/usr/riseclipse/bin/${RISECLIPSE_TOOL}.jar" "https://github.com/riseclipse/${RISECLIPSE_PROJECT}/releases/download/${RISECLIPSE_PROJECT}-${RELEASE_VERSION}/${RISECLIPSE_TOOL}-${RELEASE_VERSION}.jar"
 
 
 WORKDIR /usr/riseclipse
