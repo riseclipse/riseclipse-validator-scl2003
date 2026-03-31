@@ -81,7 +81,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.3.0-SNAPSHOT";
+    private static final String TOOL_VERSION = "1.3.0";
     private static final String TOOL_DATE = "31 March 2026";
     private static final String TOOL_VERSION_DATE = TOOL_VERSION + " (" + TOOL_DATE + ")";
 
