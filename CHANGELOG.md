@@ -1,11 +1,12 @@
 
-## 1.3.0-SNAPSHOT (2026/03/20)
+## 1.3.0 (2026/03/31)
 - add support for ASD extension of SCL
 - improve usability of graphical tool (issue riseclipse/riseclipse-validator-scl2003#217)
 - check order of DA and BDA (issue riseclipse/riseclipse-validator-scl2003#218)
 - change levels of some messages (issue riseclipse/riseclipse-validator-scl2003#224)
 - improve build of link ControlWithIEDName (issue riseclipse/riseclipse-metamodel-scl2003#77)
 - use parent LDevice for namespace (issue riseclipse/riseclipse-metamodel-scl2003#79)
+- default value of prefix is the empty string (not yet done in current schema of SCL)
 - use extended OCL Library ([see list of extensions here](https://github.com/riseclipse/org.eclipse.ocl/blob/riseclipse/master/README.md))
 
 ## 1.2.9 (2025/06/13)
