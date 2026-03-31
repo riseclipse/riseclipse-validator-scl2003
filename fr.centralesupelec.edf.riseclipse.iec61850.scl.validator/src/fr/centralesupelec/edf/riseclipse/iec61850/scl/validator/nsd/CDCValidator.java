@@ -253,6 +253,9 @@ public class CDCValidator {
         
         res = subDataObjectPresenceConditionValidator.validate( doType, diagnostics ) && res;
         
+        // Issue #218: need to check order of DAs against order of DataAttribute in CDC
+        int currentPosInCDC = -1;
+        
         for( DA da : doType.getDA() ) {
             TypeValidator typeValidator = dataAttributeTypeValidatorMap.get( da.getName() );
             if( typeValidator != null ) {
@@ -260,15 +263,15 @@ public class CDCValidator {
             }
             else {
                 String daType = ( da.getType() == null ) ? ( "\" of bType \"" + da.getBType() ) : ( "\" of type \"" + da.getType() );
-                RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
                         "DA \"", da.getName(), daType,
                         "\" cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { da, warning } ));
+                        notice.getMessage(),
+                        new Object[] { da, notice } ));
             }
 
             FunctionalConstraintValidator fcValidator = FunctionalConstraintValidator.get( da.getFc() );
@@ -276,24 +279,45 @@ public class CDCValidator {
                 fcValidator.validateAbstractDataAttribute( da, diagnostics );
             }
             else {
-                RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
                         "FunctionalConstraint ", da.getFc(), " of DA ", da.getName(),
                         " cannot be verified because there is no validator for it in namespace \"", nsIdentification, "\"" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { da, warning } ));
+                        notice.getMessage(),
+                        new Object[] { da, notice } ));
             }
             
-            // Issue #146: check dchg, qchg, dupd
-            cdc
-           .getDataAttribute()
-           .stream()
-           .filter( d -> da.getName().equals( d.getName() ))
-           .findAny()
-           .ifPresent( dataAttribute -> {
+            // For issue #218 on order of DA
+            DataAttribute dataAttribute = null;
+            for( int i = currentPosInCDC + 1; i < cdc.getDataAttribute().size(); ++i ) {
+                if( da.getName().equals( cdc.getDataAttribute().get( i ).getName() )) {
+                    currentPosInCDC = i;
+                    dataAttribute = cdc.getDataAttribute().get( currentPosInCDC );
+                }
+            }
+            if( dataAttribute == null ) {
+                RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
+                        "the DA \"", da.getName(), "\" does not respect the order of DataAttribute in CDC \"",
+                        cdc.getName(), "\" in namespace \"", nsIdentification, "\"" );
+                diagnostics.add( new BasicDiagnostic(
+                        Diagnostic.ERROR,
+                        RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
+                        0,
+                        error.getMessage(),
+                        new Object[] { da, error } ));
+                
+                for( int i = 0; i < cdc.getDataAttribute().size(); ++i ) {
+                    if( da.getName().equals( cdc.getDataAttribute().get( i ).getName() )) {
+                        dataAttribute = cdc.getDataAttribute().get( i );
+                    }
+                }
+            }
+            
+            if( dataAttribute != null ) {
+                // Issue #146: check dchg, qchg, dupd
                 if(( Boolean.TRUE.equals( da.getDchg() )) && ( ! dataAttribute.isDchg() )) {
                     RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
                             "attribute dchg of DA \"", da.getName(), "\" is true while the corresponding one in DataAttribute is false or absent",
@@ -355,20 +379,20 @@ public class CDCValidator {
                                 new Object[] { da, error } ));
                     }
                 }
-            });
+            }
         }
       
         for( SDO sdo : doType.getSDO() ) {
             // SDO.name shall be a combination of the abbreviations listed in 7-4 NSD file
             if( ! DONameValidator.validateSdoName( sdo.getName() )) {
-                RiseClipseMessage warning = RiseClipseMessage.warning( CDC_VALIDATION_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(), 
+                RiseClipseMessage notice = RiseClipseMessage.notice( CDC_VALIDATION_NSD_CATEGORY, sdo.getFilename(), sdo.getLineNumber(), 
                         "SDO name \"", sdo.getName(), "\" is not composed using standardised abbreviations" );
                 diagnostics.add( new BasicDiagnostic(
-                        Diagnostic.WARNING,
+                        Diagnostic.INFO,
                         RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                         0,
-                        warning.getMessage(),
-                        new Object[] { sdo, warning } ));
+                        notice.getMessage(),
+                        new Object[] { sdo, notice } ));
             }
             
             CDCValidator cdcValidator = subDataObjectValidatorMap.get( sdo.getName() );

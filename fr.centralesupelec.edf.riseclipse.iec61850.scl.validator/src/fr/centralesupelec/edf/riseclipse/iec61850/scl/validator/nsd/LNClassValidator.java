@@ -223,16 +223,16 @@ public class LNClassValidator {
 
             if( cdcValidator != null ) {
                 if(( do_.getRefersToDOType() != null ) && ! cdcValidator.getName().equals( do_.getRefersToDOType().getCdc() )) {
-                    RiseClipseMessage warning = RiseClipseMessage.warning( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
+                    RiseClipseMessage error = RiseClipseMessage.error( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                             "DOType id = \"", do_.getRefersToDOType().getId(), "\" at line ", do_.getRefersToDOType().getLineNumber(),
                             " used by DO \"", do_.getName(), "\" has wrong CDC \"", do_.getRefersToDOType().getCdc(),
                             "\", it should be \"", cdcValidator.getName(), "\" in namespace \"", nsIdentification + "\"" );
                     diagnostics.add( new BasicDiagnostic(
-                            Diagnostic.WARNING,
+                            Diagnostic.ERROR,
                             RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                             0,
-                            warning.getMessage(),
-                            new Object[] { do_, warning } ));
+                            error.getMessage(),
+                            new Object[] { do_, error } ));
                 }
                 res = cdcValidator.validateDO( do_, diagnostics ) && res;
             }

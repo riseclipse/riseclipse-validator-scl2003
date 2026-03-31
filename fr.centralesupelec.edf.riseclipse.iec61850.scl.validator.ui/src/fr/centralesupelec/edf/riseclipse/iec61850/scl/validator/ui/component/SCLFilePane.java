@@ -92,7 +92,6 @@ public class SCLFilePane extends JPanel implements ActionListener {
             fileDialog.setVisible( true );
             if( fileDialog.getFiles().length != 0 ) {
                 sclFilesList.add( fileDialog.getFiles()[0] );
-                btnAddSclFile.setEnabled( false );
                 btnValidate.setEnabled( true );
             }
             return;
