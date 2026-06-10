@@ -1,5 +1,5 @@
 # *************************************************************************
-# **  Copyright (c) 2022-23 CentraleSupélec & EDF.
+# **  Copyright (c) 2022-2026 CentraleSupélec & EDF.
 # **  All rights reserved. This program and the accompanying materials
 # **  are made available under the terms of the Eclipse Public License v2.0
 # **  which accompanies this distribution, and is available at
@@ -39,10 +39,10 @@ jobs:
 
     steps:
     - name: Checkout ${{ github.event.repository.name }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Download artifact from other workflow
-      uses: dawidd6/action-download-artifact@v9
+      uses: dawidd6/action-download-artifact@v18
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: Pre-Release-and-Prepare-Next-Dev.yml
@@ -86,7 +86,7 @@ jobs:
 
     steps:
     - name: Download artifact from other workflow
-      uses: dawidd6/action-download-artifact@v9
+      uses: dawidd6/action-download-artifact@v18
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: Pre-Release-and-Prepare-Next-Dev.yml
@@ -94,13 +94,13 @@ jobs:
         path: ${{ github.workspace }}\artifacts
 
     - name: Setup Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: "temurin"
         java-version: "21"
 
     - name: Checkout distribution to get icons
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: riseclipse/riseclipse-distribution
         path: ${{ github.workspace }}\riseclipse-distribution
@@ -124,7 +124,7 @@ jobs:
                  --name $toolname `
                  --app-version $version `
                  --win-dir-chooser `
-                 --copyright "Copyright (c) 2025 CentraleSupélec & EDF" `
+                 --copyright "Copyright (c) 2026 CentraleSupélec & EDF" `
                  --icon ${{ github.workspace }}\riseclipse-distribution\fr.centralesupelec.edf.riseclipse.rcp\icons\riseclipse.ico
         echo "tool_version=$version" >> $env:GITHUB_OUTPUT
       id: package_application
