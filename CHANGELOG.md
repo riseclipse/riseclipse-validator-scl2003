@@ -1,4 +1,9 @@
 
+## 1.3.1 (2026/06/10)
+- move some messages to info level (issue riseclipse/riseclipse-validator-scl2003#235)
+- change type of BehaviorDescription.format to String (issue riseclipse/riseclipse-metamodel-scl2003#86)
+- change datatype of durations and bitrate to unsigned int (issue riseclipse/riseclipse-metamodel-scl2003#87)
+
 ## 1.3.0 (2026/03/31)
 - add support for ASD extension of SCL
 - improve usability of graphical tool (issue riseclipse/riseclipse-validator-scl2003#217)
