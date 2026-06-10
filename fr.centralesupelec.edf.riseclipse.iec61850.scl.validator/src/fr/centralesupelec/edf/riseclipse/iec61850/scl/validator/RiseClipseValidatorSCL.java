@@ -81,8 +81,8 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 
 public class RiseClipseValidatorSCL {
     
-    private static final String TOOL_VERSION = "1.3.0-SNAPSHOT";
-    private static final String TOOL_DATE = "20 February 2026";
+    private static final String TOOL_VERSION = "1.3.1-SNAPSHOT";
+    private static final String TOOL_DATE = "10 June 2026";
     private static final String TOOL_VERSION_DATE = TOOL_VERSION + " (" + TOOL_DATE + ")";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
@@ -896,7 +896,7 @@ public class RiseClipseValidatorSCL {
         composedValidator = new ComposedEValidator( null );
 
         if(( oclFiles != null ) && ( ! oclFiles.isEmpty() )) {
-            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading OCL constraints" );
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "Loading OCL constraints" );
             oclValidator = new OCLValidator( sclPg, console );
 
             for( int i = 0; i < oclFiles.size(); ++i ) {
@@ -907,7 +907,7 @@ public class RiseClipseValidatorSCL {
         }
 
         if(( nsdFiles != null ) && ( ! nsdFiles.isEmpty() )) {
-            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading NSD files" );
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "Loading NSD files" );
             nsdValidator = new NsdValidator( sclPg );
             for( int i = 0; i < nsdFiles.size(); ++i ) {
                 nsdValidator.addNsdDocument( nsdFiles.get( i ), console );
@@ -920,7 +920,7 @@ public class RiseClipseValidatorSCL {
         sclAdapter = new SclItemProviderAdapterFactory();
 
         if( xsdFile != null ) {
-            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading XSD schema" );
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "Loading XSD schema" );
             if( ! XSDValidator.prepare( xsdFile )) {
                 // Problem with given xsd file, do not do XSD validation
                 console.warning( VALIDATOR_SCL_CATEGORY, 0, "XSD validation will not be done, because of problems with XSD file: " + xsdFile );
@@ -940,14 +940,14 @@ public class RiseClipseValidatorSCL {
         }
         
         sclLoader.reset();
-        console.notice( VALIDATOR_SCL_CATEGORY, 0, "Loading SCL file:", sclFile );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Loading SCL file:", sclFile );
         Resource resource = sclLoader.loadWithoutValidation( sclFile );
         if( makeExplicitLinks ) {
             console.info( VALIDATOR_SCL_CATEGORY, 0, "Making explicit links for file: ", sclFile );
             sclLoader.finalizeLoad( console );
         }
         if( resource != null ) {
-            console.notice( VALIDATOR_SCL_CATEGORY, 0, "Validating file: " + sclFile );
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "Validating file: " + sclFile );
             // Some attributes must be re-initalialized
             if( nsdValidator != null ) nsdValidator.reset();
             // Not needed for the OCL validator
@@ -1008,7 +1008,7 @@ public class RiseClipseValidatorSCL {
                 try {
                     while( true ) {
                         Thread.sleep( 1000 );
-                        console.notice( VALIDATOR_SCL_CATEGORY, 0, "Running..." );
+                        console.info( VALIDATOR_SCL_CATEGORY, 0, "Running..." );
                     }
                 }
                 catch( InterruptedException e ) {}
