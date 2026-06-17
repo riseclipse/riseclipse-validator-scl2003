@@ -29,7 +29,7 @@ on:
 env:
     RELEASE_VERSION: 1.3.1-SNAPSHOT
     DOCKER_REPOSITORY: riseclipse-validator-scl
-    DOCKER_PRE_TAG: ec61850-6-3-v
+    DOCKER_PRE_TAG: iec61850-6-3-v
 
 jobs:
   release-dockerhub-workflow:
