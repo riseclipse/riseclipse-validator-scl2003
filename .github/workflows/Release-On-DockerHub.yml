@@ -66,7 +66,7 @@ jobs:
         # Optional (recommended) mail server password:
         password: ${{ secrets.MAIL_PASSWORD }}
         # Required mail subject:
-        subject: New development version of docker image of ${{ DOCKER_REPOSITORY }}
+        subject: New development version of docker image of ${{ env.DOCKER_REPOSITORY }}
         # Required recipients' addresses:
         to: dominique.marcadet@centralesupelec.fr, aurelie.dehouck-neveu@edf.fr
         # Required sender full name (address can be skipped):
