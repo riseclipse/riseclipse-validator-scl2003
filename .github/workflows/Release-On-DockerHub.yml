@@ -62,9 +62,9 @@ jobs:
         # Optional whether this connection use TLS (default is true if server_port is 465)
         secure: true
         # Optional (recommended) mail server username:
-        username: ${{ secrets.MAIL_USERNAME }}
+        username: ${{ secrets.RISECLIPSE_GMAIL_USERNAME }}
         # Optional (recommended) mail server password:
-        password: ${{ secrets.MAIL_PASSWORD }}
+        password: ${{ secrets.RISECLIPSE_GMAIL_PASSWORD }}
         # Required mail subject:
         subject: New development version of docker image of ${{ env.DOCKER_REPOSITORY }}
         # Required recipients' addresses:
