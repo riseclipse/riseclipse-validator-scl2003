@@ -52,3 +52,32 @@ jobs:
         push: true
         build-args: RELEASE_VERSION=${{ env.RELEASE_VERSION }}
         tags: riseclipse/${{ env.DOCKER_REPOSITORY }}:${{ env.DOCKER_PRE_TAG }}${{ env.RELEASE_VERSION }}
+    
+    - name: Send email about this new development version
+      uses: dawidd6/action-send-mail@v15
+      with:
+        server_address: smtp.gmail.com
+        # Server port, default 25:
+        server_port: 465
+        # Optional whether this connection use TLS (default is true if server_port is 465)
+        secure: true
+        # Optional (recommended) mail server username:
+        username: ${{ secrets.MAIL_USERNAME }}
+        # Optional (recommended) mail server password:
+        password: ${{ secrets.MAIL_PASSWORD }}
+        # Required mail subject:
+        subject: New development version of docker image of ${{ DOCKER_REPOSITORY }}
+        # Required recipients' addresses:
+        to: dominique.marcadet@centralesupelec.fr, aurelie.dehouck-neveu@edf.fr
+        # Required sender full name (address can be skipped):
+        from: riseclipse@gmail.com
+        # Optional plain body:
+        body: |
+            Hi,
+            
+            A new development version of the image is available at https://hub.docker.com/r/riseclipse/riseclipse-validator-scl/tags.
+            See changes at https://github.com/riseclipse/${{ github.event.repository.name }}/blob/develop/CHANGELOG.md
+            
+            ----
+            The RiseClipse Team (https://riseclipse.github.io/)
+
