@@ -157,17 +157,17 @@ public class NsdEObjectValidator implements EValidator {
                 if( inNamespace != null ) {
                     nsId = NsIdentification.of( inNamespace );
                     if( nsdResourceSet.getNS( nsId ) == null ) {
-                        RiseClipseMessage warning = RiseClipseMessage.warning( NsdValidator.VALIDATION_NSD_CATEGORY,
+                        RiseClipseMessage notice = RiseClipseMessage.notice( NsdValidator.VALIDATION_NSD_CATEGORY,
                                 anyLN.getFilename(), anyLN.getLineNumber(),
                                 "AnyLN type=\"", anyLN.getLnType(), "\" class=\"", anyLN.getLnClass(),
                                 "\" is in an unknown namespace \"", inNamespace,
                                 "\", only partial validation will be done" );
                         diagnostics.add( new BasicDiagnostic(
-                                Diagnostic.WARNING,
+                                Diagnostic.INFO,
                                 RiseClipseValidatorSCL.DIAGNOSTIC_SOURCE,
                                 0,
-                                warning.getMessage(),
-                                new Object[] { anyLN, warning } ) );
+                                notice.getMessage(),
+                                new Object[] { anyLN, notice } ) );
                     }
                 }
                 
