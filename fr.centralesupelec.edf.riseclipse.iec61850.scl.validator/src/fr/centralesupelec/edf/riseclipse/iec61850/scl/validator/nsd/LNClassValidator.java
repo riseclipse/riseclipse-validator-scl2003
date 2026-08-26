@@ -202,8 +202,8 @@ public class LNClassValidator {
             // Look for first with the full name, keeping potential ending digits
             CDCValidator cdcValidator = dataObjectValidatorMap.get( do_.getName() );
             if( cdcValidator == null ) {
-                if( do_.getName().matches( "[a-zA-Z]+\\d+" )) {
-                    String name = do_.getName().split( "(?=\\d)", 2 )[0];
+                if( do_.getName().matches( "[a-zA-Z0-9]+\\d+\\z" )) {
+                    String name = do_.getName().split( "(?=\\d+\\z)", 2 )[0];
                     if( ! doWithInstanceNumber.contains( name )) {
                         RiseClipseMessage error = RiseClipseMessage.error( LNCLASS_VALIDATION_NSD_CATEGORY, do_.getFilename(), do_.getLineNumber(), 
                                 "DO name \"", do_.getName(), "\" has an instance number, it shouldn't because the presCond of its corresponding DataObject is not multi" );
