@@ -255,6 +255,9 @@ public class CDCValidator {
         
         // Issue #218: need to check order of DAs against order of DataAttribute in CDC
         int currentPosInCDC = -1;
+                
+        // Issue #239: LPL and CSD have specific treatment for DA order
+        HashMap< String, Integer > countersByFC = new HashMap<>();
         
         for( DA da : doType.getDA() ) {
             TypeValidator typeValidator = dataAttributeTypeValidatorMap.get( da.getName() );
@@ -292,12 +295,23 @@ public class CDCValidator {
             
             // For issue #218 on order of DA
             DataAttribute dataAttribute = null;
+            
+            // Issue #239: LPL and CSD have specific treatment for DA order
+            boolean specificLPLorCSD = ( da.getFc() != null ) && ( "LPL".equals( cdc.getName() ) || "CSD".equals(  cdc.getName() ));
+
+            if( specificLPLorCSD ) {
+                 currentPosInCDC = countersByFC.computeIfAbsent( da.getFc().getName(), k -> -1 );
+            }
             for( int i = currentPosInCDC + 1; i < cdc.getDataAttribute().size(); ++i ) {
                 if( da.getName().equals( cdc.getDataAttribute().get( i ).getName() )) {
                     currentPosInCDC = i;
                     dataAttribute = cdc.getDataAttribute().get( currentPosInCDC );
+                    if( specificLPLorCSD ) {
+                        countersByFC.put( da.getFc().getName(), currentPosInCDC );
+                    }
                 }
             }
+            
             if( dataAttribute == null ) {
                 RiseClipseMessage error = RiseClipseMessage.error( CDC_VALIDATION_NSD_CATEGORY, da.getFilename(), da.getLineNumber(), 
                         "the DA \"", da.getName(), "\" does not respect the order of DataAttribute in CDC \"",
@@ -309,6 +323,7 @@ public class CDCValidator {
                         error.getMessage(),
                         new Object[] { da, error } ));
                 
+                // We still need the dataAttribute
                 for( int i = 0; i < cdc.getDataAttribute().size(); ++i ) {
                     if( da.getName().equals( cdc.getDataAttribute().get( i ).getName() )) {
                         dataAttribute = cdc.getDataAttribute().get( i );
