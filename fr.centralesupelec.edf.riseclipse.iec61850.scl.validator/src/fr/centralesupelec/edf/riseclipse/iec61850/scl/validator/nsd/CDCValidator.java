@@ -297,7 +297,7 @@ public class CDCValidator {
             DataAttribute dataAttribute = null;
             
             // Issue #239: LPL and CSD have specific treatment for DA order
-            boolean specificLPLorCSD = "LPL".equals( cdc.getName() ) || "CSD".equals(  cdc.getName() );
+            boolean specificLPLorCSD = ( da.getFc() != null ) && ( "LPL".equals( cdc.getName() ) || "CSD".equals(  cdc.getName() ));
 
             if( specificLPLorCSD ) {
                  currentPosInCDC = countersByFC.computeIfAbsent( da.getFc().getName(), k -> -1 );
