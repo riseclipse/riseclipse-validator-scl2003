@@ -1,10 +1,15 @@
 
-## 1.3.1-SNAPSHOT (2026/06/30)
+## 1.3.1-SNAPSHOT (2026/08/28)
 - move some messages to info level (issue riseclipse/riseclipse-validator-scl2003#235)
 - change type of BehaviorDescription.format to String (issue riseclipse/riseclipse-metamodel-scl2003#86)
 - change datatype of durations and bitrate to unsigned int (issue riseclipse/riseclipse-metamodel-scl2003#87)
 - update to Eclipse 2026-06, update plugins
-- SourceRef.service has no default value (issue riseclipse/riseclipse-metamodel-scl2003#88)
+- SourceRef.service has no default value, also SubscriberLNode (issue riseclipse/riseclipse-metamodel-scl2003#88)
+- SclFileUUIDReference inherits UnNaming (issue riseclipse/riseclipse-metamodel-scl2003#92)
+- SignalRole inherits AgUuid (issue riseclipse/riseclipse-metamodel-scl2003#94)
+- correctly handle digits in the middle of a DO name (issue riseclipse/riseclipse-validator-scl2003#238)
+- correct order of DA verification (issue riseclipse/riseclipse-validator-scl2003#239)
+- resolve a display problem with the GUI version
 
 ## 1.3.0 (2026/03/31)
 - add support for ASD extension of SCL

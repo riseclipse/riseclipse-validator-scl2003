@@ -1,6 +1,6 @@
 /*
 *************************************************************************
-**  Copyright (c) 2016-2025 CentraleSupélec & EDF.
+**  Copyright (c) 2016-2026 CentraleSupélec & EDF.
 **  All rights reserved. This program and the accompanying materials
 **  are made available under the terms of the Eclipse Public License v2.0
 **  which accompanies this distribution, and is available at
@@ -82,7 +82,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 public class RiseClipseValidatorSCL {
     
     private static final String TOOL_VERSION = "1.3.1-SNAPSHOT";
-    private static final String TOOL_DATE = "30 June 2026";
+    private static final String TOOL_DATE = "28 August 2026";
     private static final String TOOL_VERSION_DATE = TOOL_VERSION + " (" + TOOL_DATE + ")";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
