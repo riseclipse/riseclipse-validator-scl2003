@@ -62,10 +62,9 @@ public class XSDValidator {
         
         SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
 
-        Source schemaFile = new StreamSource( new File( xsdFile ) );
-        Schema schema;
         try {
-            schema = factory.newSchema( schemaFile );
+            Source schemaFile = new StreamSource( new File( xsdFile ) );
+            Schema schema = factory.newSchema( schemaFile );
             xsdValidator = schema.newValidator();
         }
         catch( SAXException e ) {
@@ -108,6 +107,7 @@ public class XSDValidator {
         xsdValidator.reset();
 
         try {
+            xsdValidationResult = XSD_VALIDATION_SUCCESS;
             Path sclPath = Paths.get( sclFile );
             Reader reader = Files.newBufferedReader( sclPath );
             removeBOM( reader );
