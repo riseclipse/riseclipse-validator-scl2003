@@ -48,7 +48,13 @@ public class XSDValidator {
 
     private static final String VALIDATION_XSD_CATEGORY = "XSD/Validation";
     
+    public static final int XSD_VALIDATION_SUCCESS = 0;
+    public static final int XSD_VALIDATION_WARNING = 1;
+    public static final int XSD_VALIDATION_ERROR = 2;
+    public static final int XSD_VALIDATION_FATAL_ERROR = 3;
+    
     private static Validator xsdValidator;
+    private static int xsdValidationResult = XSD_VALIDATION_SUCCESS;
 
     public static boolean prepare( String xsdFile ) {
         
@@ -73,12 +79,14 @@ public class XSDValidator {
             public void warning( SAXParseException exception ) {
                 console.warning( VALIDATION_XSD_CATEGORY, exception.getLineNumber(), exception.getMessage(),
                                  "(column: ", exception.getColumnNumber(), ")" );
+                if( xsdValidationResult != XSD_VALIDATION_ERROR ) xsdValidationResult = XSD_VALIDATION_WARNING;
             }
 
             @Override
             public void error( SAXParseException exception ) {
                 console.error( VALIDATION_XSD_CATEGORY, exception.getLineNumber(), exception.getMessage(),
                                "(column: ", exception.getColumnNumber(), ")" );
+                xsdValidationResult = XSD_VALIDATION_ERROR;
             }
 
             @Override
@@ -86,6 +94,7 @@ public class XSDValidator {
                 console.error( VALIDATION_XSD_CATEGORY, exception.getLineNumber(), exception.getMessage(),
                                "(column: ", exception.getColumnNumber(), ")" );
                 console.error( VALIDATION_XSD_CATEGORY, 0, "fatal error for schema validation, stopping" );
+                xsdValidationResult = XSD_VALIDATION_FATAL_ERROR;
                 return;
             }
         } );
@@ -93,7 +102,7 @@ public class XSDValidator {
         return true;
     }
 
-    public static void validate( String sclFile ) {
+    public static int validate( String sclFile ) {
         IRiseClipseConsole console = AbstractRiseClipseConsole.getConsole();
         
         xsdValidator.reset();
@@ -108,10 +117,14 @@ public class XSDValidator {
         }
         catch( IOException e ) {
             console.error( VALIDATION_XSD_CATEGORY, 0, "IOException: " + e.getMessage() );
+            return XSD_VALIDATION_ERROR;
         }
         catch( SAXException e ) {
             console.error( VALIDATION_XSD_CATEGORY, 0, "SAXException: " + e.getMessage() );
+            return XSD_VALIDATION_ERROR;
         }
+        
+        return xsdValidationResult;
     }
     
     // From https://stackoverflow.com/questions/5353783/why-org-apache-xerces-parsers-saxparser-does-not-skip-bom-in-utf8-encoded-xml

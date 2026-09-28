@@ -82,7 +82,7 @@ import org.eclipse.ocl.pivot.validation.ValidationRegistryAdapter;
 public class RiseClipseValidatorSCL {
     
     private static final String TOOL_VERSION = "1.3.1-SNAPSHOT";
-    private static final String TOOL_DATE = "28 August 2026";
+    private static final String TOOL_DATE = "28 September 2026";
     private static final String TOOL_VERSION_DATE = TOOL_VERSION + " (" + TOOL_DATE + ")";
 
     private static final String NSDOC_FILE_EXTENSION = ".nsdoc";
@@ -854,7 +854,7 @@ public class RiseClipseValidatorSCL {
         Severity oldLevel = console.setLevel( Severity.INFO );
         String oldFormat = console.setFormatString( INFO_FORMAT_STRING );
         
-        console.info( VALIDATOR_SCL_CATEGORY, 0, "Copyright (c) 2016-2024 CentraleSupélec & EDF." );
+        console.info( VALIDATOR_SCL_CATEGORY, 0, "Copyright (c) 2016-2026 CentraleSupélec & EDF." );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "All rights reserved. This program and the accompanying materials" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "are made available under the terms of the Eclipse Public License v2.0" );
         console.info( VALIDATOR_SCL_CATEGORY, 0, "which accompanies this distribution, and is available at" );
@@ -935,8 +935,20 @@ public class RiseClipseValidatorSCL {
         
         outputtedMessages = new HashSet<>();
         
+        int returned_value = EXIT_SUCCESS;
         if( xsdFile != null ) {
-            XSDValidator.validate( sclFile );
+            int xsd_returned_value = switch( XSDValidator.validate( sclFile )) {
+                case XSDValidator.XSD_VALIDATION_SUCCESS     -> EXIT_SUCCESS;
+                case XSDValidator.XSD_VALIDATION_WARNING     -> EXIT_WARNING;
+                case XSDValidator.XSD_VALIDATION_ERROR       -> EXIT_FAILURE;
+                case XSDValidator.XSD_VALIDATION_FATAL_ERROR -> EXIT_FAILURE;
+                default -> throw new IllegalArgumentException( "Unexpected value: from XSDValidator.validate()" );
+            };
+            returned_value = update_returned_value( returned_value, xsd_returned_value );
+        }
+        if( returned_value == EXIT_FAILURE ) {
+            console.error( VALIDATOR_SCL_CATEGORY, 0, "Stopping validation of file \"", sclFile, "\" because of errors during XSD validation" );
+            return EXIT_FAILURE;
         }
         
         sclLoader.reset();
@@ -947,14 +959,14 @@ public class RiseClipseValidatorSCL {
             sclLoader.finalizeLoad( console );
         }
         if( resource != null ) {
-            console.info( VALIDATOR_SCL_CATEGORY, 0, "Validating file: " + sclFile );
+            console.info( VALIDATOR_SCL_CATEGORY, 0, "Validating file: ", sclFile );
             // Some attributes must be re-initalialized
             if( nsdValidator != null ) nsdValidator.reset();
             // Not needed for the OCL validator
             // if( oclValidator != null ) oclValidator.reset();  // NOSONAR
-            return validate( resource, sclAdapter );
+            return update_returned_value( returned_value, validate( resource, sclAdapter ));
         }
-        return EXIT_SUCCESS;
+        return returned_value;
     }
 
     private static int validate( @NonNull Resource resource, final AdapterFactory sclAdapter ) {

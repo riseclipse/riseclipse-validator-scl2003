@@ -10,6 +10,7 @@
 - correctly handle digits in the middle of a DO name (issue riseclipse/riseclipse-validator-scl2003#238)
 - correct order of DA verification (issue riseclipse/riseclipse-validator-scl2003#239)
 - resolve a display problem with the GUI version
+- exit with non-zero if XSD validation fails (issue riseclipse/riseclipse-validator-scl2003#242)
 
 ## 1.3.0 (2026/03/31)
 - add support for ASD extension of SCL
